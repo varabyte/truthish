@@ -58,3 +58,24 @@ Once you've done that, IntelliJ will save it as a reusable run configuration,
 at which point you can rerun the task using a debugger.
 
 *TODO: Instructions for JS*
+
+# Code coverage
+
+As of the time of writing this README, IntelliJ code coverage does not work for
+mutliplatform environments. As a result, jacoco support has been added to the
+Gradle scripts, which reports code coverage using the JVM.
+
+To see a coverage report, run
+
+`./gradlew jvmCoverage`
+
+Once finished, a report will be generated at:
+
+`build/reports/jacoco/jvmCoverage/html/index.html`
+
+Gradle should open the report automatically, but if it doesn't, that's where you
+can find it.
+
+Note that inline methods are not accounted for correctly, and do not get credit
+for being used even when they are.
+

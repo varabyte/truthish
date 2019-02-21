@@ -6,6 +6,8 @@ repositories {
     mavenCentral()
 }
 
+apply from: 'jacoco.gradle'
+
 group 'io.github.bitspittle'
 version '0.0.0'
 
@@ -48,3 +50,4 @@ kotlin {
         }
     }
 }
+
