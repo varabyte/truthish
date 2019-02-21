@@ -130,8 +130,8 @@ class BasicAsserts {
                 assertThrows<IllegalArgumentException> {
                 }
             }
-            assertThat(e.message!!.contains(Summaries.EXPECTED_EXCEPTION)).isTrue()
-            assertThat(e.message!!.contains("IllegalArgumentException")).isTrue()
+            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
+            assertThat(e.message!!).contains("IllegalArgumentException")
         }
 
         run { // assertThrows doesn't accept invalid exceptions.
@@ -141,9 +141,9 @@ class BasicAsserts {
                     throw IllegalStateException()
                 }
             }
-            assertThat(e.message!!.contains(Summaries.EXPECTED_EXCEPTION)).isTrue()
-            assertThat(e.message!!.contains("IllegalArgumentException")).isTrue()
-            assertThat(e.message!!.contains("IllegalStateException")).isTrue()
+            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
+            assertThat(e.message!!).contains("IllegalArgumentException")
+            assertThat(e.message!!).contains("IllegalStateException")
         }
     }
 }

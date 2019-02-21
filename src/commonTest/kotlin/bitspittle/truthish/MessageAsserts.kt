@@ -48,5 +48,8 @@ class MessageAsserts {
 
         assertWithMessage(TEST_MESSAGE).that(10.0).withStrategy(testStrategy).isGreaterThanEqual(100.0)
         testStrategy.verifyFailureAndClear(TEST_MESSAGE)
+
+        assertWithMessage(TEST_MESSAGE).that("XYZ").withStrategy(testStrategy).isEmpty()
+        testStrategy.verifyFailureAndClear(TEST_MESSAGE)
     }
 }

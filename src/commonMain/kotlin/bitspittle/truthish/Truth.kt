@@ -14,6 +14,7 @@ import bitspittle.truthish.subjects.LongSubject
 import bitspittle.truthish.subjects.NotNullSubject
 import bitspittle.truthish.subjects.NullableSubject
 import bitspittle.truthish.subjects.ShortSubject
+import bitspittle.truthish.subjects.StringSubject
 
 fun assertThat(actual: Any?) = NullableSubject(actual)
 fun assertThat(actual: Any) = NotNullSubject(actual)
@@ -25,6 +26,7 @@ fun assertThat(actual: Int) = IntSubject(actual)
 fun assertThat(actual: Long) = LongSubject(actual)
 fun assertThat(actual: Float) = FloatSubject(actual)
 fun assertThat(actual: Double) = DoubleSubject(actual)
+fun assertThat(actual: String) = StringSubject(actual)
 // Adding a new [assertThat] here? Also add it to SummarizedSubjectBuilder
 
 fun assertWithMessage(message: String) = SummarizedSubjectBuilder(message)
@@ -39,6 +41,7 @@ class SummarizedSubjectBuilder(private val message: String) {
     fun that(actual: Long) = LongSubject(actual).withMessage(message)
     fun that(actual: Float) = FloatSubject(actual).withMessage(message)
     fun that(actual: Double) = DoubleSubject(actual).withMessage(message)
+    fun that(actual: String) = StringSubject(actual).withMessage(message)
 }
 
 /**

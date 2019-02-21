@@ -17,7 +17,7 @@ class IterableAsserts {
             val testStrategy = TestStrategy()
 
             assertThat(listOf("a", "b", "c")).withStrategy(testStrategy).isNotEqualTo(listOf("a", "b", "c"))
-            testStrategy.verifyFailureAndClear("[ a, b, c ]")
+            testStrategy.verifyFailureAndClear("[ \"a\", \"b\", \"c\" ]")
         }
     }
 }
