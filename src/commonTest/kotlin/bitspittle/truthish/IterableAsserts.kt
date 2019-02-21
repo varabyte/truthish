@@ -5,7 +5,7 @@ import kotlin.test.Test
 
 class IterableAsserts {
     @Test
-    fun collectionChecks() {
+    fun basicChecks() {
         run {
             // Test true statements
             assertThat(listOf("a", "b", "c")).isEqualTo(listOf("a", "b", "c"))

@@ -8,7 +8,10 @@ abstract class Reportable {
     var message: String? = null
     var name: String? = null
 
-    protected fun report(report: Report) {
+    /**
+     * Handle a [Report] using this current reportable instance's strategy and other values.
+     */
+    fun report(report: Report) {
         // Note: The following lines are in reverse order, since each add to the 0th element. In
         // practice, it's rare that both will even be set at the same time.
         name?.let { report.details.add(0, "Name" to AnyStringifier(it)) }

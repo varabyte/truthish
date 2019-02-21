@@ -92,4 +92,17 @@ object DetailsFor {
             BUT_WAS to actual
         )
     }
+
+    /**
+     * Like the other [expectedActual] method, except you can add more details to the "Expected"
+     * label. For example, "Expected greater than:" vs just "Expected"
+     *
+     * For consistency / readability, [additionalInfo] should be lower-case.
+     */
+    fun expectedActual(additionalInfo: String, expected: Any?, actual: Any?): List<Pair<String, ValueStringifier>> {
+        return listOf(
+            "$EXPECTED $additionalInfo" to stringifierFor(expected),
+            BUT_WAS to stringifierFor(actual)
+        )
+    }
 }
