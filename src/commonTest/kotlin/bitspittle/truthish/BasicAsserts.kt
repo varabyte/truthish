@@ -83,26 +83,28 @@ class BasicAsserts {
     fun assertSame() {
         run {
             // Test true statements
-            val intValue1 = IntValue(123)
-            val intValue2 = IntValue(123)
-            val intValue3 = intValue1
+            val stubValue1 = Stub()
+            val stubValue2 = Stub()
+            val stubValue3 = stubValue1
 
-            assertThat(intValue1).isSameAs(intValue3)
-            assertThat(intValue1).isNotSameAs(intValue2)
+            assertThat(stubValue1).isSameAs(stubValue1)
+            assertThat(stubValue1).isNotSameAs(stubValue2)
+            assertThat(stubValue1).isSameAs(stubValue3)
+
         }
 
         run {
             // Test false statements
             val testStrategy = TestStrategy()
 
-            val intValue1 = IntValue(123)
-            val intValue2 = IntValue(123)
-            val intValue3 = intValue1
+            val stubValue1 = Stub()
+            val stubValue2 = Stub()
+            val stubValue3 = stubValue1
 
-            assertThat(intValue1).withStrategy(testStrategy).isSameAs(intValue2)
+            assertThat(stubValue1).withStrategy(testStrategy).isSameAs(stubValue2)
             testStrategy.verifyFailureAndClear(Summaries.EXPECTED_SAME)
 
-            assertThat(intValue1).withStrategy(testStrategy).isNotSameAs(intValue3)
+            assertThat(stubValue1).withStrategy(testStrategy).isNotSameAs(stubValue3)
             testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NOT_SAME)
         }
     }

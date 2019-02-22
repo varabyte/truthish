@@ -33,4 +33,11 @@ object Summaries {
     const val EXPECTED_NOT_CONTAINS = "A value contained another"
     const val EXPECTED_MATCH = "A value did not match another"
     const val EXPECTED_NOT_MATCH = "A value matched another"
+
+    const val EXPECTED_COLLECTION_EMPTY = "A collection was not empty"
+    const val EXPECTED_COLLECTION_NOT_EMPTY = "A collection was empty"
+    const val EXPECTED_COLLECTION_CONTAINS = "A collection did not contain element(s)"
+    const val EXPECTED_COLLECTION_NOT_CONTAINS = "A collection contained element(s)"
+    const val EXPECTED_COLLECTION_NO_DUPLICATES = "A collection had duplicates"
+    const val EXPECTED_COLLECTION_ORDERED = "A collection did not contain element(s) in an expected order"
 }

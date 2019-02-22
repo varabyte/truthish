@@ -99,10 +99,10 @@ object DetailsFor {
      *
      * For consistency / readability, [additionalInfo] should be lower-case.
      */
-    fun expectedActual(additionalInfo: String, expected: Any?, actual: Any?): List<Pair<String, ValueStringifier>> {
-        return listOf(
-            "$EXPECTED $additionalInfo" to stringifierFor(expected),
-            BUT_WAS to stringifierFor(actual)
+    fun expectedActual(additionalInfo: String, expected: Any?, actual: Any?): MutableList<Pair<String, Any?>> {
+        return mutableListOf(
+            "$EXPECTED $additionalInfo" to expected,
+            BUT_WAS to actual
         )
     }
 }

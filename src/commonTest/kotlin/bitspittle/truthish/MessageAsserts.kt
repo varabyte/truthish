@@ -51,5 +51,8 @@ class MessageAsserts {
 
         assertWithMessage(TEST_MESSAGE).that("XYZ").withStrategy(testStrategy).isEmpty()
         testStrategy.verifyFailureAndClear(TEST_MESSAGE)
+
+        assertWithMessage(TEST_MESSAGE).that(listOf(1, 2, 3)).withStrategy(testStrategy).containsAnyIn(listOf(4, 5, 6))
+        testStrategy.verifyFailureAndClear(TEST_MESSAGE)
     }
 }
