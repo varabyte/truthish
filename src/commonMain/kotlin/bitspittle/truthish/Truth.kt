@@ -12,6 +12,7 @@ import bitspittle.truthish.subjects.FloatSubject
 import bitspittle.truthish.subjects.IntSubject
 import bitspittle.truthish.subjects.IterableSubject
 import bitspittle.truthish.subjects.LongSubject
+import bitspittle.truthish.subjects.MapSubject
 import bitspittle.truthish.subjects.NotNullSubject
 import bitspittle.truthish.subjects.NullableSubject
 import bitspittle.truthish.subjects.ShortSubject
@@ -29,6 +30,7 @@ fun assertThat(actual: Float) = FloatSubject(actual)
 fun assertThat(actual: Double) = DoubleSubject(actual)
 fun assertThat(actual: String) = StringSubject(actual)
 fun <T, I: Iterable<T>> assertThat(actual: I) = IterableSubject(actual)
+fun <K, V, T: Map<K, V>> assertThat(actual: T) = MapSubject(actual)
 // Adding a new [assertThat] here? Also add it to SummarizedSubjectBuilder
 
 fun assertWithMessage(message: String) = SummarizedSubjectBuilder(message)
@@ -45,6 +47,7 @@ class SummarizedSubjectBuilder(private val message: String) {
     fun that(actual: Double) = DoubleSubject(actual).withMessage(message)
     fun that(actual: String) = StringSubject(actual).withMessage(message)
     fun <T, I: Iterable<T>> that(actual: I) = IterableSubject(actual).withMessage(message)
+    fun <K, V, T: Map<K, V>> that(actual: T) = MapSubject(actual).withMessage(message)
 }
 
 /**

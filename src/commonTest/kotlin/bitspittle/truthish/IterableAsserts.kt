@@ -143,4 +143,41 @@ class IterableAsserts {
             testStrategy.verifyFailureAndClear()
         }
     }
+
+    @Test
+    fun mapChecks() {
+        val asciiMap = ('a'..'z').associate { it to it.toInt() }
+
+        run {
+            assertThat(asciiMap.keys).contains('g')
+            assertThat(asciiMap.keys).doesNotContain('G')
+            assertThat(asciiMap.values).contains(107)
+            assertThat(asciiMap.values).doesNotContain(9999)
+            assertThat(asciiMap).contains('e' to 101)
+            assertThat(asciiMap).doesNotContain('e' to 102)
+
+            assertThat(asciiMap).containsAllIn('a' to 97, 'z' to 122).inOrder()
+        }
+
+        run {
+            // Test false statements
+            val testStrategy = TestStrategy()
+
+            assertThat(asciiMap.keys).withStrategy(testStrategy).doesNotContain('g')
+            testStrategy.verifyFailureAndClear()
+            assertThat(asciiMap.keys).withStrategy(testStrategy).contains('G')
+            testStrategy.verifyFailureAndClear()
+            assertThat(asciiMap.values).withStrategy(testStrategy).doesNotContain(107)
+            testStrategy.verifyFailureAndClear()
+            assertThat(asciiMap.values).withStrategy(testStrategy).contains(9999)
+            testStrategy.verifyFailureAndClear()
+            assertThat(asciiMap).withStrategy(testStrategy).doesNotContain('e' to 101)
+            testStrategy.verifyFailureAndClear()
+            assertThat(asciiMap).withStrategy(testStrategy).contains('e' to 102)
+            testStrategy.verifyFailureAndClear()
+
+            assertThat(asciiMap).withStrategy(testStrategy).containsAllIn('a' to 122, 'z' to 122)
+            testStrategy.verifyFailureAndClear()
+        }
+    }
 }

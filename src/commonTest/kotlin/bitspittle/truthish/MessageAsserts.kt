@@ -54,5 +54,8 @@ class MessageAsserts {
 
         assertWithMessage(TEST_MESSAGE).that(listOf(1, 2, 3)).withStrategy(testStrategy).containsAnyIn(listOf(4, 5, 6))
         testStrategy.verifyFailureAndClear(TEST_MESSAGE)
+
+        assertWithMessage(TEST_MESSAGE).that(mapOf(1 to 1, 2 to 4, 3 to 9)).withStrategy(testStrategy).contains(4 to 16)
+        testStrategy.verifyFailureAndClear(TEST_MESSAGE)
     }
 }

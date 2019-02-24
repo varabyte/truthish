@@ -4,7 +4,7 @@ import bitspittle.truthish.failure.DetailsFor
 import bitspittle.truthish.failure.Report
 import bitspittle.truthish.failure.Summaries
 
-class IterableSubject<T>(internal val actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
+open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
     fun isEmpty() {
         if (actual.count() != 0) {
             report(Report(Summaries.EXPECTED_COLLECTION_EMPTY, DetailsFor.actual(actual)))
@@ -47,13 +47,14 @@ class IterableSubject<T>(internal val actual: Iterable<T>) : NotNullSubject<Iter
     }
 
     fun hasNoDuplicates() {
-        val duplicates = actual.groupingBy{ it }.eachCount().filter { it.value > 1 }
+        val duplicates = actual.groupingBy { it }.eachCount().filter { it.value > 1 }
         if (duplicates.isNotEmpty()) {
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
                     DetailsFor.actual(actual).apply {
-                        add("Duplicates" to duplicates.map { it.key }.toList()) }
+                        add("Duplicates" to duplicates.map { it.key }.toList())
+                    }
                 )
             )
         }
@@ -92,7 +93,7 @@ class IterableSubject<T>(internal val actual: Iterable<T>) : NotNullSubject<Iter
             )
             return skipInOrderCheck(this)
         }
-        return OrderedAsserter(this, other)
+        return OrderedAsserter(this, actual, other)
     }
 
     fun containsAllIn(vararg elements: T) = containsAllIn(elements.asIterable())
@@ -136,7 +137,7 @@ class IterableSubject<T>(internal val actual: Iterable<T>) : NotNullSubject<Iter
             return skipInOrderCheck(this)
         }
 
-        return OrderedAsserter(this, other)
+        return OrderedAsserter(this, actual, other)
     }
 
     fun containsExactly(vararg elements: T) = containsExactly(elements.asIterable())
@@ -146,13 +147,17 @@ class IterableSubject<T>(internal val actual: Iterable<T>) : NotNullSubject<Iter
  * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]\
  * instead, which is guaranteed to pass.
  */
-private fun <T>skipInOrderCheck(parent: IterableSubject<T>) = OrderedAsserter(parent, parent.actual)
+private fun <T> skipInOrderCheck(parent: IterableSubject<T>) = OrderedAsserter(parent, listOf(), listOf())
 
-class OrderedAsserter<T>(private val parent: IterableSubject<T>, private val other: Iterable<T>) {
+class OrderedAsserter<T>(
+    private val parent: IterableSubject<T>,
+    private val actual: Iterable<T>,
+    private val other: Iterable<T>
+) {
     fun inOrder() {
         var actualIndex = 0
         var otherIndex = 0
-        val actualList = parent.actual.toList()
+        val actualList = actual.toList()
         val otherList = other.toList()
 
         while (otherIndex < otherList.size) {
@@ -168,7 +173,7 @@ class OrderedAsserter<T>(private val parent: IterableSubject<T>, private val oth
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COLLECTION_ORDERED,
-                        DetailsFor.expectedActual("in order", other, parent.actual)
+                        DetailsFor.expectedActual("in order", other, actual)
                     )
                 )
                 break
@@ -179,4 +184,26 @@ class OrderedAsserter<T>(private val parent: IterableSubject<T>, private val oth
 
         // If we got here -- congrats! All elements of [other] were found in [actual] in order.
     }
+}
+
+/**
+ * A subject useful for testing the state of a [Map]'s entries.
+ *
+ * Note that if you want to make assertions about a map's keys or values, you should assert against
+ * them directly:
+ *
+ * ```
+ * val asciiMap: Map<Char, Int> = ... // mapping of 'a-z' to their ascii codes
+ *
+ * assertThat(map).contains('e' to 101)
+ * assertThat(map.keys).contains('e')
+ * assertThat(map.values).contains(101)
+ *
+ * assertThat(map).containsAllIn('a' to 97, 'z' to 122)
+ * assertThat(map.keys).containsAllIn('a', 'z')
+ * assertThat(map.values).containsAllIn(97, 122)
+ * ```
+ */
+class MapSubject<K, V>(actual: Map<K, V>) :
+    IterableSubject<Pair<K, V>>(actual.entries.map { it.toPair() }) {
 }

@@ -4,6 +4,7 @@ internal fun stringifierFor(value: Any?): ValueStringifier {
     return when (value) {
         is Char -> CharStringifier(value)
         is CharSequence -> StringStringifier(value)
+        is Map<*, *> -> MapStringifier(value)
         is Set<*> -> SetStringifier(value)
         is Iterable<*> -> IterableStringifier(value)
         else -> AnyStringifier(value)
@@ -34,6 +35,10 @@ class StringStringifier(private val value: CharSequence) : ValueStringifier() {
 
 class IterableStringifier(private val value: Iterable<*>) : ValueStringifier() {
     override fun toString() = "[ ${value.joinToString(", ") { stringifierFor(it).toString() }} ]"
+}
+
+class MapStringifier(private val value: Map<*, *>) : ValueStringifier() {
+    override fun toString() = "{ ${value.entries.joinToString(", ") { stringifierFor(it).toString() }} }"
 }
 
 // This should take precedence over IterableStringifier!
