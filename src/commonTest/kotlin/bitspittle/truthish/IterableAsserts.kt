@@ -180,4 +180,13 @@ class IterableAsserts {
             testStrategy.verifyFailureAndClear()
         }
     }
+
+    @Test
+    fun sequenceChecks() {
+        // Sequences are treated as iterables, so just do a few quick sanity checks
+        assertThat(sequenceOf("a", "b", "c")).containsExactly("a", "b", "c")
+        assertThat(sequenceOf<String>()).isEmpty()
+        assertThat(sequenceOf(1, 2, 3)).isNotEmpty()
+        assertThat(('a' .. 'z').asSequence()).hasSize(26)
+    }
 }
