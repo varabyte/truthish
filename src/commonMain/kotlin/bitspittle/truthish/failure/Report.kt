@@ -39,7 +39,7 @@ class Report(private val summary: String, details: List<Pair<String, Any?>> = li
         val builder = StringBuilder(summary)
         if (details.size > 0) {
             builder.append("\n\n")
-            val longestKey = details.map { it.first.length }.max()!!
+            val longestKey = details.maxOf { it.first.length }
 
             details.forEachIndexed { index, pair ->
                 if (index > 0) {

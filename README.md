@@ -81,23 +81,3 @@ you should be able to see a lot of console output)
 *truthish*, so whenever you rebuild, its target dependencies should be updated
 automatically.
 
-# Code coverage
-
-As of the time of writing this README, IntelliJ code coverage does not work for
-mutliplatform environments. As a result, jacoco support has been added to the
-Gradle scripts, which reports code coverage using the JVM.
-
-To see a coverage report, run
-
-`./gradlew jvmCoverage`
-
-Once finished, a report will be generated at:
-
-`build/reports/jacoco/jvmCoverage/html/index.html`
-
-Gradle should open the report automatically, but if it doesn't, that's where you
-can find it.
-
-Note that inline methods are not accounted for correctly, and do not get credit
-for being used even when they are.
-
