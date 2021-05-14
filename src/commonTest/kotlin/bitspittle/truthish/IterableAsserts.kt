@@ -146,7 +146,7 @@ class IterableAsserts {
 
     @Test
     fun mapChecks() {
-        val asciiMap = ('a'..'z').associate { it to it.toInt() }
+        val asciiMap = ('a'..'z').associateWith { it.code }
 
         run {
             assertThat(asciiMap.keys).contains('g')
