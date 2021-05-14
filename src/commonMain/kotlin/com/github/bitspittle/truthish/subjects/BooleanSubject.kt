@@ -1,7 +1,7 @@
-package bitspittle.truthish.subjects
+package com.github.bitspittle.truthish.subjects
 
-import bitspittle.truthish.failure.Report
-import bitspittle.truthish.failure.Summaries
+import com.github.bitspittle.truthish.failure.Report
+import com.github.bitspittle.truthish.failure.Summaries
 
 class BooleanSubject(private val actual: Boolean) : ComparableSubject<Boolean>(actual) {
     fun isTrue() {

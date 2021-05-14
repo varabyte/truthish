@@ -1,7 +1,7 @@
-package bitspittle.truthish
+package com.github.bitspittle.truthish
 
-import bitspittle.truthish.failure.FailureStrategy
-import bitspittle.truthish.failure.Report
+import com.github.bitspittle.truthish.failure.FailureStrategy
+import com.github.bitspittle.truthish.failure.Report
 
 /**
  * A "reporter" that saves the last failure that was reported but does not abort.

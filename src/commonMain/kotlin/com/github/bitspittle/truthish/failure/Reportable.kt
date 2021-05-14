@@ -1,4 +1,4 @@
-package bitspittle.truthish.failure
+package com.github.bitspittle.truthish.failure
 
 /**
  * Base class for any object that may want to send a failure report.

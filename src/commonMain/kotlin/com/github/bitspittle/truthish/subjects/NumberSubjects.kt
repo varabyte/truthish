@@ -1,8 +1,8 @@
-package bitspittle.truthish.subjects
+package com.github.bitspittle.truthish.subjects
 
-import bitspittle.truthish.failure.DetailsFor
-import bitspittle.truthish.failure.Report
-import bitspittle.truthish.failure.Summaries
+import com.github.bitspittle.truthish.failure.DetailsFor
+import com.github.bitspittle.truthish.failure.Report
+import com.github.bitspittle.truthish.failure.Summaries
 import kotlin.math.absoluteValue
 
 class ByteSubject(actual: Byte) : ComparableSubject<Byte>(actual)
@@ -60,7 +60,8 @@ class DoubleEpsilonAsserter(
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("within $epsilon of", parent.actual, target)))
+                        DetailsFor.expectedActual("within $epsilon of", parent.actual, target))
+                )
             }
         }
         else {
@@ -68,7 +69,8 @@ class DoubleEpsilonAsserter(
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("not within $epsilon of", parent.actual, target)))
+                        DetailsFor.expectedActual("not within $epsilon of", parent.actual, target))
+                )
             }
         }
     }

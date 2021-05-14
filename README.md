@@ -9,7 +9,7 @@ multiplatform projects.
 For example, you can write `assertThat` checks in tests like this:
 
 ```kotlin
-import bitspittle.truthish
+import com.github.bitspittle.truthish
 
 fun isEven(num: Int) = (num % 2) == 0
 fun square(num: Int) = (num * num)
@@ -103,7 +103,7 @@ kotlin {
             implementation kotlin("test-common")
             implementation kotlin("test-annotations-common")
             ...
-            implementation "io.github.bitspittle:truthish:$truthish-version"
+            implementation "com.github.bitspittle:truthish:$truthish-version"
         }
     }
     
@@ -111,7 +111,7 @@ kotlin {
         dependencies {
             implementation kotlin("test")
             ...
-            implementation "io.github.bitspittle:truthish-jvm:$truthish-version"
+            implementation "com.github.bitspittle:truthish-jvm:$truthish-version"
         }
     }
 
@@ -119,7 +119,7 @@ kotlin {
         dependencies {
             implementation kotlin("test-js")
             ...
-            implementation "io.github.bitspittle:truthish-js:$truthish-version"
+            implementation "com.github.bitspittle:truthish-js:$truthish-version"
         }
     }
   }

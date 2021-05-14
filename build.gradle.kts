@@ -7,7 +7,7 @@ repositories {
     mavenCentral()
 }
 
-group = "io.github.bitspittle"
+group = "com.github.bitspittle"
 version = "0.6.0"
 
 kotlin {

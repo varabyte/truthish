@@ -1,8 +1,8 @@
-package bitspittle.truthish.subjects
+package com.github.bitspittle.truthish.subjects
 
-import bitspittle.truthish.failure.DetailsFor
-import bitspittle.truthish.failure.Report
-import bitspittle.truthish.failure.Summaries
+import com.github.bitspittle.truthish.failure.DetailsFor
+import com.github.bitspittle.truthish.failure.Report
+import com.github.bitspittle.truthish.failure.Summaries
 
 open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
     fun isEmpty() {

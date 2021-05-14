@@ -1,22 +1,22 @@
-package bitspittle.truthish
+package com.github.bitspittle.truthish
 
-import bitspittle.truthish.failure.DetailsFor
-import bitspittle.truthish.failure.Report
-import bitspittle.truthish.failure.Summaries
-import bitspittle.truthish.failure.withMessage
-import bitspittle.truthish.subjects.BooleanSubject
-import bitspittle.truthish.subjects.ByteSubject
-import bitspittle.truthish.subjects.ComparableSubject
-import bitspittle.truthish.subjects.DoubleSubject
-import bitspittle.truthish.subjects.FloatSubject
-import bitspittle.truthish.subjects.IntSubject
-import bitspittle.truthish.subjects.IterableSubject
-import bitspittle.truthish.subjects.LongSubject
-import bitspittle.truthish.subjects.MapSubject
-import bitspittle.truthish.subjects.NotNullSubject
-import bitspittle.truthish.subjects.NullableSubject
-import bitspittle.truthish.subjects.ShortSubject
-import bitspittle.truthish.subjects.StringSubject
+import com.github.bitspittle.truthish.failure.DetailsFor
+import com.github.bitspittle.truthish.failure.Report
+import com.github.bitspittle.truthish.failure.Summaries
+import com.github.bitspittle.truthish.failure.withMessage
+import com.github.bitspittle.truthish.subjects.BooleanSubject
+import com.github.bitspittle.truthish.subjects.ByteSubject
+import com.github.bitspittle.truthish.subjects.ComparableSubject
+import com.github.bitspittle.truthish.subjects.DoubleSubject
+import com.github.bitspittle.truthish.subjects.FloatSubject
+import com.github.bitspittle.truthish.subjects.IntSubject
+import com.github.bitspittle.truthish.subjects.IterableSubject
+import com.github.bitspittle.truthish.subjects.LongSubject
+import com.github.bitspittle.truthish.subjects.MapSubject
+import com.github.bitspittle.truthish.subjects.NotNullSubject
+import com.github.bitspittle.truthish.subjects.NullableSubject
+import com.github.bitspittle.truthish.subjects.ShortSubject
+import com.github.bitspittle.truthish.subjects.StringSubject
 
 fun assertThat(actual: Any?) = NullableSubject(actual)
 fun assertThat(actual: Any) = NotNullSubject(actual)

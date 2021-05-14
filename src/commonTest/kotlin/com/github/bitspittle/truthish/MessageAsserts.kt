@@ -1,6 +1,6 @@
-package bitspittle.truthish
+package com.github.bitspittle.truthish
 
-import bitspittle.truthish.failure.withStrategy
+import com.github.bitspittle.truthish.failure.withStrategy
 import kotlin.test.Test
 
 const val TEST_MESSAGE = "Your message here"
