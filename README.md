@@ -93,35 +93,35 @@ repositories {
 }
 
 kotlin {
-  jvm()
-  js()
-  // ...
-  sourceSets {
+    jvm()
+    js()
     // ...
-    commonTest {
-        dependencies {
-            implementation kotlin("test-common")
-            implementation kotlin("test-annotations-common")
-            // ...
-            implementation "com.github.bitspittle:truthish:$truthish-version"
+    sourceSets {
+        // ...
+        commonTest {
+            dependencies {
+                implementation kotlin("test-common")
+                implementation kotlin("test-annotations-common")
+                // ...
+                implementation "com.github.bitspittle:truthish:$truthish-version"
+            }
         }
-    }
-    
-    jmvTest {
-        dependencies {
-            implementation kotlin("test")
-            // ...
-            implementation "com.github.bitspittle:truthish-jvm:$truthish-version"
-        }
-    }
 
-    jsTest {
-        dependencies {
-            implementation kotlin("test-js")
-            // ...
-            implementation "com.github.bitspittle:truthish-js:$truthish-version"
+        jmvTest {
+            dependencies {
+                implementation kotlin("test")
+                // ...
+                implementation "com.github.bitspittle:truthish-jvm:$truthish-version"
+            }
+        }
+
+        jsTest {
+            dependencies {
+                implementation kotlin("test-js")
+                // ...
+                implementation "com.github.bitspittle:truthish-js:$truthish-version"
+            }
         }
     }
-  }
 }
 ```
