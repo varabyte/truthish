@@ -1,1 +1,0 @@
-../../build/classes/kotlin/js/main/truthish.js
