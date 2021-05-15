@@ -51,7 +51,7 @@ fun testDivideByZeroException() {
 You can read the [Google Truth documentation](https://truth.dev/) for why they
 believe their fluent approach to assertions is both more readable and produces
 cleaner error messages, but let's break one of the tests above to see a
-specific example:
+specific example error message:
 
 ```kotlin
 @Test
