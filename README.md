@@ -95,14 +95,14 @@ repositories {
 kotlin {
   jvm()
   js()
-  ...
+  // ...
   sourceSets {
-    ...
+    // ...
     commonTest {
         dependencies {
             implementation kotlin("test-common")
             implementation kotlin("test-annotations-common")
-            ...
+            // ...
             implementation "com.github.bitspittle:truthish:$truthish-version"
         }
     }
@@ -110,7 +110,7 @@ kotlin {
     jmvTest {
         dependencies {
             implementation kotlin("test")
-            ...
+            // ...
             implementation "com.github.bitspittle:truthish-jvm:$truthish-version"
         }
     }
@@ -118,7 +118,7 @@ kotlin {
     jsTest {
         dependencies {
             implementation kotlin("test-js")
-            ...
+            // ...
             implementation "com.github.bitspittle:truthish-js:$truthish-version"
         }
     }
