@@ -1,6 +1,6 @@
-package com.github.bitspittle.truthish
+package com.varabyte.truthish
 
-import com.github.bitspittle.truthish.failure.withStrategy
+import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
 const val TEST_MESSAGE = "Your message here"

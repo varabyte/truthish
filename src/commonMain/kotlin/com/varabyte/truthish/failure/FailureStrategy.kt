@@ -1,4 +1,4 @@
-package com.github.bitspittle.truthish.failure
+package com.varabyte.truthish.failure
 
 /**
  * A strategy for how an assertion failure should be handled.

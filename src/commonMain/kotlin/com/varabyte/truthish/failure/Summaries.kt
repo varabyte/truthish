@@ -1,4 +1,4 @@
-package com.github.bitspittle.truthish.failure
+package com.varabyte.truthish.failure
 
 /**
  * Re-usable summaries for all subjects

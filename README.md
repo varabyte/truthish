@@ -9,7 +9,7 @@ multiplatform projects.
 For example, you can write `assertThat` checks in tests like this:
 
 ```kotlin
-import com.github.bitspittle.truthish
+import com.varabyte.truthish
 
 fun isEven(num: Int) = (num % 2) == 0
 fun square(num: Int) = (num * num)
@@ -75,21 +75,20 @@ Extraneous                        : [ 16, 25 ]
 
 # Using Truthish in Your Project
 
-> **Note**: Truthish is not currently hosted anywhere, so to use it you'll
-first need to clone the repository and run `/.gradlew publishToMavenLocal`.
-Then, make sure you specify `mavenLocal` as a repository in your own project.
-If there's demand for this library, let me know, and I'll investigate getting
-it hosted appropriately.
-
 To use *Truthish* in your multiplatform application, declare the following
-dependencies:
+dependencies (replacing "$truthish-version" with the value you see at the top of this README):
 
 ```groovy
 // build.gradle
 
 repositories {
-    mavenLocal()
-    // ...
+  /* ... */
+  maven { url 'https://us-central1-maven.pkg.dev/varabyte-repos/public' }
+}
+
+dependencies {
+  /* ... */
+  implementation 'com.varabyte.truthish:truthish:$truthish-version'
 }
 
 kotlin {
@@ -103,7 +102,7 @@ kotlin {
                 implementation kotlin("test-common")
                 implementation kotlin("test-annotations-common")
                 // ...
-                implementation "com.github.bitspittle:truthish:$truthish-version"
+                implementation "com.varabyte.truthish:truthish:$truthish-version"
             }
         }
 
@@ -111,7 +110,7 @@ kotlin {
             dependencies {
                 implementation kotlin("test")
                 // ...
-                implementation "com.github.bitspittle:truthish-jvm:$truthish-version"
+                implementation "com.varabyte.truthish:truthish-jvm:$truthish-version"
             }
         }
 
@@ -119,7 +118,7 @@ kotlin {
             dependencies {
                 implementation kotlin("test-js")
                 // ...
-                implementation "com.github.bitspittle:truthish-js:$truthish-version"
+                implementation "com.varabyte.truthish:truthish-js:$truthish-version"
             }
         }
     }

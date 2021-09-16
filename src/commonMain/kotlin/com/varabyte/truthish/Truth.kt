@@ -1,22 +1,22 @@
-package com.github.bitspittle.truthish
+package com.varabyte.truthish
 
-import com.github.bitspittle.truthish.failure.DetailsFor
-import com.github.bitspittle.truthish.failure.Report
-import com.github.bitspittle.truthish.failure.Summaries
-import com.github.bitspittle.truthish.failure.withMessage
-import com.github.bitspittle.truthish.subjects.BooleanSubject
-import com.github.bitspittle.truthish.subjects.ByteSubject
-import com.github.bitspittle.truthish.subjects.ComparableSubject
-import com.github.bitspittle.truthish.subjects.DoubleSubject
-import com.github.bitspittle.truthish.subjects.FloatSubject
-import com.github.bitspittle.truthish.subjects.IntSubject
-import com.github.bitspittle.truthish.subjects.IterableSubject
-import com.github.bitspittle.truthish.subjects.LongSubject
-import com.github.bitspittle.truthish.subjects.MapSubject
-import com.github.bitspittle.truthish.subjects.NotNullSubject
-import com.github.bitspittle.truthish.subjects.NullableSubject
-import com.github.bitspittle.truthish.subjects.ShortSubject
-import com.github.bitspittle.truthish.subjects.StringSubject
+import com.varabyte.truthish.failure.DetailsFor
+import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.withMessage
+import com.varabyte.truthish.subjects.BooleanSubject
+import com.varabyte.truthish.subjects.ByteSubject
+import com.varabyte.truthish.subjects.ComparableSubject
+import com.varabyte.truthish.subjects.DoubleSubject
+import com.varabyte.truthish.subjects.FloatSubject
+import com.varabyte.truthish.subjects.IntSubject
+import com.varabyte.truthish.subjects.IterableSubject
+import com.varabyte.truthish.subjects.LongSubject
+import com.varabyte.truthish.subjects.MapSubject
+import com.varabyte.truthish.subjects.NotNullSubject
+import com.varabyte.truthish.subjects.NullableSubject
+import com.varabyte.truthish.subjects.ShortSubject
+import com.varabyte.truthish.subjects.StringSubject
 
 fun assertThat(actual: Any?) = NullableSubject(actual)
 fun assertThat(actual: Any) = NotNullSubject(actual)

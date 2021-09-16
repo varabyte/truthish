@@ -1,4 +1,4 @@
-package com.github.bitspittle.truthish.failure
+package com.varabyte.truthish.failure
 
 internal fun stringifierFor(value: Any?): ValueStringifier {
     return when (value) {

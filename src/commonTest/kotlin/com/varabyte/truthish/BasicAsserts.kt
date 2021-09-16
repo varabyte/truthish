@@ -1,8 +1,8 @@
-package com.github.bitspittle.truthish
+package com.varabyte.truthish
 
-import com.github.bitspittle.truthish.failure.Summaries
-import com.github.bitspittle.truthish.failure.named
-import com.github.bitspittle.truthish.failure.withStrategy
+import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.named
+import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
 class BasicAsserts {

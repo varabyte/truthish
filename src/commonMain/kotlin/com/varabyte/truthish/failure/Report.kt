@@ -1,4 +1,4 @@
-package com.github.bitspittle.truthish.failure
+package com.varabyte.truthish.failure
 
 /**
  * Create a report which consists of a single summary line and an optional list of details.

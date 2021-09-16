@@ -1,8 +1,8 @@
-package com.github.bitspittle.truthish.subjects
+package com.varabyte.truthish.subjects
 
-import com.github.bitspittle.truthish.failure.DetailsFor
-import com.github.bitspittle.truthish.failure.Report
-import com.github.bitspittle.truthish.failure.Summaries
+import com.varabyte.truthish.failure.DetailsFor
+import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.Summaries
 import kotlin.math.absoluteValue
 
 class ByteSubject(actual: Byte) : ComparableSubject<Byte>(actual)

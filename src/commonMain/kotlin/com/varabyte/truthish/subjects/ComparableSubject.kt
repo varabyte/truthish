@@ -1,8 +1,8 @@
-package com.github.bitspittle.truthish.subjects
+package com.varabyte.truthish.subjects
 
-import com.github.bitspittle.truthish.failure.DetailsFor
-import com.github.bitspittle.truthish.failure.Report
-import com.github.bitspittle.truthish.failure.Summaries
+import com.varabyte.truthish.failure.DetailsFor
+import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.Summaries
 
 /**
  * A subject that supports comparing one value to another
