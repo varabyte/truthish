@@ -12,7 +12,7 @@ multiplatform projects.
 For example, you can write `assertThat` checks in tests like this:
 
 ```kotlin
-import com.varabyte.truthish
+import com.varabyte.truthish.*
 
 fun isEven(num: Int) = (num % 2) == 0
 fun square(num: Int) = (num * num)
@@ -78,6 +78,8 @@ Extraneous                        : [ 16, 25 ]
 
 # Using Truthish in Your Project
 
+## Multiplatform
+
 To use *Truthish* in your multiplatform application, declare the following dependencies (replacing `$truthish` with the
 value you see at the top of this README):
 
@@ -108,19 +110,19 @@ kotlin {
         jmvTest {
             dependencies {
                 implementation kotlin("test")
-                implementation "com.varabyte.truthish:truthish-jvm:$truthish"
             }
         }
 
         jsTest {
             dependencies {
                 implementation kotlin("test-js")
-                implementation "com.varabyte.truthish:truthish-js:$truthish"
             }
         }
     }
 }
 ```
+
+## Single platform
 
 You can also use *Truthish* in non-multiplatform projects as well:
 
