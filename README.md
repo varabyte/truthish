@@ -1,6 +1,9 @@
 ## Truthish
 
 [![version](https://img.shields.io/badge/version-0.6.0-yellow.svg)](https://semver.org)
+<a href="https://discord.gg/bCdxPr7aTV">
+  <img alt="Varabyte Discord" src="https://img.shields.io/discord/886036660767305799.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
+</a>
 
 A testing API inspired by [Google Truth](https://github.com/google/truth) but
 rewritten in Kotlin from the ground up, so it can be used in Kotlin
