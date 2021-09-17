@@ -78,20 +78,16 @@ Extraneous                        : [ 16, 25 ]
 
 # Using Truthish in Your Project
 
-To use *Truthish* in your multiplatform application, declare the following
-dependencies (replacing "$truthish-version" with the value you see at the top of this README):
+To use *Truthish* in your multiplatform application, declare the following dependencies (replacing `$truthish` with the
+value you see at the top of this README):
 
 ```groovy
 // build.gradle
+// Multiplatform
 
 repositories {
   /* ... */
   maven { url 'https://us-central1-maven.pkg.dev/varabyte-repos/public' }
-}
-
-dependencies {
-  /* ... */
-  implementation 'com.varabyte.truthish:truthish:$truthish-version'
 }
 
 kotlin {
@@ -105,25 +101,42 @@ kotlin {
                 implementation kotlin("test-common")
                 implementation kotlin("test-annotations-common")
                 // ...
-                implementation "com.varabyte.truthish:truthish:$truthish-version"
+                implementation "com.varabyte.truthish:truthish:$truthish"
             }
         }
 
         jmvTest {
             dependencies {
                 implementation kotlin("test")
-                // ...
-                implementation "com.varabyte.truthish:truthish-jvm:$truthish-version"
+                implementation "com.varabyte.truthish:truthish-jvm:$truthish"
             }
         }
 
         jsTest {
             dependencies {
                 implementation kotlin("test-js")
-                // ...
-                implementation "com.varabyte.truthish:truthish-js:$truthish-version"
+                implementation "com.varabyte.truthish:truthish-js:$truthish"
             }
         }
     }
+}
+```
+
+You can also use *Truthish* in non-multiplatform projects as well:
+
+```groovy
+// build.gradle
+// JVM
+
+repositories {
+  /* ... */
+  maven { url 'https://us-central1-maven.pkg.dev/varabyte-repos/public' }
+}
+
+dependencies {
+  // ...
+
+  testImplementation "org.jetbrains.kotlin:kotlin-test"
+  testImplementation "com.varabyte.truthish:truthish:0.6.0"
 }
 ```
