@@ -4,15 +4,18 @@ import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Summaries
 
-open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
+@Suppress("NAME_SHADOWING")
+open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
+    private val actual = actual.toList()
+
     fun isEmpty() {
-        if (actual.count() != 0) {
+        if (actual.isNotEmpty()) {
             report(Report(Summaries.EXPECTED_COLLECTION_EMPTY, DetailsFor.actual(actual)))
         }
     }
 
     fun isNotEmpty() {
-        if (actual.count() == 0) {
+        if (actual.isEmpty()) {
             report(Report(Summaries.EXPECTED_COLLECTION_NOT_EMPTY))
         }
     }
@@ -61,7 +64,8 @@ open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<
     }
 
     fun containsAnyIn(other: Iterable<T>) {
-        if (other.count() == 0) {
+        val other = other.toList()
+        if (other.isEmpty()) {
             return
         }
 
@@ -79,15 +83,14 @@ open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<
     fun containsAnyIn(vararg elements: T) = containsAnyIn(elements.asIterable())
 
     fun containsAllIn(other: Iterable<T>): OrderedAsserter<T> {
-        val actualList = actual.toList()
-        val otherList = other.toList()
+        val other = other.toList()
 
-        if (!actualList.containsAll(otherList)) {
+        if (!actual.containsAll(other)) {
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
                     DetailsFor.expectedActual("all elements from", other, actual).apply {
-                        add("Missing" to (otherList - actualList))
+                        add("Missing" to (other - actual))
                     }
                 )
             )
@@ -99,8 +102,10 @@ open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<
     fun containsAllIn(vararg elements: T) = containsAllIn(elements.asIterable())
 
     fun containsNoneIn(other: Iterable<T>) {
+        val other = other.toList()
+
         val commonElements = actual.intersect(other)
-        if (!commonElements.isEmpty()) {
+        if (commonElements.isNotEmpty()) {
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
@@ -115,6 +120,8 @@ open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<
     fun containsNoneIn(vararg elements: T) = containsNoneIn(elements.asIterable())
 
     fun containsExactly(other: Iterable<T>): OrderedAsserter<T> {
+        val other = other.toList()
+
         val remainingActual = actual.toMutableList()
         val remainingOther = other.toMutableList()
         other.forEach { remainingActual.remove(it) }
@@ -125,10 +132,10 @@ open class IterableSubject<T>(private val actual: Iterable<T>) : NotNullSubject<
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
                     DetailsFor.expectedActual("exactly all elements from", other, actual).apply {
-                        if (!remainingOther.isEmpty()) {
+                        if (remainingOther.isNotEmpty()) {
                             add("Missing" to remainingOther)
                         }
-                        if (!remainingActual.isEmpty()) {
+                        if (remainingActual.isNotEmpty()) {
                             add("Extraneous" to remainingActual)
                         }
                     }
@@ -151,24 +158,25 @@ private fun <T> skipInOrderCheck(parent: IterableSubject<T>) = OrderedAsserter(p
 
 class OrderedAsserter<T>(
     private val parent: IterableSubject<T>,
-    private val actual: Iterable<T>,
-    private val other: Iterable<T>
+    actual: Iterable<T>,
+    other: Iterable<T>
 ) {
+    private val actual = actual.toList()
+    private val other = other.toList()
+
     fun inOrder() {
         var actualIndex = 0
         var otherIndex = 0
-        val actualList = actual.toList()
-        val otherList = other.toList()
 
-        while (otherIndex < otherList.size) {
-            val lookingFor = otherList[otherIndex]
-            while (actualIndex < actualList.size) {
-                if (actualList[actualIndex] == lookingFor) {
+        while (otherIndex < other.size) {
+            val lookingFor = other[otherIndex]
+            while (actualIndex < actual.size) {
+                if (actual[actualIndex] == lookingFor) {
                     break
                 }
                 ++actualIndex
             }
-            if (actualIndex == actualList.size) {
+            if (actualIndex == actual.size) {
                 // If we got here, we couldn't find the next element from [other]
                 parent.report(
                     Report(
