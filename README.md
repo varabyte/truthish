@@ -110,12 +110,14 @@ kotlin {
         jmvTest {
             dependencies {
                 implementation kotlin("test")
+                implementation "com.varabyte.truthish:truthish-jvm:$truthish"
             }
         }
 
         jsTest {
             dependencies {
                 implementation kotlin("test-js")
+                implementation "com.varabyte.truthish:truthish-js:$truthish"
             }
         }
     }
