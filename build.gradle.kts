@@ -9,7 +9,7 @@ repositories {
 }
 
 group = "com.varabyte.truthish"
-version = "0.6.1-SNAPSHOT"
+version = "0.6.1"
 
 kotlin {
     jvm {
