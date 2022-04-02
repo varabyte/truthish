@@ -9,7 +9,7 @@ repositories {
 }
 
 group = "com.varabyte.truthish"
-version = "0.6.1"
+version = "0.6.2-SNAPSHOT"
 
 kotlin {
     jvm {
@@ -19,7 +19,7 @@ kotlin {
             }
         }
     }
-    js {
+    js(BOTH) {
         browser()
     }
     sourceSets {
