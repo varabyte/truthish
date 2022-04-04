@@ -87,6 +87,10 @@ class IterableAsserts {
             assertThat(listOf("a", "a", "b", "c")).withStrategy(testStrategy).containsExactly("a", "b", "b", "c")
             testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
+            // Verify inOrder doesn't get tripped up by duplicate elements in the list
+            assertThat(listOf("30", "20", "10", "20")).withStrategy(testStrategy).containsExactly("30", "20", "20", "10").inOrder()
+            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COLLECTION_ORDERED)
+
             // Verify inOrder doesn't get triggered if the original assert already failed
             assertThat(listOf("a", "b", "c")).withStrategy(testStrategy).containsAllIn("x", "y", "z").inOrder()
             testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COLLECTION_CONTAINS)

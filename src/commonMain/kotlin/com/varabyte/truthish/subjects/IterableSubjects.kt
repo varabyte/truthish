@@ -164,6 +164,12 @@ class OrderedAsserter<T>(
     private val actual = actual.toList()
     private val other = other.toList()
 
+    /**
+     * It's possible that our lists might have duplicate values - make sure we don't ever recount the
+     * same element in order!
+     */
+    private val usedIndices = mutableSetOf<Int>()
+
     fun inOrder() {
         var actualIndex = 0
         var otherIndex = 0
@@ -171,7 +177,8 @@ class OrderedAsserter<T>(
         while (otherIndex < other.size) {
             val lookingFor = other[otherIndex]
             while (actualIndex < actual.size) {
-                if (actual[actualIndex] == lookingFor) {
+                if (!usedIndices.contains(actualIndex) && actual[actualIndex] == lookingFor) {
+                    usedIndices.add(actualIndex)
                     break
                 }
                 ++actualIndex
