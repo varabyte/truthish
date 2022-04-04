@@ -1,6 +1,6 @@
 ## Truthish
 
-[![version](https://img.shields.io/badge/version-0.6.1-yellow.svg)](https://semver.org)
+[![version](https://img.shields.io/badge/version-0.6.2-yellow.svg)](https://semver.org)
 <a href="https://discord.gg/bCdxPr7aTV">
   <img alt="Varabyte Discord" src="https://img.shields.io/discord/886036660767305799.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
 </a>
@@ -143,6 +143,6 @@ dependencies {
   // ...
 
   testImplementation "org.jetbrains.kotlin:kotlin-test"
-  testImplementation "com.varabyte.truthish:truthish:0.6.1"
+  testImplementation "com.varabyte.truthish:truthish:0.6.2"
 }
 ```
