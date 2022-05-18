@@ -80,8 +80,7 @@ Extraneous                        : [ 16, 25 ]
 
 ## Multiplatform
 
-To use *Truthish* in your multiplatform application, declare the following dependencies (replacing `$truthish` with the
-value you see at the top of this README):
+To use *Truthish* in your multiplatform application, declare the following dependencies:
 
 ```groovy
 // build.gradle
@@ -104,21 +103,21 @@ kotlin {
                 implementation kotlin("test-common")
                 implementation kotlin("test-annotations-common")
                 // ...
-                implementation "com.varabyte.truthish:truthish:$truthish"
+                implementation "com.varabyte.truthish:truthish:0.6.3"
             }
         }
 
         jmvTest {
             dependencies {
                 implementation kotlin("test")
-                implementation "com.varabyte.truthish:truthish-jvm:$truthish"
+                implementation "com.varabyte.truthish:truthish-jvm:0.6.3"
             }
         }
 
         jsTest {
             dependencies {
                 implementation kotlin("test-js")
-                implementation "com.varabyte.truthish:truthish-js:$truthish"
+                implementation "com.varabyte.truthish:truthish-js:0.6.3"
             }
         }
     }
