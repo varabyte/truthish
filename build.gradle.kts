@@ -101,14 +101,6 @@ repositories {
     mavenCentral()
 }
 
-fun artifactSuffix(name: String): String {
-    return when(name) {
-        // For multiplatform targets, append them, so e.g. "kobweb" becomes "kobweb-js"
-        "js", "jvm" -> "-${name}"
-        else -> ""
-    }
-}
-
 publishing {
     publications {
         if (shouldSign()) {
@@ -130,8 +122,7 @@ publishing {
             }
         }
 
-        create<MavenPublication>("truthish") {
-            this.artifactId = artifactId + artifactSuffix(name)
+        withType<MavenPublication> {
             pom {
                 val githubPath = "https://github.com/varabyte/truthish"
                 name.set("Truthish")
@@ -165,6 +156,6 @@ if (shouldSign()) {
     signing {
         // Signing requires following steps at https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
         // and adding singatory properties somewhere reachable, e.g. ~/.gradle/gradle.properties
-        sign(publishing.publications["truthish"])
+        sign(publishing.publications)
     }
 }
