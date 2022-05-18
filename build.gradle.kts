@@ -1,5 +1,8 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     kotlin("multiplatform") version "1.6.20"
+    id("org.jetbrains.dokka") version "1.6.20"
     `maven-publish`
     signing
 }
@@ -101,6 +104,14 @@ repositories {
     mavenCentral()
 }
 
+val dokkaHtml by tasks.getting(DokkaTask::class)
+
+val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaHtml.outputDirectory)
+}
+
 publishing {
     publications {
         if (shouldSign()) {
@@ -123,6 +134,7 @@ publishing {
         }
 
         withType<MavenPublication> {
+            artifact(javadocJar)
             pom {
                 val githubPath = "https://github.com/varabyte/truthish"
                 name.set("Truthish")
