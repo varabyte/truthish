@@ -133,8 +133,7 @@ You can also use *Truthish* in non-multiplatform projects as well:
 // JVM
 
 repositories {
-  /* ... */
-  maven { url 'https://us-central1-maven.pkg.dev/varabyte-repos/public' }
+  mavenCentral()
 }
 
 dependencies {
