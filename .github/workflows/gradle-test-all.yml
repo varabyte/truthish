@@ -21,5 +21,12 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: 'gradle'
+
+      - name: Cache Kotlin Native compiler
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: kotlin-native-compiler-${{ runner.OS }}
+
       - name: Test with Gradle
         run: ./gradlew allTests --no-daemon
