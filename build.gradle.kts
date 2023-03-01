@@ -1,8 +1,8 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    kotlin("multiplatform") version "1.6.20"
-    id("org.jetbrains.dokka") version "1.6.20"
+    kotlin("multiplatform") version "1.8.10"
+    id("org.jetbrains.dokka") version "1.7.20"
     `maven-publish`
     signing
 }
@@ -22,7 +22,7 @@ kotlin {
             }
         }
     }
-    js(BOTH) {
+    js(IR) {
         browser()
     }
     sourceSets {
