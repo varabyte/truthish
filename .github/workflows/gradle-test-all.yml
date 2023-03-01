@@ -20,5 +20,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+          cache: 'gradle'
       - name: Test with Gradle
-        run: ./gradlew allTests
+        run: ./gradlew allTests --no-daemon
