@@ -59,15 +59,17 @@ class SummarizedSubjectBuilder(private val message: String) {
  * Unfortunately, there is no way to override the failure strategy for this assert, since
  * for usability we need to guarantee that we'll either return a valid exception or abort via a
  * different exception, so we throw [AssertionError] directly.
+ *
+ * @param message If set, include a custom message in the final assertion.
  */
-inline fun <reified T : Throwable> assertThrows(block: () -> Unit): T {
+inline fun <reified T : Throwable> assertThrows(message: String? = null, block: () -> Unit): T {
     val report = try {
         block()
-        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class))
+        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class).apply { if (message != null) add("Message" to message) })
     }
     catch (t: Throwable) {
         if (t !is T) {
-            Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expectedActual(T::class, t::class))
+            Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expectedActual(T::class, t::class).apply { if (message != null) add("Message" to message) })
         }
         else {
             return t

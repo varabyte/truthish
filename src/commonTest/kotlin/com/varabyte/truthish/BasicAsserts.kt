@@ -128,7 +128,7 @@ class BasicAsserts {
 
         run { // assertThrows doesn't accept no exceptions.
             val e = assertThrows<AssertionError> {
-                // Outer block captures inner-block, so the test can keep going
+                // This is the real assert test. The outer one captures it in order to verify the failure text.
                 assertThrows<IllegalArgumentException> {
                 }
             }
@@ -138,7 +138,7 @@ class BasicAsserts {
 
         run { // assertThrows doesn't accept invalid exceptions.
             val e = assertThrows<AssertionError> {
-                // Outer block captures inner-block, so the test can keep going
+                // This is the real assert test. The outer one captures it in order to verify the failure text.
                 assertThrows<IllegalArgumentException> {
                     throw IllegalStateException()
                 }
@@ -146,6 +146,42 @@ class BasicAsserts {
             assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
             assertThat(e.message!!).contains("IllegalArgumentException")
             assertThat(e.message!!).contains("IllegalStateException")
+        }
+    }
+
+    @Test
+    fun assertThrowsWithMessage() {
+        run { // Verify the correct path
+            val e = assertThrows<IllegalArgumentException>(message = "not used") {
+                throw IllegalArgumentException("xyz")
+            }
+            assertThat(e.message).isEqualTo("xyz")
+        }
+
+        run { // assertThrows doesn't accept no exceptions.
+            val e = assertThrows<AssertionError>(message = "outer assert") {
+                // This is the real assert test. The outer one captures it in order to verify the failure text.
+                assertThrows<IllegalArgumentException>("inner assert") {
+                }
+            }
+            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
+            assertThat(e.message!!).contains("IllegalArgumentException")
+            assertThat(e.message!!).contains("inner assert")
+            assertThat(e.message!!).doesNotContain("outer assert")
+        }
+
+        run { // assertThrows doesn't accept invalid exceptions.
+            val e = assertThrows<AssertionError>("outer assert") {
+                // This is the real assert test. The outer one captures it in order to verify the failure text.
+                assertThrows<IllegalArgumentException>("inner assert") {
+                    throw IllegalStateException()
+                }
+            }
+            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
+            assertThat(e.message!!).contains("IllegalArgumentException")
+            assertThat(e.message!!).contains("IllegalStateException")
+            assertThat(e.message!!).contains("inner assert")
+            assertThat(e.message!!).doesNotContain("outer assert")
         }
     }
 }
