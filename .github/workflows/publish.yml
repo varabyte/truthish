@@ -34,12 +34,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Note: For some reason, windows-latest does not seem to surface the task for publishing
+        # windows targets?! Linux seems to be able to do it, however.
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - id: shouldrun
         name: Should Run (early exit check)
-        if: inputs.target == 'all' || (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') || (matrix.os == 'windows-latest' && inputs.target == 'win') || (matrix.os == 'macos-latest' && inputs.target == 'mac')
+        if: inputs.target == 'all' || (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') || (matrix.os == 'ubuntu-latest' && inputs.target == 'win') || (matrix.os == 'macos-latest' && inputs.target == 'mac')
         run: echo "This workflow will run because the inputs are relevant to this machine."
 
       - uses: actions/checkout@v3
@@ -98,5 +100,5 @@ jobs:
         if: |
           (steps.shouldrun.conclusion == 'success') &&
           (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'windows-latest' && (inputs.target == 'all' || inputs.target == 'win'))
+          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'win'))
         run: ./gradlew publishMingwX64PublicationToGCloudMavenRepository --no-daemon
