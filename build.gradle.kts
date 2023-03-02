@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.7.20"
     `maven-publish`
     signing
+    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
 }
 
 repositories {
@@ -66,9 +67,7 @@ fun shouldPublishToGCloud(): Boolean {
             && findProperty("gcloud.artifact.registry.secret") != null
 }
 fun shouldPublishToMavenCentral(): Boolean {
-    // Only publish snapshots to our varabyte repo for now, we may change our mind later
-    return !version.toString().endsWith("SNAPSHOT")
-            && (findProperty("truthish.maven.publish") as? String).toBoolean()
+    return (findProperty("truthish.maven.publish") as? String).toBoolean()
             && findProperty("ossrhUsername") != null && findProperty("ossrhPassword") != null
 }
 
@@ -183,5 +182,16 @@ if (shouldSign()) {
         // Signing requires following steps at https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
         // and adding singatory properties somewhere reachable, e.g. ~/.gradle/gradle.properties
         sign(publishing.publications)
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            (findProperty("ossrhUsername") as? String)?.let { username.set(it) }
+            (findProperty("ossrhPassword") as? String)?.let { password.set(it) }
+        }
     }
 }
