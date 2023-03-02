@@ -1,0 +1,102 @@
+name: Publish to Maven
+
+on:
+  workflow_dispatch:
+    inputs:
+      registry:
+        description: 'Maven Registry'
+        required: true
+        default: 'gcloud'
+        type: choice
+        options:
+          - all
+          - gcloud
+          - sonatype
+      target:
+        description: 'Artifact Target'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - jvmjs
+          - win
+          - linux
+          - mac
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    env:
+      # See: https://docs.gradle.org/current/userguide/signing_plugin.html#sec:in-memory-keys
+      ORG_GRADLE_PROJECT_signingKey: ${{ secrets.VARABYTE_SIGNING_KEY }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - id: shouldrun
+        name: Should Run (early exit check)
+        if: inputs.target == 'all' || (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') || (matrix.os == 'windows-latest' && inputs.target == 'win') || (matrix.os == 'macos-latest' && inputs.target == 'mac')
+        run: echo "This workflow will run because the inputs are relevant to this machine."
+
+      - uses: actions/checkout@v3
+        if: steps.shouldrun.conclusion == 'success'
+
+      - name: Setup Gradle
+        if: steps.shouldrun.conclusion == 'success'
+        uses: gradle/gradle-build-action@v2
+
+      - name: Add secret Gradle properties
+        if: steps.shouldrun.conclusion == 'success'
+        env:
+          GRADLE_PROPERTIES: ${{ secrets.VARABYTE_GRADLE_PROPERTIES }}
+        shell: bash
+        run: |
+          mkdir -p ~/.gradle/
+          echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
+          echo "${GRADLE_PROPERTIES}" > ~/.gradle/gradle.properties
+
+      - name: Cache Kotlin Native compiler
+        if: steps.shouldrun.conclusion == 'success'
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: kotlin-native-compiler-${{ runner.OS }}
+
+      # TODO: Add Sonatype
+
+      - name: Publish JVM/JS (GCloud)
+        # Doesn't have to be Linux but it tends to be the fastest image
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
+          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'jvmjs'))
+        run: |
+          ./gradlew publishJvmPublicationToGCloudMavenRepository --no-daemon
+          ./gradlew publishJsPublicationToGCloudMavenRepository --no-daemon
+
+      - name: Publish Linux (GCloud)
+        if: |
+          (steps.shouldrun.conclusion == 'success') && 
+          (inputs.registry == 'all' || inputs.registry == 'gcloud') && 
+          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'linux'))
+        run: ./gradlew publishLinuxX64PublicationToGCloudMavenRepository --no-daemon
+
+      - name: Publish Mac (GCloud)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
+          (matrix.os == 'macos-latest' && (inputs.target == 'all' || inputs.target == 'mac'))
+        run: |
+          ./gradlew publishMacosX64PublicationToGCloudMavenRepository --no-daemon
+          ./gradlew publishMacosArm64PublicationToGCloudMavenRepository --no-daemon
+
+      - name: Publish Win (GCloud)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
+          (matrix.os == 'windows-latest' && (inputs.target == 'all' || inputs.target == 'win'))
+        run: ./gradlew publishMingwX64PublicationToGCloudMavenRepository --no-daemon
