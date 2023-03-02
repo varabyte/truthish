@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           - all
+          - common
           - jvmjs
           - win
           - linux
@@ -41,7 +42,13 @@ jobs:
     steps:
       - id: shouldrun
         name: Should Run (early exit check)
-        if: inputs.target == 'all' || (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') || (matrix.os == 'ubuntu-latest' && inputs.target == 'win') || (matrix.os == 'macos-latest' && inputs.target == 'mac')
+        if: |
+          inputs.target == 'all' ||
+          (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') ||
+          (matrix.os == 'ubuntu-latest' && inputs.target == 'common') ||
+          (matrix.os == 'ubuntu-latest' && inputs.target == 'jvmjs') ||
+          (matrix.os == 'ubuntu-latest' && inputs.target == 'win') ||
+          (matrix.os == 'macos-latest' && inputs.target == 'mac')
         run: echo "This workflow will run because the inputs are relevant to this machine."
 
       - uses: actions/checkout@v3
@@ -69,6 +76,15 @@ jobs:
           key: kotlin-native-compiler-${{ runner.OS }}
 
       # TODO: Add Sonatype
+
+      - name: Publish Common (GCloud)
+        # Doesn't have to be Linux but it tends to be the fastest image
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
+          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'common'))
+        run: |
+          ./gradlew publishKotlinMultiplatformPublicationToGCloudMavenRepository --no-daemon
 
       - name: Publish JVM/JS (GCloud)
         # Doesn't have to be Linux but it tends to be the fastest image
