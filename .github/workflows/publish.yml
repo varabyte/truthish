@@ -35,8 +35,10 @@ jobs:
 
     strategy:
       matrix:
-        # Note: For some reason, windows-latest does not seem to surface the task for publishing
-        # windows targets?! Linux seems to be able to do it, however.
+        # Note: We use Linux to build the windows target because we can and it's easier than using a windows-latest
+        # machine (which would require configuring the "Add secret Gradle properties" step below differently using
+        # Windows paths. It's also faster to grab a Linux machine runner vs. a Windows machine runner, at least in my
+        # experience.
         os: [ubuntu-latest, macos-latest]
 
     steps:
