@@ -1,8 +1,10 @@
 ## Truthish
 
-![version](https://img.shields.io/badge/version-0.6.3-yellow.svg)
+![version](https://img.shields.io/badge/version-0.6.4-yellow.svg)
 ![truthish tests](https://github.com/varabyte/truthish/actions/workflows/gradle-test-all.yml/badge.svg)
-
+<br>
+![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac-white.svg)
+<br>
 <a href="https://discord.gg/bCdxPr7aTV">
   <img alt="Varabyte Discord" src="https://img.shields.io/discord/886036660767305799.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
 </a>
@@ -85,7 +87,7 @@ Extraneous                        : [ 16, 25 ]
 To use *Truthish* in your multiplatform application, declare the following dependencies:
 
 ```groovy
-// build.gradle
+// build.gradle.kts
 // Multiplatform
 
 repositories {
@@ -97,31 +99,33 @@ kotlin {
     js(IR) {
       browser()
     }
-    // ...
+
+    linuxX64()
+    // Also supported:
+    // macosArm64() // Mac M1
+    // macosX64() // Mac Intel
+    // mingwX64() // Windows
+
     sourceSets {
-        // ...
-        commonTest {
+        val commonTest by getting {
             dependencies {
-                implementation kotlin("test-common")
-                implementation kotlin("test-annotations-common")
-                // ...
-                implementation "com.varabyte.truthish:truthish:0.6.3"
+                implementation("com.varabyte.truthish:truthish:0.6.4")
             }
         }
 
-        jmvTest {
+        val jvmTest by getting {
             dependencies {
-                implementation kotlin("test")
-                implementation "com.varabyte.truthish:truthish-jvm:0.6.3"
+                implementation(kotlin("test"))
             }
         }
 
-        jsTest {
+        val jsTest by getting {
             dependencies {
-                implementation kotlin("test-js")
-                implementation "com.varabyte.truthish:truthish-js:0.6.3"
+                implementation(kotlin("test-js"))
             }
         }
+
+        // Native doesn't need you to declare a kotlin("test") dependency, nice!
     }
 }
 ```
@@ -131,7 +135,7 @@ kotlin {
 You can also use *Truthish* in non-multiplatform projects as well:
 
 ```groovy
-// build.gradle
+// build.gradle.kts
 // JVM
 
 repositories {
@@ -141,7 +145,7 @@ repositories {
 dependencies {
   // ...
 
-  testImplementation "org.jetbrains.kotlin:kotlin-test"
-  testImplementation "com.varabyte.truthish:truthish:0.6.3"
+  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testImplementation("com.varabyte.truthish:truthish:0.6.4")
 }
 ```
