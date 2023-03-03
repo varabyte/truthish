@@ -3,27 +3,38 @@ name: Publish to Maven
 on:
   workflow_dispatch:
     inputs:
-      registry:
-        description: 'Maven Registry'
-        required: true
-        default: 'gcloud'
-        type: choice
-        options:
-          - all
-          - gcloud
-          - sonatype
-      target:
-        description: 'Artifact Target'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - common
-          - jvmjs
-          - win
-          - linux
-          - mac
+      repo-gcloud:
+        type: boolean
+        description: "Repository: GCloud"
+        default: true
+      repo-sonatype:
+        type: boolean
+        description: "Repository: Sonatype"
+        default: false
+      target-common:
+        type: boolean
+        description: "Target: Common"
+        default: true
+      target-jvm:
+        type: boolean
+        description: "Target: JVM"
+        default: true
+      target-js:
+        type: boolean
+        description: "Target: JS"
+        default: true
+      target-linux:
+        type: boolean
+        description: "Target: Linux"
+        default: true
+      target-win:
+        type: boolean
+        description: "Target: Windows"
+        default: true
+      target-mac:
+        type: boolean
+        description: "Target: Mac OS"
+        default: true
 
 jobs:
   build:
@@ -45,12 +56,14 @@ jobs:
       - id: shouldrun
         name: Should Run (early exit check)
         if: |
-          inputs.target == 'all' ||
-          (matrix.os == 'ubuntu-latest' && inputs.target == 'linux') ||
-          (matrix.os == 'ubuntu-latest' && inputs.target == 'common') ||
-          (matrix.os == 'ubuntu-latest' && inputs.target == 'jvmjs') ||
-          (matrix.os == 'ubuntu-latest' && inputs.target == 'win') ||
-          (matrix.os == 'macos-latest' && inputs.target == 'mac')
+          (inputs.repo-gcloud || inputs.repo-sonatype) && (
+            (matrix.os == 'ubuntu-latest' && inputs.target-linux) ||
+            (matrix.os == 'ubuntu-latest' && inputs.target-common) ||
+            (matrix.os == 'ubuntu-latest' && inputs.target-jvm) ||
+            (matrix.os == 'ubuntu-latest' && inputs.target-js) ||
+            (matrix.os == 'ubuntu-latest' && inputs.target-win) ||
+            (matrix.os == 'macos-latest' && inputs.target-mac)
+          )
         run: echo "This workflow will run because the inputs are relevant to this machine."
 
       - uses: actions/checkout@v3
@@ -83,33 +96,41 @@ jobs:
         # Doesn't have to be Linux but it tends to be the fastest image
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'common'))
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-common)
         run: |
           ./gradlew publishKotlinMultiplatformPublicationToGCloudMavenRepository --no-daemon
 
-      - name: Publish JVM/JS (GCloud)
+      - name: Publish JVM (GCloud)
         # Doesn't have to be Linux but it tends to be the fastest image
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'jvmjs'))
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-jvm)
         run: |
           ./gradlew publishJvmPublicationToGCloudMavenRepository --no-daemon
+
+      - name: Publish JS (GCloud)
+        # Doesn't have to be Linux but it tends to be the fastest image
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-js)
+        run: |
           ./gradlew publishJsPublicationToGCloudMavenRepository --no-daemon
 
       - name: Publish Linux (GCloud)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'linux'))
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-linux)
         run: ./gradlew publishLinuxX64PublicationToGCloudMavenRepository --no-daemon
 
       - name: Publish Mac (GCloud)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'macos-latest' && (inputs.target == 'all' || inputs.target == 'mac'))
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'macos-latest' && inputs.target-mac)
         run: |
           ./gradlew publishMacosX64PublicationToGCloudMavenRepository --no-daemon
           ./gradlew publishMacosArm64PublicationToGCloudMavenRepository --no-daemon
@@ -117,8 +138,8 @@ jobs:
       - name: Publish Win (GCloud)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'gcloud') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'win'))
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-win)
         run: ./gradlew publishMingwX64PublicationToGCloudMavenRepository --no-daemon
 
       #################### SONATYPE ####################
@@ -127,33 +148,41 @@ jobs:
         # Doesn't have to be Linux but it tends to be the fastest image
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'sonatype') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'common'))
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-common)
         run: |
           ./gradlew publishKotlinMultiplatformPublicationToSonatypeMavenRepository --no-daemon
 
-      - name: Publish JVM/JS (Sonatype)
+      - name: Publish JVM (Sonatype)
         # Doesn't have to be Linux but it tends to be the fastest image
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'sonatype') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'jvmjs'))
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-jvm)
         run: |
           ./gradlew publishJvmPublicationToSonatypeMavenRepository --no-daemon
+
+      - name: Publish JS (Sonatype)
+        # Doesn't have to be Linux but it tends to be the fastest image
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-js)
+        run: |
           ./gradlew publishJsPublicationToSonatypeMavenRepository --no-daemon
 
       - name: Publish Linux (Sonatype)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'sonatype') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'linux'))
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-linux)
         run: ./gradlew publishLinuxX64PublicationToSonatypeMavenRepository --no-daemon
 
       - name: Publish Mac (Sonatype)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'sonatype') &&
-          (matrix.os == 'macos-latest' && (inputs.target == 'all' || inputs.target == 'mac'))
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'macos-latest' && inputs.target-mac)
         run: |
           ./gradlew publishMacosX64PublicationToSonatypeMavenRepository --no-daemon
           ./gradlew publishMacosArm64PublicationToSonatypeMavenRepository --no-daemon
@@ -161,6 +190,6 @@ jobs:
       - name: Publish Win (Sonatype)
         if: |
           (steps.shouldrun.conclusion == 'success') &&
-          (inputs.registry == 'all' || inputs.registry == 'sonatype') &&
-          (matrix.os == 'ubuntu-latest' && (inputs.target == 'all' || inputs.target == 'win'))
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-win)
         run: ./gradlew publishMingwX64PublicationToSonatypeMavenRepository --no-daemon
