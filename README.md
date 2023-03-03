@@ -101,10 +101,9 @@ kotlin {
     }
 
     linuxX64()
-    // Also supported:
-    // macosArm64() // Mac M1
-    // macosX64() // Mac Intel
-    // mingwX64() // Windows
+    macosArm64() // Mac M1
+    macosX64() // Mac Intel
+    mingwX64() // Windows
 
     sourceSets {
         val commonTest by getting {
@@ -145,7 +144,7 @@ repositories {
 dependencies {
   // ...
 
-  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testImplementation(kotlin("test"))
   testImplementation("com.varabyte.truthish:truthish:0.6.4")
 }
 ```
