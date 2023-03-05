@@ -6,16 +6,20 @@ plugins {
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
+    id("com.android.library") version "7.4.1"
 }
 
 repositories {
     mavenCentral()
+    google()
 }
 
 group = "com.varabyte.truthish"
 version = "0.6.5-SNAPSHOT"
 
 kotlin {
+    jvmToolchain(8) // Used by Android to set JDK version used by kotlin compilation
+
     jvm {
         val main by compilations.getting {
             kotlinOptions {
@@ -28,9 +32,15 @@ kotlin {
     }
 
     linuxX64()
-    macosArm64() // Mac M1
+    macosArm64() // Mac M1+
     macosX64() // Mac Intel
     mingwX64() // Windows
+    iosX64() // iOS Intel
+    iosArm64() // iOS M1+
+    iosSimulatorArm64()
+    android {
+        publishLibraryVariants("release")
+    }
 
     sourceSets {
         val commonMain by getting
@@ -53,11 +63,17 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+    }
+}
 
-        val linuxX64Main by getting
-        val macosArm64Main by getting
-        val macosX64Main by getting
-        val mingwX64Main by getting
+android {
+    namespace = "com.varabyte.truthish"
+    compileSdk = 33
+
+    compileOptions {
+        // 1.8 is as low as we can go since kotlin can't target anything lower
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 

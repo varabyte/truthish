@@ -35,6 +35,14 @@ on:
         type: boolean
         description: "Target: Mac OS"
         default: true
+      target-ios:
+        type: boolean
+        description: "Target: iOS"
+        default: true
+      target-android:
+        type: boolean
+        description: "Target: Android"
+        default: true
 
 jobs:
   build:
@@ -62,12 +70,21 @@ jobs:
             (matrix.os == 'ubuntu-latest' && inputs.target-jvm) ||
             (matrix.os == 'ubuntu-latest' && inputs.target-js) ||
             (matrix.os == 'ubuntu-latest' && inputs.target-win) ||
-            (matrix.os == 'macos-latest' && inputs.target-mac)
+            (matrix.os == 'ubuntu-latest' && inputs.target-android) ||
+            (matrix.os == 'macos-latest' && inputs.target-mac) ||
+            (matrix.os == 'macos-latest' && inputs.target-ios)
           )
         run: echo "This workflow will run because the inputs are relevant to this machine."
 
       - uses: actions/checkout@v3
         if: steps.shouldrun.conclusion == 'success'
+
+      # Java 11 needed for the Android Gradle Plugin, apparently
+      - uses: actions/setup-java@v3
+        if: steps.shouldrun.conclusion == 'success'
+        with:
+          distribution: temurin
+          java-version: 11
 
       - name: Setup Gradle
         if: steps.shouldrun.conclusion == 'success'
@@ -142,6 +159,23 @@ jobs:
           (matrix.os == 'ubuntu-latest' && inputs.target-win)
         run: ./gradlew publishMingwX64PublicationToGCloudMavenRepository --no-daemon
 
+      - name: Publish iOS (GCloud)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'macos-latest' && inputs.target-ios)
+        run: |
+          ./gradlew publishIosX64PublicationToGCloudMavenRepository --no-daemon
+          ./gradlew publishIosArm64PublicationToGCloudMavenRepository --no-daemon
+          ./gradlew publishIosSimulatorArm64PublicationToGCloudMavenRepository --no-daemon
+
+      - name: Publish Android (GCloud)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-gcloud) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-android)
+        run: ./gradlew publishAndroidReleasePublicationToGCloudMavenRepository --no-daemon
+
       #################### SONATYPE ####################
 
       - name: Publish Common (Sonatype)
@@ -193,3 +227,20 @@ jobs:
           (inputs.repo-sonatype) &&
           (matrix.os == 'ubuntu-latest' && inputs.target-win)
         run: ./gradlew publishMingwX64PublicationToSonatypeMavenRepository --no-daemon
+
+      - name: Publish iOS (Sonatype)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'macos-latest' && inputs.target-ios)
+        run: |
+          ./gradlew publishIosX64PublicationToSonatypeMavenRepository --no-daemon
+          ./gradlew publishIosArm64PublicationToSonatypeMavenRepository --no-daemon
+          ./gradlew publishIosSimulatorArm64PublicationToSonatypeMavenRepository --no-daemon
+
+      - name: Publish Android (Sonatype)
+        if: |
+          (steps.shouldrun.conclusion == 'success') &&
+          (inputs.repo-sonatype) &&
+          (matrix.os == 'ubuntu-latest' && inputs.target-android)
+        run: ./gradlew publishAndroidReleasePublicationToSonatypeMavenRepository --no-daemon
