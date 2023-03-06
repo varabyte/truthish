@@ -128,13 +128,7 @@ kotlin {
             }
         }
         
-        val androidTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-            }
-        }
-
-        // Native doesn't need you to declare a kotlin("test") dependency, nice!
+        // Other configurations don't seem to need a kotlin("test") dependency, nice!
     }
 }
 ```
