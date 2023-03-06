@@ -1,9 +1,9 @@
 ## Truthish
 
-![version](https://img.shields.io/badge/version-0.6.4-yellow.svg)
+![version](https://img.shields.io/badge/version-0.6.5-yellow.svg)
 ![truthish tests](https://github.com/varabyte/truthish/actions/workflows/gradle-test-all.yml/badge.svg)
 <br>
-![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac-white.svg)
+![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac,_Android,_iOS-white.svg)
 <br>
 <a href="https://discord.gg/bCdxPr7aTV">
   <img alt="Varabyte Discord" src="https://img.shields.io/discord/886036660767305799.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
@@ -86,29 +86,33 @@ Extraneous                        : [ 16, 25 ]
 
 To use *Truthish* in your multiplatform application, declare the following dependencies:
 
-```groovy
+```kotlin
 // build.gradle.kts
 // Multiplatform
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 kotlin {
     jvm()
     js(IR) {
-      browser()
+        browser()
     }
 
     linuxX64()
-    macosArm64() // Mac M1
+    macosArm64() // Mac M1+
     macosX64() // Mac Intel
     mingwX64() // Windows
+    iosX64() // iOS Intel
+    iosArm64() // iOS M1+
+    iosSimulatorArm64()
+    android()
 
     sourceSets {
         val commonTest by getting {
             dependencies {
-                implementation("com.varabyte.truthish:truthish:0.6.4")
+                implementation("com.varabyte.truthish:truthish:0.6.5")
             }
         }
 
@@ -123,6 +127,12 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+        
+        val androidTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+            }
+        }
 
         // Native doesn't need you to declare a kotlin("test") dependency, nice!
     }
@@ -133,18 +143,41 @@ kotlin {
 
 You can also use *Truthish* in non-multiplatform projects as well:
 
-```groovy
+### JVM
+
+```kotlin
 // build.gradle.kts
-// JVM
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  // ...
+    // ...
 
-  testImplementation(kotlin("test"))
-  testImplementation("com.varabyte.truthish:truthish:0.6.4")
+    testImplementation(kotlin("test"))
+    testImplementation("com.varabyte.truthish:truthish:0.6.5")
+}
+```
+
+### Android
+
+```kotlin
+// build.gradle.kts
+
+repositories {
+    mavenCentral()
+}
+
+android { /* ... */ }
+
+dependencies {
+    // ...
+
+    // If used in tests run on the host
+    testImplementation("com.varabyte.truthish:truthish:0.6.5")
+
+    // If used in tests run on the device
+    androidTestImplementation("com.varabyte.truthish:truthish:0.6.5")
 }
 ```
