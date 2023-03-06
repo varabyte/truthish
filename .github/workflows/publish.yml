@@ -79,7 +79,7 @@ jobs:
       - uses: actions/checkout@v3
         if: steps.shouldrun.conclusion == 'success'
 
-      # Java 11 needed for the Android Gradle Plugin, apparently
+      # Java 11 needed for resolving the Android Gradle Plugin
       - uses: actions/setup-java@v3
         if: steps.shouldrun.conclusion == 'success'
         with:
