@@ -1,0 +1,45 @@
+# coverage-badge.yml
+
+name: Create coverage badge
+
+on:
+  push:
+    branches: [ main ] # !! CONFIRM THIS !!
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Java 11 needed for resolving the Android Gradle Plugin
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Cache Kotlin Native compiler
+        uses: actions/cache@v3
+        with:
+          path: ~/.konan
+          key: kotlin-native-compiler-${{ runner.OS }}
+
+      - name: Generate coverage output
+        run: |
+          echo "COVERAGE=$(${{github.workspace}}/gradlew -q printLineCoverage)" >> $GITHUB_ENV
+
+      - name: Update dynamic badge gist
+        uses: schneegans/dynamic-badges-action@v1.5.0
+        with:
+          auth: ${{secrets.COVERAGE_GIST_SECRET}}
+          gistID: 01b6bfe88483946d9f5438f5616d9b9f
+          filename: truthish-coverage-badge.json
+          label: coverage
+          message: ${{env.COVERAGE}}%
+          valColorRange: ${{env.COVERAGE}}
+          minColorRange: 0
+          maxColorRange: 100
