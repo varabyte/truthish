@@ -15,7 +15,7 @@ repositories {
 }
 
 group = "com.varabyte.truthish"
-version = "0.6.5"
+version = "0.6.6-SNAPSHOT"
 
 kotlin {
     jvmToolchain(8) // Used by Android to set JDK version used by kotlin compilation
