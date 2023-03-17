@@ -32,6 +32,5 @@ jobs:
           path: ~/.konan
           key: kotlin-native-compiler-${{ runner.OS }}
 
-      # TODO: ./gradlew allTests (when I have time to debug what's going wrong)
       - name: Test with Gradle
-        run: ./gradlew jvmTest --no-daemon
+        run: ./gradlew allTests --no-daemon
