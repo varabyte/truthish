@@ -2,6 +2,7 @@
 
 ![version](https://img.shields.io/badge/version-0.6.5-yellow.svg)
 ![truthish tests](https://github.com/varabyte/truthish/actions/workflows/gradle-test-all.yml/badge.svg)
+![coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bitspittle/01b6bfe88483946d9f5438f5616d9b9f/raw/truthish-coverage-badge.json)
 <br>
 ![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac,_Android,_iOS-white.svg)
 <br>
