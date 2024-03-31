@@ -154,10 +154,10 @@ android { /* ... */ }
 dependencies {
     // ...
 
-    // If used in tests run on the host
+    // If used in tests that are run on the host (i.e. your dev machine)
     testImplementation("com.varabyte.truthish:truthish:0.6.5")
 
-    // If used in tests run on the device
+    // If used in tests that are run on the device
     androidTestImplementation("com.varabyte.truthish:truthish:0.6.5")
 }
 ```
