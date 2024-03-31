@@ -2,6 +2,7 @@ name: tests
 # Note: name shows up in a badge. Be careful about renaming.
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
