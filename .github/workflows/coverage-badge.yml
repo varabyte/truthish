@@ -13,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Java 11 needed for resolving the Android Gradle Plugin
+      # Java 17 needed for resolving the Android Gradle Plugin
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -33,7 +33,7 @@ jobs:
           echo "COVERAGE=$(${{github.workspace}}/gradlew -q printLineCoverage)" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
-        uses: schneegans/dynamic-badges-action@v1.5.0
+        uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{secrets.COVERAGE_GIST_SECRET}}
           gistID: 01b6bfe88483946d9f5438f5616d9b9f
