@@ -79,38 +79,8 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-annotations-common"))
-                implementation(kotlin("test-common"))
-            }
-        }
-
-        val jvmMain by getting
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlin("test-junit"))
-            }
-        }
-        val jsMain by getting
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
-
-        val androidMain by getting
-        val androidUnitTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-            }
-        }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
