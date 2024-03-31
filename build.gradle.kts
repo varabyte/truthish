@@ -2,13 +2,13 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
-    kotlin("multiplatform") version "1.8.10"
-    id("org.jetbrains.dokka") version "1.7.20"
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    kotlin("multiplatform") version "1.9.23"
+    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
     `maven-publish`
     signing
-    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
-    id("com.android.library") version "7.4.1"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("com.android.library") version "8.3.0"
 }
 
 repositories {
