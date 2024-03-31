@@ -111,25 +111,10 @@ kotlin {
     android()
 
     sourceSets {
-        val commonTest by getting {
-            dependencies {
-                implementation("com.varabyte.truthish:truthish:0.6.5")
-            }
+        commonTest.dependencies {
+            implementation("com.varabyte.truthish:truthish:0.6.5")
+            implementation(kotlin("test"))
         }
-
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
-        
-        // Other configurations don't seem to need a kotlin("test") dependency, nice!
     }
 }
 ```
