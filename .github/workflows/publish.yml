@@ -76,19 +76,19 @@ jobs:
           )
         run: echo "This workflow will run because the inputs are relevant to this machine."
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: steps.shouldrun.conclusion == 'success'
 
-      # Java 11 needed for resolving the Android Gradle Plugin
-      - uses: actions/setup-java@v3
+      # Java 17 needed for resolving the Android Gradle Plugin
+      - uses: actions/setup-java@v4
         if: steps.shouldrun.conclusion == 'success'
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Gradle
         if: steps.shouldrun.conclusion == 'success'
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Add secret Gradle properties
         if: steps.shouldrun.conclusion == 'success'
@@ -102,7 +102,7 @@ jobs:
 
       - name: Cache Kotlin Native compiler
         if: steps.shouldrun.conclusion == 'success'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.konan
           key: kotlin-native-compiler-${{ runner.OS }}
