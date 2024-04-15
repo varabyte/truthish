@@ -2,7 +2,9 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
-    kotlin("multiplatform") version "1.9.23"
+    // NOTE: Intentionally older version to maximize compatibility with projects in the wild
+    // Going much older and this buildscript won't compile
+    kotlin("multiplatform") version "1.7.21"
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
     `maven-publish`
@@ -79,8 +81,10 @@ kotlin {
     }
 
     sourceSets {
-        commonTest.dependencies {
-            implementation(kotlin("test"))
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
     }
 }
