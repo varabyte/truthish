@@ -107,7 +107,7 @@ fun shouldPublishToGCloud(): Boolean {
 }
 fun shouldPublishToMavenCentral(): Boolean {
     return (findProperty("truthish.maven.publish") as? String).toBoolean()
-            && findProperty("ossrhUsername") != null && findProperty("ossrhPassword") != null
+            && findProperty("ossrhToken") != null && findProperty("ossrhTokenPassword") != null
 }
 
 
@@ -128,8 +128,8 @@ val SONATYPE_SNAPSHOT_REPO_URL = uri("https://s01.oss.sonatype.org/content/repos
 fun MavenArtifactRepository.sonatypeAuth() {
     url = if (!version.toString().endsWith("SNAPSHOT")) SONATYPE_RELEASE_REPO_URL else SONATYPE_SNAPSHOT_REPO_URL
     credentials {
-        username = findProperty("ossrhUsername") as String
-        password = findProperty("ossrhPassword") as String
+        username = findProperty("ossrhToken") as String
+        password = findProperty("ossrhTokenPassword") as String
     }
     authentication {
         create<BasicAuthentication>("basic")
@@ -229,8 +229,8 @@ nexusPublishing {
         sonatype {  //only for users registered in Sonatype after 24 Feb 2021
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            (findProperty("ossrhUsername") as? String)?.let { username.set(it) }
-            (findProperty("ossrhPassword") as? String)?.let { password.set(it) }
+            (findProperty("ossrhToken") as? String)?.let { username.set(it) }
+            (findProperty("ossrhTokenPassword") as? String)?.let { password.set(it) }
         }
     }
 }
