@@ -4,19 +4,7 @@ import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.withMessage
-import com.varabyte.truthish.subjects.BooleanSubject
-import com.varabyte.truthish.subjects.ByteSubject
-import com.varabyte.truthish.subjects.ComparableSubject
-import com.varabyte.truthish.subjects.DoubleSubject
-import com.varabyte.truthish.subjects.FloatSubject
-import com.varabyte.truthish.subjects.IntSubject
-import com.varabyte.truthish.subjects.IterableSubject
-import com.varabyte.truthish.subjects.LongSubject
-import com.varabyte.truthish.subjects.MapSubject
-import com.varabyte.truthish.subjects.NotNullSubject
-import com.varabyte.truthish.subjects.NullableSubject
-import com.varabyte.truthish.subjects.ShortSubject
-import com.varabyte.truthish.subjects.StringSubject
+import com.varabyte.truthish.subjects.*
 
 fun assertThat(actual: Any?) = NullableSubject(actual)
 fun assertThat(actual: Any) = NotNullSubject(actual)
@@ -32,6 +20,15 @@ fun assertThat(actual: String) = StringSubject(actual)
 fun <T, I: Iterable<T>> assertThat(actual: I) = IterableSubject(actual)
 fun <K, V, T: Map<K, V>> assertThat(actual: T) = MapSubject(actual)
 fun <T, S: Sequence<T>> assertThat(actual: S) = IterableSubject(actual.asIterable())
+fun <T> assertThat(actual: Array<T>) = ArraySubject(actual)
+fun assertThat(actual: BooleanArray) = BooleanArraySubject(actual)
+fun assertThat(actual: ByteArray) = ByteArraySubject(actual)
+fun assertThat(actual: CharArray) = CharArraySubject(actual)
+fun assertThat(actual: ShortArray) = ShortArraySubject(actual)
+fun assertThat(actual: IntArray) = IntArraySubject(actual)
+fun assertThat(actual: LongArray) = LongArraySubject(actual)
+fun assertThat(actual: FloatArray) = FloatArraySubject(actual)
+fun assertThat(actual: DoubleArray) = DoubleArraySubject(actual)
 // Adding a new [assertThat] here? Also add it to SummarizedSubjectBuilder
 
 fun assertWithMessage(message: String) = SummarizedSubjectBuilder(message)
@@ -50,6 +47,15 @@ class SummarizedSubjectBuilder(private val message: String) {
     fun <T, I: Iterable<T>> that(actual: I) = IterableSubject(actual).withMessage(message)
     fun <K, V, T: Map<K, V>> that(actual: T) = MapSubject(actual).withMessage(message)
     fun <T, S: Sequence<T>> that(actual: S) = IterableSubject(actual.asIterable()).withMessage(message)
+    fun <T> that(actual: Array<T>) = ArraySubject(actual).withMessage(message)
+    fun that(actual: BooleanArray) = BooleanArraySubject(actual).withMessage(message)
+    fun that(actual: ByteArray) = ByteArraySubject(actual).withMessage(message)
+    fun that(actual: CharArray) = CharArraySubject(actual).withMessage(message)
+    fun that(actual: ShortArray) = ShortArraySubject(actual).withMessage(message)
+    fun that(actual: IntArray) = IntArraySubject(actual).withMessage(message)
+    fun that(actual: LongArray) = LongArraySubject(actual).withMessage(message)
+    fun that(actual: FloatArray) = FloatArraySubject(actual).withMessage(message)
+    fun that(actual: DoubleArray) = DoubleArraySubject(actual).withMessage(message)
 }
 
 /**

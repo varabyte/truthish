@@ -150,6 +150,12 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun containsExactly(vararg elements: T) = containsExactly(elements.asIterable())
 }
 
+fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other)
+fun <T> IterableSubject<T>.containsAllIn(other: Array<T>) = containsAllIn(*other)
+fun <T> IterableSubject<T>.containsNoneIn(other: Array<T>) = containsNoneIn(*other)
+fun <T> IterableSubject<T>.containsExactly(other: Array<T>) = containsExactly(*other)
+
+
 /**
  * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]\
  * instead, which is guaranteed to pass.
