@@ -1,5 +1,7 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.ReportError
+import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
@@ -14,15 +16,16 @@ class AmbiguityTest {
 
     @Test
     fun extraInformationShownIfToStringIsAmbiguous() {
-        val testStrategy = TestStrategy()
+        assertThrows<ReportError> {
+            assertThat(ClassA("x")).isEqualTo(ClassB("x"))
+        }.assertSubstrings("x (Type: `ClassB`)", "x (Type: `ClassA`)")
 
-        assertThat(ClassA("x")).withStrategy(testStrategy).isEqualTo(ClassB("x"))
-        testStrategy.verifyFailureAndClear("x (Type: `ClassB`)", "x (Type: `ClassA`)")
+        assertThrows<ReportError> {
+            assertThat(ClassA("x")).isEqualTo("x")
+        }.assertSubstrings("\"x\" (Type: `String`)", "x (Type: `ClassA`)")
 
-        assertThat(ClassA("x")).withStrategy(testStrategy).isEqualTo("x")
-        testStrategy.verifyFailureAndClear("\"x\" (Type: `String`)", "x (Type: `ClassA`)")
-
-        assertThat("x").withStrategy(testStrategy).isEqualTo(ClassB("x"))
-        testStrategy.verifyFailureAndClear("x (Type: `ClassB`)", "\"x\" (Type: `String`)")
+        assertThrows<ReportError> {
+            assertThat("x").isEqualTo(ClassB("x"))
+        }.assertSubstrings("x (Type: `ClassB`)", "\"x\" (Type: `String`)")
     }
 }

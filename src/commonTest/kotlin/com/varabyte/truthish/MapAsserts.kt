@@ -1,5 +1,6 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
@@ -35,41 +36,61 @@ class MapAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
+            assertThrows<ReportError> {
+                assertThat(asciiMap).isEqualTo(emptyMap())
+            }
 
-            assertThat(asciiMap).withStrategy(testStrategy).isEqualTo(emptyMap())
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(asciiMap).isNotEqualTo(asciiMap)
+            }
 
-            assertThat(asciiMap).withStrategy(testStrategy).isNotEqualTo(asciiMap)
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(asciiMap).doesNotContainKey('g')
+            }
 
+            assertThrows<ReportError> {
+                assertThat(asciiMap.keys).doesNotContain('g')
+            }
 
-            assertThat(asciiMap).withStrategy(testStrategy).doesNotContainKey('g')
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap.keys).withStrategy(testStrategy).doesNotContain('g')
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap).withStrategy(testStrategy).containsKey('G')
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap.keys).withStrategy(testStrategy).contains('G')
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap).withStrategy(testStrategy).doesNotContainValue(107)
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap.values).withStrategy(testStrategy).doesNotContain(107)
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap).withStrategy(testStrategy).containsValue(9999)
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap.values).withStrategy(testStrategy).contains(9999)
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap).withStrategy(testStrategy).doesNotContain('e' to 101)
-            testStrategy.verifyFailureAndClear()
-            assertThat(asciiMap).withStrategy(testStrategy).contains('e' to 102)
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(asciiMap).containsKey('G')
+            }
 
-            assertThat(asciiMap).withStrategy(testStrategy).containsAllIn('a' to 122, 'z' to 122)
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(asciiMap.keys).contains('G')
+            }
 
-            assertThat(asciiMap).withStrategy(testStrategy).containsAllIn('z' to 122, 'a' to 97).inOrder()
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(asciiMap).doesNotContainValue(107)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap.values).doesNotContain(107)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap).containsValue(9999)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap.values).contains(9999)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap).doesNotContain('e' to 101)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap).contains('e' to 102)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap).containsAllIn('a' to 122, 'z' to 122)
+            }
+
+            assertThrows<ReportError> {
+                assertThat(asciiMap).containsAllIn('z' to 122, 'a' to 97).inOrder()
+            }
         }
     }
 }

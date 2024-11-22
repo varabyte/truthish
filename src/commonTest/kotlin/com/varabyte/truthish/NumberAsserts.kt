@@ -1,7 +1,8 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
-import com.varabyte.truthish.failure.withStrategy
+import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
 
 class NumberAssets {
@@ -21,16 +22,18 @@ class NumberAssets {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
-
-            assertThat(5).withStrategy(testStrategy).isGreaterThanEqual(6)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5", "6")
-            assertThat(5).withStrategy(testStrategy).isGreaterThan(5)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5")
-            assertThat(5).withStrategy(testStrategy).isLessThanEqual(4)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5", "4")
-            assertThat(5).withStrategy(testStrategy).isLessThan(3)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5", "3")
+            assertThrows<ReportError> {
+                assertThat(5).isGreaterThanEqual(6)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "6")
+            assertThrows<ReportError> {
+                assertThat(5).isGreaterThan(5)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5")
+            assertThrows<ReportError> {
+                assertThat(5).isLessThanEqual(4)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "4")
+            assertThrows<ReportError> {
+                assertThat(5).isLessThan(3)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "3")
         }
     }
 
@@ -90,12 +93,12 @@ class NumberAssets {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
-
-            assertThat(5.3f).withStrategy(testStrategy).isNotWithin(0.5f).of(5.5f)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5.3", "0.5", "5.5")
-            assertThat(5.3f).withStrategy(testStrategy).isWithin(0.1f).of(5.5f)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_COMPARISON, "5.3", "0.1", "5.5")
+            assertThrows<ReportError> {
+                assertThat(5.3f).isNotWithin(0.5f).of(5.5f)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5.3", "0.5", "5.5")
+            assertThrows<ReportError> {
+                assertThat(5.3f).isWithin(0.1f).of(5.5f)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5.3", "0.1", "5.5")
         }
     }
 
@@ -118,12 +121,12 @@ class NumberAssets {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
-
-            assertThat(5.3).withStrategy(testStrategy).isNotWithin(0.5).of(5.5)
-            testStrategy.verifyFailureAndClear()
-            assertThat(5.3).withStrategy(testStrategy).isWithin(0.1).of(5.5)
-            testStrategy.verifyFailureAndClear()
+            assertThrows<ReportError> {
+                assertThat(5.3).isNotWithin(0.5).of(5.5)
+            }
+            assertThrows<ReportError> {
+                assertThat(5.3).isWithin(0.1).of(5.5)
+            }
         }
     }
 

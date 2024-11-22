@@ -1,6 +1,8 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
@@ -18,12 +20,13 @@ class BooleanAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
+            assertThrows<ReportError> {
+                assertThat(true).isFalse()
+            }.assertSubstrings(Summaries.EXPECTED_FALSE)
 
-            assertThat(true).withStrategy(testStrategy).isFalse()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_FALSE)
-            assertThat(false).withStrategy(testStrategy).isTrue()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_TRUE)
+            assertThrows<ReportError> {
+                assertThat(false).isTrue()
+            }.assertSubstrings(Summaries.EXPECTED_TRUE)
         }
     }
 }

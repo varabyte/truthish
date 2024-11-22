@@ -1,8 +1,7 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.Summaries
-import com.varabyte.truthish.failure.named
-import com.varabyte.truthish.failure.withStrategy
+import com.varabyte.truthish.failure.*
+import com.varabyte.truthish.failure.ReportError
 import kotlin.test.Test
 
 class BasicAsserts {
@@ -25,12 +24,12 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
-
-            assertThat("str").withStrategy(testStrategy).isNotEqualTo("str")
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NOT_EQUAL, "str")
-            assertThat("str1").withStrategy(testStrategy).isEqualTo("str2")
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_EQUAL, "str1", "str2")
+            assertThrows<ReportError> {
+                assertThat("str").isNotEqualTo("str")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "str")
+            assertThrows<ReportError> {
+                assertThat("str1").isEqualTo("str2")
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "str1", "str2")
         }
     }
 
@@ -47,14 +46,15 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
             var stub: Stub? = Stub()
-            assertThat(stub).withStrategy(testStrategy).isNull()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NULL)
+            assertThrows<ReportError> {
+                assertThat(stub).isNull()
+            }.assertSubstrings(Summaries.EXPECTED_NULL)
 
             stub = null
-            assertThat(stub).withStrategy(testStrategy).isNotNull()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NOT_NULL)
+            assertThrows<ReportError> {
+                assertThat(stub).isNotNull()
+            }.assertSubstrings(Summaries.EXPECTED_NOT_NULL)
         }
     }
 
@@ -69,13 +69,13 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
+            assertThrows<ReportError> {
+                assertThat(IntValue(234)).isInstanceOf<Int>()
+            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "IntValue", "Int")
 
-            assertThat(IntValue(234)).withStrategy(testStrategy).isInstanceOf<Int>()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_INSTANCE, "IntValue", "Int")
-
-            assertThat(IntValue(234)).withStrategy(testStrategy).isNotInstanceOf<IntValue>()
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NOT_INSTANCE, "IntValue")
+            assertThrows<ReportError> {
+                assertThat(IntValue(234)).isNotInstanceOf<IntValue>()
+            }.assertSubstrings(Summaries.EXPECTED_NOT_INSTANCE, "IntValue")
         }
     }
 
@@ -95,26 +95,26 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            val testStrategy = TestStrategy()
-
             val stubValue1 = Stub()
             val stubValue2 = Stub()
             val stubValue3 = stubValue1
 
-            assertThat(stubValue1).withStrategy(testStrategy).isSameAs(stubValue2)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_SAME)
+            assertThrows<ReportError> {
+                assertThat(stubValue1).isSameAs(stubValue2)
+            }.assertSubstrings(Summaries.EXPECTED_SAME)
 
-            assertThat(stubValue1).withStrategy(testStrategy).isNotSameAs(stubValue3)
-            testStrategy.verifyFailureAndClear(Summaries.EXPECTED_NOT_SAME)
+            assertThrows<ReportError> {
+                assertThat(stubValue1).isNotSameAs(stubValue3)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_SAME)
         }
     }
 
     @Test
     fun assertNamed() {
-        val testStrategy = TestStrategy()
         val stub: Stub? = Stub()
-        assertThat(stub).named("Stubby McStubberson").withStrategy(testStrategy).isNull()
-        testStrategy.verifyFailureAndClear("Stubby McStubberson")
+        assertThrows<ReportError> {
+            assertThat(stub).named("Stubby McStubberson").isNull()
+        }.assertSubstrings("Stubby McStubberson")
     }
 
     @Test
