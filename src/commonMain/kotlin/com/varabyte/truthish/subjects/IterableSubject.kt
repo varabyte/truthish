@@ -2,6 +2,7 @@ package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.Reportable
 import com.varabyte.truthish.failure.Summaries
 
 @Suppress("NAME_SHADOWING")
@@ -160,10 +161,10 @@ fun <T> IterableSubject<T>.containsExactly(other: Array<T>) = containsExactly(*o
  * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]\
  * instead, which is guaranteed to pass.
  */
-private fun <T> skipInOrderCheck(parent: IterableSubject<T>) = OrderedAsserter(parent, listOf(), listOf())
+internal fun <T> skipInOrderCheck(parent: Reportable) = OrderedAsserter<T>(parent, emptyList(), emptyList())
 
 class OrderedAsserter<T>(
-    private val parent: IterableSubject<T>,
+    private val parent: Reportable,
     actual: Iterable<T>,
     other: Iterable<T>
 ) {
@@ -205,26 +206,4 @@ class OrderedAsserter<T>(
 
         // If we got here -- congrats! All elements of [other] were found in [actual] in order.
     }
-}
-
-/**
- * A subject useful for testing the state of a [Map]'s entries.
- *
- * Note that if you want to make assertions about a map's keys or values, you should assert against
- * them directly:
- *
- * ```
- * val asciiMap: Map<Char, Int> = ... // mapping of 'a-z' to their ascii codes
- *
- * assertThat(map).contains('e' to 101)
- * assertThat(map.keys).contains('e')
- * assertThat(map.values).contains(101)
- *
- * assertThat(map).containsAllIn('a' to 97, 'z' to 122)
- * assertThat(map.keys).containsAllIn('a', 'z')
- * assertThat(map.values).containsAllIn(97, 122)
- * ```
- */
-class MapSubject<K, V>(actual: Map<K, V>) :
-    IterableSubject<Pair<K, V>>(actual.entries.map { it.toPair() }) {
 }
