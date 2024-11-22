@@ -17,11 +17,10 @@ internal class MultipleReportsError(val reports: List<Report>, val summary: Stri
         private fun List<Report>.buildErrorMessage(summary: String?): String {
             val self = this
             return buildString {
+                append("Grouped assertions had ${self.size} failure(s)\n")
                 if (summary != null) {
-                    appendLine(summary)
-                    appendLine()
+                    appendLine("Summary: $summary")
                 }
-                append("Encountered ${self.size} failure(s)...\n")
                 appendLine()
                 self.forEachIndexed { i, report ->
                     append("Failure ${i + 1}:\n")
