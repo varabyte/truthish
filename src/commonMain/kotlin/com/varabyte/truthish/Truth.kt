@@ -28,6 +28,42 @@ fun assertThat(actual: FloatArray) = FloatArraySubject(actual)
 fun assertThat(actual: DoubleArray) = DoubleArraySubject(actual)
 // Adding a new [assertThat] here? Also add it to SummarizedSubjectBuilder and AssetAllScope
 
+/**
+ * Create a block of grouped assertions.
+ *
+ * Within an `assertAll` block, all assertions are run, and if any fail, all failures are deferred to the end of the
+ * block and reported all at once.
+ *
+ * For example, a test like:
+ * ```
+ * val person = personDatabase.query(id = 123)
+ * assertAll {
+ *   that(person.name).isEqualTo("Alice")
+ *   that(person.age).isEqualTo(30)
+ *   that(person.id).isEqualTo(123)
+ * }
+ * ```
+ *
+ * could output something like:
+ *
+ * ```
+ * Grouped assertions had 2 failure(s)
+ *
+ * Failure 1:
+ * Two objects were not equal
+ *
+ * Expected: "Bob"
+ * But was : "Alice"
+ * At      : "org.example.DatabaseTest$queryPerson$1.invoke(DatabaseTest.kt:47)"
+ *
+ * Failure 2:
+ * Two objects were not equal
+ *
+ * Expected: 45
+ * But was : 30
+ * At      : "org.example.DatabaseTest$queryPerson$1.invoke(DatabaseTest.kt:48)"
+ * ```
+ */
 fun assertAll(summary: String? = null, block: AssertAllScope.() -> Unit) {
     val assertAllScope = AssertAllScope(summary)
     assertAllScope.block()
