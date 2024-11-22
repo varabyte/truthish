@@ -91,5 +91,14 @@ class AssertAllTest {
             that(floatArrayOf(1.0f, 2.0f, 3.0f)).isEqualTo(floatArrayOf(1.0f, 2.0f, 3.0f))
             that(doubleArrayOf(1.0, 2.0, 3.0)).isEqualTo(doubleArrayOf(1.0, 2.0, 3.0))
         }
+
+        assertThrows<MultipleReportsError> {
+            assertAll {
+                // Dummy "inOrder" asserters are provided from a different code branch if the first part of the
+                // assert fails early.
+                that(arrayOf(1, 2, 3)).containsAllIn(4, 5, 6).inOrder()
+                that(arrayOf(1, 2, 3)).containsExactly(1, 2, 3, 4).inOrder()
+            }
+        }
     }
 }
