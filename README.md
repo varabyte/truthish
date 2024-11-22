@@ -173,3 +173,20 @@ dependencies {
     androidTestImplementation("com.varabyte.truthish:truthish:1.0.2")
 }
 ```
+
+### Testing snapshots
+
+Most users won't ever need to run a Truthish snapshot, so feel free to skip this section! However, occasionally, bug
+fixes and new features will be available for testing for a short period before they are released.
+
+If you ever file a bug with Truthish and are asked to test a fix using a snapshot, you must add an entry for the sonatype
+snapshots repository to your `repositories` block in order to allow Gradle to find it:
+
+```diff
+// build.gradle.kts
+
+repositories {
+  mavenCentral()
++ maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+}
+```
