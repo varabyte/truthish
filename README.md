@@ -56,6 +56,18 @@ fun testDivideByZeroException() {
 }
 ```
 
+If you would like to check multiple assertions at the same time (meaning a failure won't be reported until all checks
+have run), you can use the `assertAll` function:
+
+```kotlin
+val person = Person("Alice", 30)
+assertAll {
+    that(person.name).isEqualTo("Bob")
+    that(person.age).isEqualTo(45)
+}
+// The above will assert once, reporting both equality check failures
+```
+
 You can read the [Google Truth documentation](https://truth.dev/) for why they
 believe their fluent approach to assertions is both more readable and produces
 cleaner error messages, but let's break one of the tests above to see a

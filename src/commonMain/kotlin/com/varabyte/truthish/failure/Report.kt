@@ -76,13 +76,18 @@ class Details(
     }
 }
 
+fun Details.find(key: String): Any? {
+    return items.find { it.first == key }?.second
+}
+
 /**
  * Helpful utility methods providing detail lists for common scenarios.
  */
 object DetailsFor {
-    private const val VALUE = "Value"
-    private const val EXPECTED = "Expected"
-    private const val BUT_WAS = "But was"
+    const val VALUE = "Value"
+    const val EXPECTED = "Expected"
+    const val BUT_WAS = "But was"
+    const val AT = "At"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was
