@@ -54,19 +54,33 @@ class AssertionStrategy : FailureStrategy {
 class DeferredStrategy(private val summary: String? = null) : FailureStrategy {
     private val reports = mutableListOf<Report>()
 
+    // e.g. at com.varabyte.truthish.AssertAllTest.assertAllCallstacksAreCorrect(AssertAllTest.kt:133)
+    private val jvmCallstackRegex = Regex("\\s+at ([^ ]+)")
+    // e.g. at 1 test.kexe 0x104adf41f kfun:com.varabyte.truthish.AssertAllTest#assertAllCallstacksAreCorrect(){} + 1847 (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:133:21)
+    private val knCallstackRegex = Regex("\\s+at.+kfun:(.+)")
+
     override fun handle(report: Report) {
         reports.add(report)
-        report.details.add(DetailsFor.AT to
-                AnyStringifier(
-                    Throwable()
-                        .stackTraceToString().split("\n")
-                        .drop(1) // Drop "java.lang.Throwable" line
-                        .asSequence()
-                        .map { it.removePrefix("\tat ") }
-                        .filterNot { it.startsWith("com.varabyte.truthish.failure") || it.startsWith("com.varabyte.truthish.subjects") }
-                        .first()
-                )
-        )
+
+        val callStackLine = Throwable()
+            .stackTraceToString().split("\n")
+            .drop(1) // Drop "java.lang.Throwable" line
+            .asSequence()
+            .mapNotNull { stackTraceLine ->
+                jvmCallstackRegex.matchEntire(stackTraceLine) ?: knCallstackRegex.matchEntire(stackTraceLine)
+            }
+            .map { match -> match.groupValues[1] }
+            .filterNot {
+                it.startsWith("com.varabyte.truthish.failure")
+                        || it.startsWith("com.varabyte.truthish.subjects")
+                        || it.startsWith("kotlin.") // Kotlin/Native
+                        || it.startsWith("<global>") // Kotlin/Native
+            }
+            .firstOrNull()
+
+        if (callStackLine != null) {
+            report.details.add(DetailsFor.AT to AnyStringifier(callStackLine))
+        }
     }
 
     fun handleNow() {
