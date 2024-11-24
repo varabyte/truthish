@@ -7,7 +7,12 @@ import com.varabyte.truthish.failure.Summaries
 open class ArraySubject<T>(private val actualArray: Array<T>) : IterableSubject<T>(actualArray.toList()) {
     fun isEqualTo(expected: Array<T>) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -18,12 +23,18 @@ open class ArraySubject<T>(private val actualArray: Array<T>) : IterableSubject<
     }
 }
 
-open class BooleanArraySubject(private val actualArray: BooleanArray) : ArraySubject<Boolean>(actualArray.toTypedArray()) {
+open class BooleanArraySubject(private val actualArray: BooleanArray) :
+    ArraySubject<Boolean>(actualArray.toTypedArray()) {
     private fun BooleanArray.toTypedArray(): Array<Boolean> = this.map { it }.toTypedArray()
 
     fun isEqualTo(expected: BooleanArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -44,7 +55,12 @@ open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<B
 
     fun isEqualTo(expected: ByteArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -59,12 +75,18 @@ open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<B
     fun containsNoneIn(other: ByteArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: ByteArray) = containsExactly(other.toTypedArray())
 }
+
 open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<Char>(actualArray.toTypedArray()) {
     private fun CharArray.toTypedArray(): Array<Char> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: CharArray) {
+    fun isEqualTo(expected: CharArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -79,12 +101,18 @@ open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<C
     fun containsNoneIn(other: CharArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: CharArray) = containsExactly(other.toTypedArray())
 }
+
 open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject<Short>(actualArray.toTypedArray()) {
     private fun ShortArray.toTypedArray(): Array<Short> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: ShortArray) {
+    fun isEqualTo(expected: ShortArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -99,12 +127,18 @@ open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject
     fun containsNoneIn(other: ShortArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: ShortArray) = containsExactly(other.toTypedArray())
 }
+
 open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int>(actualArray.toTypedArray()) {
     private fun IntArray.toTypedArray(): Array<Int> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: IntArray) {
+    fun isEqualTo(expected: IntArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -119,12 +153,18 @@ open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int
     fun containsNoneIn(other: IntArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: IntArray) = containsExactly(other.toTypedArray())
 }
+
 open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<Long>(actualArray.toTypedArray()) {
     private fun LongArray.toTypedArray(): Array<Long> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: LongArray) {
+    fun isEqualTo(expected: LongArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -139,12 +179,18 @@ open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<L
     fun containsNoneIn(other: LongArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: LongArray) = containsExactly(other.toTypedArray())
 }
+
 open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject<Float>(actualArray.toTypedArray()) {
     private fun FloatArray.toTypedArray(): Array<Float> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: FloatArray) {
+    fun isEqualTo(expected: FloatArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
@@ -159,12 +205,18 @@ open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject
     fun containsNoneIn(other: FloatArray) = containsNoneIn(other.toTypedArray())
     fun containsExactly(other: FloatArray) = containsExactly(other.toTypedArray())
 }
+
 open class DoubleArraySubject(private val actualArray: DoubleArray) : ArraySubject<Double>(actualArray.toTypedArray()) {
     private fun DoubleArray.toTypedArray(): Array<Double> = this.map { it }.toTypedArray()
 
-        fun isEqualTo(expected: DoubleArray) {
+    fun isEqualTo(expected: DoubleArray) {
         if (!actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())))
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(expected.contentToString(), actualArray.contentToString())
+                )
+            )
         }
     }
 
