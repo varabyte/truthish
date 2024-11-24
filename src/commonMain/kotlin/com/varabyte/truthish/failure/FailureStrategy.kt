@@ -57,13 +57,15 @@ class DeferredStrategy(private val summary: String? = null) : FailureStrategy {
     override fun handle(report: Report) {
         reports.add(report)
         report.details.add(DetailsFor.AT to
-                Throwable()
-                    .stackTraceToString().split("\n")
-                    .drop(1) // Drop "java.lang.Throwable" line
-                    .asSequence()
-                    .map { it.removePrefix("\tat ") }
-                    .filterNot { it.startsWith("com.varabyte.truthish.failure") || it.startsWith("com.varabyte.truthish.subjects") }
-                    .first()
+                AnyStringifier(
+                    Throwable()
+                        .stackTraceToString().split("\n")
+                        .drop(1) // Drop "java.lang.Throwable" line
+                        .asSequence()
+                        .map { it.removePrefix("\tat ") }
+                        .filterNot { it.startsWith("com.varabyte.truthish.failure") || it.startsWith("com.varabyte.truthish.subjects") }
+                        .first()
+                )
         )
     }
 

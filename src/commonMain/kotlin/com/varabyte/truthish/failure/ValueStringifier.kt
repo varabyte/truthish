@@ -2,6 +2,7 @@ package com.varabyte.truthish.failure
 
 internal fun stringifierFor(value: Any?): ValueStringifier {
     return when (value) {
+        is ValueStringifier -> value // In case caller already wrapped `value` in a stringifier themselves
         is Char -> CharStringifier(value)
         is CharSequence -> StringStringifier(value)
         is Map<*, *> -> MapStringifier(value)
