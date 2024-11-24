@@ -4,7 +4,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 plugins {
     // NOTE: Intentionally older version to maximize compatibility with projects in the wild
     // Going much older and this buildscript won't compile
-    kotlin("multiplatform") version "1.7.21"
+    kotlin("multiplatform") version "1.8.22"
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
     `maven-publish`
