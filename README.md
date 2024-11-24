@@ -110,8 +110,9 @@ repositories {
 
 kotlin {
     jvm()
-    js(IR) {
+    js {
         browser()
+        nodeJs()
     }
 
     linuxX64()
