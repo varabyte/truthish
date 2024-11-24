@@ -99,7 +99,38 @@ class AssertAllScope(summary: String?) {
     fun withMessage(message: String) = SummarizedSubjectBuilder(message, deferredStrategy)
 }
 
-
+/**
+ * Create an assertion with a message that describes it, which can be useful for providing more context to a failure.
+ *
+ * For example:
+ *
+ * ```
+ * assertWithMessage("IDs should match").that(item1.id).isEqualTo(item2.id)
+ * ```
+ *
+ * could generate output like:
+ *
+ * ```
+ * Two objects were not equal
+ *
+ * Message : IDs should match
+ * Expected: 672528
+ * But was : 187974
+ * ```
+ *
+ * Without that message, you might just see a test failure that showed two random numbers not being the same, which
+ * would require the developer to dig into the test to understand what was being compared.
+ *
+ * Note that the example above is functionally identical to:
+ *
+ * ```
+ * assertThat(item1.id).withMessage("IDs should match").isEqualTo(item2.id)
+ * ```
+ *
+ * but the `assertWithMessage` approach is provided as it reads a lot more naturally and doesn't obscure the check by
+ * jamming a long message in the middle of the assertion. In fact, despite being syntax sugar, you should prefer
+ * using `assertWithMessage` over `withMessage` for this reason.
+ */
 fun assertWithMessage(message: String) = SummarizedSubjectBuilder(message)
 class SummarizedSubjectBuilder(private val message: String, private val strategyOverride: FailureStrategy? = null) {
     private inline fun <reified R: Reportable> R.withStrategyOverride() = if (strategyOverride != null) withStrategy(strategyOverride) else this

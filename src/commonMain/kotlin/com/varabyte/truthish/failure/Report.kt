@@ -28,6 +28,8 @@ package com.varabyte.truthish.failure
  *
  * @param summary A one-line summary of this report. This should be a generic, re-usable message,
  * and any specific details for this particular report should be specified in the [details] parameter.
+ *
+ * @see FailureStrategy
  */
 class Report(private val summary: String, details: Details? = null) {
     internal val details = details ?: Details()
