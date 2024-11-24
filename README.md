@@ -98,7 +98,7 @@ Extraneous                        : [ 16, 25 ]
 
 ## Multiplatform
 
-To use *Truthish* in your multiplatform application, declare the following dependencies:
+To use *Truthish* in your multiplatform application, declare any of the following dependencies relevant to your project:
 
 ```kotlin
 // build.gradle.kts
