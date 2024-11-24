@@ -24,12 +24,12 @@ class AssertAllTest {
             assertAll {
                 that(e.summary).isEqualTo("Just an assertAll test")
                 that(e.reports.size).isEqualTo(4)
-                // that(a).isEqualTo(b)
+                // Failure 1: "that(a).isEqualTo(b)"
                 with(e.reports[0].details) {
                     that(this.find(DetailsFor.EXPECTED)!!).isEqualTo(b)
                     that(this.find(DetailsFor.BUT_WAS)!!).isEqualTo(a)
                 }
-                // that(a).isEqualTo(c)
+                // Failure 4: "that(a).isEqualTo(c)"
                 with(e.reports[3].details) {
                     that(this.find(DetailsFor.EXPECTED)!!).isEqualTo(c)
                     that(this.find(DetailsFor.BUT_WAS)!!).isEqualTo(a)
