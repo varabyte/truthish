@@ -123,16 +123,16 @@ class AssertAllTest {
             }
         }.let { e ->
             // Use a regex to extract callstack values, so that this test will still pass even if the line numbers change
-            // Example callstack entry: com.varabyte.truthish.AssertAllTest$assertAllCallstacksAreCorrect$2$1.invoke(AssertAllTest.kt:123)
-            val expectedAt = Regex(
-                """com\.varabyte\.truthish\.AssertAllTest${"\\$"}assertAllCallstacksAreCorrect${"\\$"}(\d+)${"\\$"}(\d+)\.invoke\(AssertAllTest\.kt:(\d+)\)"""
-            )
-            val match = expectedAt.matchEntire(e.reports[0].details.find(DetailsFor.AT).toString())!!
-            val outerLambdaId = match.groupValues[1].toInt() // assertThrows
-            val innerLambdaId = match.groupValues[2].toInt() // assertAll
-            val lineNumber = match.groupValues[3].toInt()
+            // Example AT entry for...
+            //   jvm: com.varabyte.truthish.AssertAllTest$assertAllCallstacksAreCorrect$2$1.invoke(AssertAllTest.kt:123)
+            //   k/n: com.varabyte.truthish.AssertAllTest#assertAllCallstacksAreCorrect(){} + 1847 (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:133:21)
+            val lineRegex = Regex(".+AssertAllTest\\.kt:(\\d+).+")
 
-            assertAll {
+            val atValue = e.reports[0].details.find(DetailsFor.AT).toString()
+            val match = lineRegex.matchEntire(atValue)!!
+            val lineNumber = match.groupValues[1].toInt()
+
+            assertAll("Comparing callstacks against \"$atValue\"") {
                 // "Error report" to "delta distance from the first report"
                 val reportsToCheck = listOf(
                     e.reports[1] to 2,
@@ -140,11 +140,9 @@ class AssertAllTest {
                     e.reports[3] to 5
                 )
 
-                reportsToCheck.forEach { (report, lineDelta) ->
-                    with(expectedAt.matchEntire(report.details.find(DetailsFor.AT).toString())!!) {
-                        that(groupValues[1].toInt()).isEqualTo(outerLambdaId)
-                        that(groupValues[2].toInt()).isEqualTo(innerLambdaId)
-                        that(groupValues[3].toInt()).isEqualTo(lineNumber + lineDelta)
+                reportsToCheck.forEachIndexed { i, (report, lineDelta) ->
+                    with(lineRegex.matchEntire(report.details.find(DetailsFor.AT).toString())!!) {
+                        that(groupValues[1].toInt()).named("Line delta for report ${i + 1}").isEqualTo(lineNumber + lineDelta)
                     }
                 }
             }
