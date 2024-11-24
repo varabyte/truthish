@@ -122,7 +122,7 @@ kotlin {
     iosX64() // iOS Intel
     iosArm64() // iOS M1+
     iosSimulatorArm64()
-    android()
+    androidTarget()
 
     sourceSets {
         commonTest.dependencies {
