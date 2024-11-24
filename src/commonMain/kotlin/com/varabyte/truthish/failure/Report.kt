@@ -58,7 +58,8 @@ class Report(private val summary: String, details: Details? = null) {
  *
  * @property extras Optional additional information which, if specified, should be appended after the value
  *   somehow. The key for the extra information should be the same as the key for the details item. For example,
- *   ("Expected" to "xyz") could specify some extra information ("Expected" to "Type is `ClassXyz`")
+ *   the detail ("Expected" to "xyz") can be decorated with extra information by adding the extra entry
+ *   ("Expected" to "Type is `ClassXyz`").
  */
 class Details(
     items: List<Pair<String, Any?>> = emptyList(),
