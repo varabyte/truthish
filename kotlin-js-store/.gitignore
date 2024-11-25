@@ -1,0 +1,36 @@
+# Normally, it is good practice to check in your yarn.lock file. 
+# https://classic.yarnpkg.com/blog/2016/11/24/lockfiles-for-all
+# to keep dependencies consistent across developers.
+# However, we're writing Kotlin, not JS, so this is less of a
+# concern for us, as the dependencies they use are tied to the
+# Kotlin plugin version, which *is* checked into source control.
+#
+# Furthermore, Truthish is a test assertion library, which means
+# it only gets run on developer machnes, not end users nested into
+# public sites, so I'm not terribly worried about security issues.
+# As long as the Kotlin/JS logic is sound, `jsBrowserTest` and
+# `jsNodeTest` will pass all tests on the CI.
+#
+# Meanwhile, keeping it around is annoying -- it requires updating
+# every time we upgrade Kotlin (which, above, I'd argue is unecessary
+# for our project), and this happens a fair bit because we use a
+# newer version of Kotlin for testing than we do publishing (to work
+# around test issues fixed in newer versions of the Kotlin plugin).
+#
+# Our yarn.lock file also keeps causing GitHub to complain about
+# dependabot issues even though I can't do anything about them since
+# I'm tied to an older version of the Kotlin plugin in order to
+# ensure that my library has maximum reach.
+#
+# So, let's just remove it and trust our passing tests to verify
+# that all generated Kotlin/JS code is good to go.
+#
+# NOTE: If you ran tests before and then updated the Kotlin version
+# since then, you will likely need to run
+# `./gradlew :kobwebUpgradeYarnLock`. Or just delete the yarn.lock
+# file manually! (I would have added logic to the build script to
+# disable this warning if I could have, but since I'm using an
+# older Kotlin plugin version I can't simply follow the instructions
+# at https://kotlinlang.org/docs/js-project-setup.html#reporting-that-yarn-lock-has-been-updated
+
+yarn.lock
