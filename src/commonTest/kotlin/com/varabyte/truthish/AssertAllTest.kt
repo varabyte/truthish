@@ -135,7 +135,7 @@ class AssertAllTest {
             // At least verify the specified callstack contains this class in it and isn't in some random part of the
             // Truthish codebase.
             val match = lineRegex.matchEntire(atValue) ?: run {
-                assertThat(atValue).contains(AssertAllTest::class.qualifiedName.toString())
+                assertThat(atValue).contains(AssertAllTest::class.simpleName.toString())
                 return
             }
 
