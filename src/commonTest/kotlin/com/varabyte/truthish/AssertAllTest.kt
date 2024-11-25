@@ -122,14 +122,23 @@ class AssertAllTest {
                 that(a).isEqualTo(c) // ❌   // Fourth failure, line0 + 5
             }
         }.let { e ->
+            // JS callstacks are mangled in release mode, so "At" details are skipped in that case
+            val atValue = e.reports[0].details.find(DetailsFor.AT)?.toString() ?: return
+
             // Use a regex to extract callstack values, so that this test will still pass even if the line numbers change
             // Example AT entry for...
             //   jvm: com.varabyte.truthish.AssertAllTest$assertAllCallstacksAreCorrect$2$1.invoke(AssertAllTest.kt:123)
             //   k/n: com.varabyte.truthish.AssertAllTest#assertAllCallstacksAreCorrect(){} + 1847 (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:133:21)
-            val lineRegex = Regex(".+AssertAllTest\\.kt:(\\d+).+")
+            val lineRegex = Regex(".+${AssertAllTest::class.simpleName}\\.kt:(\\d+).+")
 
-            val atValue = e.reports[0].details.find(DetailsFor.AT).toString()
-            val match = lineRegex.matchEntire(atValue)!!
+            // Windows and Linux don't include line numbers in their callstacks?!
+            // At least verify the specified callstack contains this class in it and isn't in some random part of the
+            // Truthish codebase.
+            val match = lineRegex.matchEntire(atValue) ?: run {
+                assertThat(atValue).contains(AssertAllTest::class.simpleName.toString())
+                return
+            }
+
             val lineNumber = match.groupValues[1].toInt()
 
             assertAll("Comparing callstacks against \"$atValue\"") {
