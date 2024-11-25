@@ -32,6 +32,8 @@ jobs:
           path: ~/.konan
           key: kotlin-native-compiler-${{ runner.OS }}
 
+      # This is necessary because older versions of Kotlin have issues that
+      # fail to run tests on Mac targets.
       - name: Override Kotlin Version for testing
         run: echo "KOTLIN_VERSION_OVERRIDE=2.0.0" >> $GITHUB_ENV
 
