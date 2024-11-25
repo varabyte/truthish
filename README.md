@@ -1,6 +1,6 @@
 ## Truthish
 
-![version](https://img.shields.io/badge/version-1.0.2-blue.svg)
+![version](https://img.shields.io/badge/version-1.0.3-blue.svg)
 ![truthish tests](https://github.com/varabyte/truthish/actions/workflows/gradle-test-all.yml/badge.svg)
 ![coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bitspittle/01b6bfe88483946d9f5438f5616d9b9f/raw/truthish-coverage-badge.json)
 <br>
@@ -127,7 +127,7 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation("com.varabyte.truthish:truthish:1.0.2")
+            implementation("com.varabyte.truthish:truthish:1.0.3")
             implementation(kotlin("test"))
         }
     }
@@ -151,7 +151,7 @@ dependencies {
     // ...
 
     testImplementation(kotlin("test"))
-    testImplementation("com.varabyte.truthish:truthish:1.0.2")
+    testImplementation("com.varabyte.truthish:truthish:1.0.3")
 }
 ```
 
@@ -170,10 +170,10 @@ dependencies {
     // ...
 
     // If used in tests that are run on the host (i.e. your dev machine)
-    testImplementation("com.varabyte.truthish:truthish:1.0.2")
+    testImplementation("com.varabyte.truthish:truthish:1.0.3")
 
     // If used in tests that are run on the device
-    androidTestImplementation("com.varabyte.truthish:truthish:1.0.2")
+    androidTestImplementation("com.varabyte.truthish:truthish:1.0.3")
 }
 ```
 
