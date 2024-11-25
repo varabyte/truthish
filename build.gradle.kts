@@ -56,12 +56,12 @@ tasks.register("printLineCoverage") {
 }
 
 kotlin {
-    jvmToolchain(8) // Used by Android to set JDK version used by kotlin compilation
+    jvmToolchain(11) // Used by Android to set JDK version used by kotlin compilation
 
     jvm {
         val main by compilations.getting {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "11"
             }
         }
     }
@@ -95,9 +95,9 @@ android {
     compileSdk = 33
 
     compileOptions {
-        // 1.8 is as low as we can go since kotlin can't target anything lower
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so we're moving to JDK11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
