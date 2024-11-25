@@ -55,11 +55,20 @@ class DeferredStrategy(private val summary: String? = null) : FailureStrategy {
     private val reports = mutableListOf<Report>()
 
     // e.g. JVM: at com.varabyte.truthish.AssertAllTest.assertAllCallstacksAreCorrect(AssertAllTest.kt:133)
-    // e.g. Node #1: at /Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:18:25
-    // e.g. Node #2: at AssertAllTest.protoOf.assertAllCollectsMultipleErrors_tljnxt_k$ (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:14:13)
-    private val jvmNodeCallstackRegex = Regex("\\s+at ?[^ ]* ?([^ ]+\\.kt:\\d+[^ ]+)")
+    // exclude slashes so as not to clash with js node
+    private val jvmCallstackRegex = Regex("\\s+at ([^ /]+\\.kt:\\d+[^ ]+)")
+
+    // e.g. Node: at /Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:18:25
+    // NOTE: There are also callstack lines like "at AssertAllTest.protoOf.assertAllCollectsMultipleErrors_tljnxt_k$ (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:14:13)"
+    //       but I think we can skip over them and still get the user callstack line that we want, as user code will
+    //       always(?) look like this.
+    private val jsNodeCallstackRegex = Regex("\\s+at (/[^)]+)\\)?")
+
     // e.g. at 1 test.kexe 0x104adf41f kfun:com.varabyte.truthish.AssertAllTest#assertAllCallstacksAreCorrect(){} + 1847 (/Users/d9n/Code/1p/truthish/src/commonTest/kotlin/com/varabyte/truthish/AssertAllTest.kt:133:21)
     private val knCallstackRegex = Regex("\\s+at.+kfun:(.+)")
+
+    // e.g. at protoOf.assertAllCallstacksAreCorrect_nyk2hi(/var/folders/5x/f_r3s2p53rx2l_lffc7m9nmw0000gn/T/_karma_webpack_413015/commons.js:29616)
+    private val jsBrowserCallstackRegex = Regex("\\.js\\?")
 
     override fun handle(report: Report) {
         reports.add(report)
@@ -67,21 +76,21 @@ class DeferredStrategy(private val summary: String? = null) : FailureStrategy {
         val callstackLine =
             Throwable()
             .stackTraceToString()
-            .takeIf { it.contains("common.js") }
+            // Reject JS browser callstacks because they're mangled
+            .takeUnless { jsBrowserCallstackRegex.containsMatchIn(it) }
             ?.split("\n")
             ?.drop(1) // Drop "java.lang.Throwable" line
             ?.asSequence()
             ?.mapNotNull { stackTraceLine ->
-                jvmNodeCallstackRegex.matchEntire(stackTraceLine) ?: knCallstackRegex.matchEntire(stackTraceLine)
+                jvmCallstackRegex.matchEntire(stackTraceLine)
+                    ?: knCallstackRegex.matchEntire(stackTraceLine)
+                    ?: jsNodeCallstackRegex.matchEntire(stackTraceLine)
             }
             ?.map { match -> match.groupValues[1] }
             ?.filterNot {
                 it.startsWith("com.varabyte.truthish.failure.")
                         || it.startsWith("com.varabyte.truthish.subjects.")
                         || it.startsWith("kotlin.") // Kotlin/Native
-                        || it.contains("/com/varabyte/truthish/failure/")
-                        || it.contains("/com/varabyte/truthish/subjects/")
-                        || it.contains("/kotlin/js/runtime/")
             }
             ?.firstOrNull()
 
