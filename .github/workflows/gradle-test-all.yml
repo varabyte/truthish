@@ -32,5 +32,11 @@ jobs:
           path: ~/.konan
           key: kotlin-native-compiler-${{ runner.OS }}
 
+      - name: Override Kotlin Version for testing
+        run: echo "KOTLIN_VERSION_OVERRIDE=2.0.0" >> $GITHUB_ENV
+
+      - name: Update yarn.lock which may have changed for the new version
+        run: ./gradlew :kotlinUpgradeYarnLock
+
       - name: Test with Gradle
         run: ./gradlew allTests --no-daemon
