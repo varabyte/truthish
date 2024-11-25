@@ -10,10 +10,9 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
 
-    # TODO: run on more target OSes
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
