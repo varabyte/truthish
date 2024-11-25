@@ -6,7 +6,7 @@ plugins {
     // Going much older and this buildscript won't compile
     kotlin("multiplatform") version "1.8.22"
     id("org.jetbrains.dokka") version "1.9.20"
-    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.kotlinx.kover") version "0.8.3"
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
