@@ -3,8 +3,10 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
     // NOTE: Intentionally older version to maximize compatibility with projects in the wild
-    // Going much older and this buildscript won't compile
-    kotlin("multiplatform") version "1.8.22"
+    // Going much older and this buildscript won't compile.
+    // NOTE2: We allow the CI to override the Kotlin version that we use, because otherwise this or that test fails due
+    // to missing features in the Kotlin multiplatform plugin.
+    kotlin("multiplatform") version (System.getenv("KOTLIN_VERSION_OVERRIDE") ?: "1.7.21")
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.8.3"
     `maven-publish`
