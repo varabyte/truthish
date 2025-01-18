@@ -205,6 +205,12 @@ publishing {
 }
 
 if (shouldSign()) {
+    // Workaround for https://youtrack.jetbrains.com/issue/KT-61858
+    val signingTasks = tasks.withType<Sign>()
+    tasks.withType<AbstractPublishToMaven>().configureEach {
+        mustRunAfter(signingTasks)
+    }
+
     // If "shouldSign" returns true, then singing password should be set
     val secretKeyRingExists = (findProperty("signing.secretKeyRingFile") as? String)
         ?.let { File(it).exists() }
