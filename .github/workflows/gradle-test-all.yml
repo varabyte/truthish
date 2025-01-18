@@ -38,4 +38,4 @@ jobs:
         run: echo "KOTLIN_VERSION_OVERRIDE=2.0.0" >> $GITHUB_ENV
 
       - name: Test with Gradle
-        run: ./gradlew allTests --no-daemon
+        run: ./gradlew allTests
