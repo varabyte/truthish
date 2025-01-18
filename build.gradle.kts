@@ -191,11 +191,12 @@ publishing {
                         id.set("bitspittle")
                         name.set("David Herman")
                         email.set("bitspittle@gmail.com")
+                        url.set("https://github.com/bitspittle")
                     }
                 }
                 licenses {
                     license {
-                        name.set("The Apache License, Version 2.0")
+                        name.set("Apache-2.0")
                         url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
