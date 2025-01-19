@@ -5,7 +5,7 @@
 ![coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bitspittle/01b6bfe88483946d9f5438f5616d9b9f/raw/truthish-coverage-badge.json)
 <br>
 ![kotlin version](https://img.shields.io/badge/kotlin_compatibility-1.6+-lightgray?logo=kotlin)
-![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac,_Android,_iOS-white.svg)
+![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac,_Android,_iOS,_Wasm-white.svg)
 <br>
 <a href="https://discord.gg/bCdxPr7aTV">
   <img alt="Varabyte Discord" src="https://img.shields.io/discord/886036660767305799.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
@@ -114,6 +114,11 @@ kotlin {
     js {
         browser()
         nodeJs()
+    }
+    wasmJs {
+      browser()
+      nodeJs()
+      d8()
     }
 
     linuxX64()

@@ -135,6 +135,7 @@ jobs:
           (matrix.os == 'ubuntu-latest' && inputs.target-js)
         run: |
           ./gradlew publishJsPublicationToGCloudMavenRepository
+          ./gradlew publishWasmJsPublicationToCloudMavenRepository
 
       - name: Publish Linux (GCloud)
         if: |
@@ -204,6 +205,7 @@ jobs:
           (matrix.os == 'ubuntu-latest' && inputs.target-js)
         run: |
           ./gradlew publishJsPublicationToSonatypeMavenRepository
+          ./gradlew publishWasmJsPublicationToSonatypeMavenRepository
 
       - name: Publish Linux (Sonatype)
         if: |

@@ -1,12 +1,13 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
-    // NOTE: Intentionally older version to maximize compatibility with projects in the wild
-    // Going much older and this buildscript won't compile.
-    // NOTE2: We allow the CI to override the Kotlin version that we use, because otherwise this or that test fails due
-    // to missing features in the Kotlin multiplatform plugin.
-    kotlin("multiplatform") version (System.getenv("KOTLIN_VERSION_OVERRIDE") ?: "1.7.21")
+    kotlin("multiplatform") version "2.1.0"
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.8.3"
     `maven-publish`
@@ -57,19 +58,29 @@ tasks.register("printLineCoverage") {
     }
 }
 
+fun LanguageSettingsBuilder.setToVersion(version: String) {
+    check(version.count { it == '.' } == 2)
+    val withoutPatch = version.substringBeforeLast('.')
+    languageVersion = withoutPatch
+    apiVersion = withoutPatch
+}
+
 kotlin {
     jvmToolchain(11) // Used by Android to set JDK version used by kotlin compilation
 
     jvm {
-        val main by compilations.getting {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    js(IR) {
+    js {
         browser()
         nodejs()
+    }
+    wasmJs {
+        browser()
+        nodejs()
+        d8()
     }
 
     linuxX64()
@@ -79,15 +90,39 @@ kotlin {
     iosX64() // iOS Intel
     iosArm64() // iOS M1+
     iosSimulatorArm64()
-    android {
+    androidTarget {
         publishLibraryVariants("release")
     }
 
     sourceSets {
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
+        // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
+        // We also use "buildMap" from 1.6
+        val targetKotlinVersion = "1.6.21"
+
+        all {
+            languageSettings {
+                setToVersion(targetKotlinVersion)
             }
+        }
+
+        commonMain.dependencies {
+            implementation(kotlin("stdlib", targetKotlinVersion))
+        }
+
+        wasmJsMain {
+            // Wasm needs to use 1.9+ or else compilation dies.
+            // This exception is not a big deal since Wasm didn't really exist until the end of 1.8 anyway
+            val wasmKotlinVersion = "1.9.25"
+            languageSettings {
+                setToVersion(wasmKotlinVersion)
+            }
+
+            dependencies {
+                implementation(kotlin("stdlib", wasmKotlinVersion))
+            }
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
