@@ -6,6 +6,9 @@
 # Ignore Gradle build output directory
 build
 
+## Kotlin
+.kotlin
+
 ## IntelliJ
 
 # Gradle is the source of truth for this project; ignore IDEA settings
