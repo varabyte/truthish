@@ -83,13 +83,15 @@ kotlin {
         d8()
     }
 
+    linuxArm64()
     linuxX64()
     macosArm64() // Mac M1+
     macosX64() // Mac Intel
     mingwX64() // Windows
-    iosX64() // iOS Intel
     iosArm64() // iOS M1+
+    iosX64() // iOS Intel
     iosSimulatorArm64()
+
     androidTarget {
         publishLibraryVariants("release")
     }

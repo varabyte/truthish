@@ -142,7 +142,9 @@ jobs:
           (steps.shouldrun.conclusion == 'success') &&
           (inputs.repo-gcloud) &&
           (matrix.os == 'ubuntu-latest' && inputs.target-linux)
-        run: ./gradlew publishLinuxX64PublicationToGCloudMavenRepository
+        run: |
+          ./gradlew publishLinuxX64PublicationToGCloudMavenRepository
+          ./gradlew publishLinuxArm64PublicationToGCloudMavenRepository
 
       - name: Publish Mac (GCloud)
         if: |
@@ -212,7 +214,9 @@ jobs:
           (steps.shouldrun.conclusion == 'success') &&
           (inputs.repo-sonatype) &&
           (matrix.os == 'ubuntu-latest' && inputs.target-linux)
-        run: ./gradlew publishLinuxX64PublicationToSonatypeMavenRepository
+        run: |
+          ./gradlew publishLinuxX64PublicationToSonatypeMavenRepository
+          ./gradlew publishLinuxArm64PublicationToSonatypeMavenRepository
 
       - name: Publish Mac (Sonatype)
         if: |
