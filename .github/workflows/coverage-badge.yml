@@ -4,7 +4,8 @@ name: Create coverage badge
 
 on:
   push:
-    branches: [ main ] # !! CONFIRM THIS !!
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -28,17 +29,13 @@ jobs:
           path: ~/.konan
           key: kotlin-native-compiler-${{ runner.OS }}
 
-      # At some point, the Android plugin started getting chatty with its output
-      # and spams stuff like "Install Android SDK ..."
-      # This will mess up the next command (gradlw -q printLineCoverage) so we just
-      # run a harmless task first.
-      - name: Run Gradle once to clear Android startup messages
-        run: |
-          ${{github.workspace}}/gradlew tasks
-
       - name: Generate coverage output
+        # NOTE: the Android plugin is chatty with its output and spams stuff like "Install Android SDK ..."
+        # This will mess up the next command (gradlew -q printLineCoverage) so we filter out anything that doesn't match
+        # a very simple numeric value.
         run: |
-          echo "COVERAGE=$(${{github.workspace}}/gradlew -q printLineCoverage)" >> $GITHUB_ENV
+          COVERAGE=$(${{github.workspace}}/gradlew -q printLineCoverage | grep -E '^[0-9]+(\.[0-9]+)?$')
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
         uses: schneegans/dynamic-badges-action@v1.7.0
