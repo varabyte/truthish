@@ -20,7 +20,7 @@ repositories {
 }
 
 group = "com.varabyte.truthish"
-version = "1.0.3"
+version = "1.0.4-SNAPSHOT"
 
 tasks.register("printLineCoverage") {
     group = "verification" // Put into the same group as the `kover` tasks
