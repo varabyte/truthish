@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
+import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
@@ -9,7 +10,7 @@ plugins {
     kotlin("multiplatform") version "2.1.0"
     id("org.jetbrains.dokka") version "2.1.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.4"
-    id("com.android.library") version "8.3.0"
+    id("com.android.kotlin.multiplatform.library") version "8.13.2"
     id("com.vanniktech.maven.publish") version "0.35.0"
 }
 
@@ -79,11 +80,13 @@ fun LanguageSettingsBuilder.setToVersion(version: String) {
 }
 
 kotlin {
-    jvmToolchain(11) // Used by Android to set JDK version used by kotlin compilation
+    // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so we're moving to JDK11
+    @Suppress("LocalVariableName") // Intentional constant naming convention
+    val JVM_TARGET = JvmTarget.JVM_11
 
     jvm {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JVM_TARGET)
         }
     }
     js {
@@ -105,8 +108,16 @@ kotlin {
     iosX64() // iOS Intel
     iosSimulatorArm64()
 
-    androidTarget {
-        publishLibraryVariants("release")
+    androidLibrary {
+        namespace = "com.varabyte.truthish"
+        compileSdk = 35 // No reason not to use latest for compilation
+        // Per my loose understanding, 21 is a widely supported baseline value (99.8% coverage) while excluding a bunch
+        // of legacy edge cases.
+        minSdk = 21
+
+        compilerOptions {
+            jvmTarget.set(JVM_TARGET)
+        }
     }
 
     sourceSets {
@@ -139,17 +150,6 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-    }
-}
-
-android {
-    namespace = "com.varabyte.truthish"
-    compileSdk = 33
-
-    compileOptions {
-        // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so we're moving to JDK11
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
