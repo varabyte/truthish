@@ -8,7 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 plugins {
     kotlin("multiplatform") version "2.1.0"
     id("org.jetbrains.dokka") version "1.9.20"
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.4"
     id("com.android.library") version "8.3.0"
     id("com.vanniktech.maven.publish") version "0.35.0"
 }
@@ -21,11 +21,20 @@ repositories {
 group = "com.varabyte.truthish"
 version = "1.0.4-SNAPSHOT"
 
-tasks.register("printLineCoverage") {
-    group = "verification" // Put into the same group as the `kover` tasks
-    dependsOn("koverXmlReport")
-    doLast {
-        val report = layout.buildDirectory.file("reports/kover/report.xml").get().asFile
+/**
+ * Extract the line coverage calculation from a generated Kover XML report.
+ *
+ * It is expected that someone will call the `koverReportXml` task and set its output into [koverReportFile].
+ */
+abstract class PrintLineCoverageFromKoverTask : DefaultTask() {
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val koverReportFile: RegularFileProperty
+
+    @TaskAction
+    fun run() {
+        val report = koverReportFile.get().asFile
 
         val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(report)
         val rootNode = doc.firstChild
@@ -53,6 +62,13 @@ tasks.register("printLineCoverage") {
 
         println("%.1f".format(coveragePercent))
     }
+}
+
+val koverXmlReportTask = tasks.named("koverXmlReport")
+tasks.register<PrintLineCoverageFromKoverTask>("printLineCoverage") {
+    group = "verification"
+    dependsOn(koverXmlReportTask)
+    koverReportFile.set(layout.buildDirectory.file("reports/kover/report.xml"))
 }
 
 fun LanguageSettingsBuilder.setToVersion(version: String) {
