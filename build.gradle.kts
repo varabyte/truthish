@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
     kotlin("multiplatform") version "2.1.0"
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.dokka") version "2.1.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.4"
     id("com.android.library") version "8.3.0"
     id("com.vanniktech.maven.publish") version "0.35.0"
