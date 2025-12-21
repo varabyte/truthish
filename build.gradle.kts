@@ -18,7 +18,7 @@ repositories {
 }
 
 group = "com.varabyte.truthish"
-version = "1.0.4-SNAPSHOT"
+version = "1.0.4"
 
 /**
  * Extract the line coverage calculation from a generated Kover XML report.
