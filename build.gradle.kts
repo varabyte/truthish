@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
-import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
@@ -10,7 +9,6 @@ plugins {
     kotlin("multiplatform") version "2.1.0"
     id("org.jetbrains.dokka") version "2.1.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.4"
-    id("com.android.kotlin.multiplatform.library") version "8.13.2"
     id("com.vanniktech.maven.publish") version "0.35.0"
 }
 
@@ -80,13 +78,10 @@ fun LanguageSettingsBuilder.setToVersion(version: String) {
 }
 
 kotlin {
-    // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so we're moving to JDK11
-    @Suppress("LocalVariableName") // Intentional constant naming convention
-    val JVM_TARGET = JvmTarget.JVM_11
-
     jvm {
         compilerOptions {
-            jvmTarget.set(JVM_TARGET)
+            // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so moved to JDK11
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
     js {
@@ -107,18 +102,6 @@ kotlin {
     iosArm64() // iOS M1+
     iosX64() // iOS Intel
     iosSimulatorArm64()
-
-    androidLibrary {
-        namespace = "com.varabyte.truthish"
-        compileSdk = 35 // No reason not to use latest for compilation
-        // Per my loose understanding, 21 is a widely supported baseline value (99.8% coverage) while excluding a bunch
-        // of legacy edge cases.
-        minSdk = 21
-
-        compilerOptions {
-            jvmTarget.set(JVM_TARGET)
-        }
-    }
 
     sourceSets {
         // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
