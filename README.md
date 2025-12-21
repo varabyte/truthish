@@ -133,7 +133,7 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation("com.varabyte.truthish:truthish:1.0.3")
+            implementation("com.varabyte.truthish:truthish:1.0.4")
             implementation(kotlin("test"))
         }
     }
@@ -157,7 +157,7 @@ dependencies {
     // ...
 
     testImplementation(kotlin("test"))
-    testImplementation("com.varabyte.truthish:truthish:1.0.3")
+    testImplementation("com.varabyte.truthish:truthish:1.0.4")
 }
 ```
 
@@ -176,10 +176,10 @@ dependencies {
     // ...
 
     // If used in tests that are run on the host (i.e. your dev machine)
-    testImplementation("com.varabyte.truthish:truthish:1.0.3")
+    testImplementation("com.varabyte.truthish:truthish:1.0.4")
 
     // If used in tests that are run on the device
-    androidTestImplementation("com.varabyte.truthish:truthish:1.0.3")
+    androidTestImplementation("com.varabyte.truthish:truthish:1.0.4")
 }
 ```
 
