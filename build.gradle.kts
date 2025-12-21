@@ -88,11 +88,6 @@ kotlin {
         browser()
         nodejs()
     }
-    wasmJs {
-        browser()
-        nodejs()
-        d8()
-    }
 
     linuxArm64()
     linuxX64()
@@ -118,18 +113,6 @@ kotlin {
             implementation(kotlin("stdlib", targetKotlinVersion))
         }
 
-        wasmJsMain {
-            // Wasm needs to use 1.9+ or else compilation dies.
-            // This exception is not a big deal since Wasm didn't really exist until the end of 1.8 anyway
-            val wasmKotlinVersion = "1.9.25"
-            languageSettings {
-                setToVersion(wasmKotlinVersion)
-            }
-
-            dependencies {
-                implementation(kotlin("stdlib", wasmKotlinVersion))
-            }
-        }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
