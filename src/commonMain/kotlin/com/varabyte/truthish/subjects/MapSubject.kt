@@ -83,8 +83,10 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
         }
     }
 
-    fun containsAnyIn(other: Map<K, V>) = containsAnyIn(other.toIterable())
-    fun containsAllIn(other: Map<K, V>) = containsAllIn(other.toIterable())
-    fun containsNoneIn(other: Map<K, V>) = containsNoneIn(other.toIterable())
-    fun containsExactly(other: Map<K, V>) = containsExactly(other.toIterable())
+    fun containsAnyIn(other: Map<K, V>): Unit = containsAnyIn(other.toIterable())
+    @IgnorableReturnValue
+    fun containsAllIn(other: Map<K, V>): OrderedAsserter<Pair<K, V>> = containsAllIn(other.toIterable())
+    fun containsNoneIn(other: Map<K, V>): Unit = containsNoneIn(other.toIterable())
+    @IgnorableReturnValue
+    fun containsExactly(other: Map<K, V>): OrderedAsserter<Pair<K, V>> = containsExactly(other.toIterable())
 }

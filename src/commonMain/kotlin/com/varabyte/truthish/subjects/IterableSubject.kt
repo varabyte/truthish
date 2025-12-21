@@ -83,6 +83,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
     fun containsAnyIn(vararg elements: T) = containsAnyIn(elements.asIterable())
 
+    @IgnorableReturnValue
     fun containsAllIn(other: Iterable<T>): OrderedAsserter<T> {
         val other = other.toList()
 
@@ -100,7 +101,8 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
         return OrderedAsserter(this, actual, other)
     }
 
-    fun containsAllIn(vararg elements: T) = containsAllIn(elements.asIterable())
+    @IgnorableReturnValue
+    fun containsAllIn(vararg elements: T): OrderedAsserter<T> = containsAllIn(elements.asIterable())
 
     fun containsNoneIn(other: Iterable<T>) {
         val other = other.toList()
@@ -120,6 +122,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
     fun containsNoneIn(vararg elements: T) = containsNoneIn(elements.asIterable())
 
+    @IgnorableReturnValue
     fun containsExactly(other: Iterable<T>): OrderedAsserter<T> {
         val other = other.toList()
 
@@ -148,13 +151,16 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
         return OrderedAsserter(this, actual, other)
     }
 
-    fun containsExactly(vararg elements: T) = containsExactly(elements.asIterable())
+    @IgnorableReturnValue
+    fun containsExactly(vararg elements: T): OrderedAsserter<T> = containsExactly(elements.asIterable())
 }
 
-fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other)
-fun <T> IterableSubject<T>.containsAllIn(other: Array<T>) = containsAllIn(*other)
-fun <T> IterableSubject<T>.containsNoneIn(other: Array<T>) = containsNoneIn(*other)
-fun <T> IterableSubject<T>.containsExactly(other: Array<T>) = containsExactly(*other)
+fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>): Unit = containsAnyIn(*other)
+@IgnorableReturnValue
+fun <T> IterableSubject<T>.containsAllIn(other: Array<T>): OrderedAsserter<T> = containsAllIn(*other)
+fun <T> IterableSubject<T>.containsNoneIn(other: Array<T>): Unit = containsNoneIn(*other)
+@IgnorableReturnValue
+fun <T> IterableSubject<T>.containsExactly(other: Array<T>): OrderedAsserter<T> = containsExactly(*other)
 
 
 /**

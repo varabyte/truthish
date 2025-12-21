@@ -44,10 +44,12 @@ open class BooleanArraySubject(private val actualArray: BooleanArray) :
         }
     }
 
-    fun containsAnyIn(other: BooleanArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: BooleanArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: BooleanArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: BooleanArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: BooleanArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: BooleanArray): OrderedAsserter<Boolean> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: BooleanArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: BooleanArray): OrderedAsserter<Boolean> = containsExactly(other.toTypedArray())
 }
 
 open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<Byte>(actualArray.toTypedArray()) {
@@ -70,10 +72,12 @@ open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<B
         }
     }
 
-    fun containsAnyIn(other: ByteArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: ByteArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: ByteArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: ByteArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: ByteArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: ByteArray): OrderedAsserter<Byte> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: ByteArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: ByteArray): OrderedAsserter<Byte> = containsExactly(other.toTypedArray())
 }
 
 open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<Char>(actualArray.toTypedArray()) {
@@ -96,10 +100,12 @@ open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<C
         }
     }
 
-    fun containsAnyIn(other: CharArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: CharArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: CharArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: CharArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: CharArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: CharArray): OrderedAsserter<Char> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: CharArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: CharArray): OrderedAsserter<Char> = containsExactly(other.toTypedArray())
 }
 
 open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject<Short>(actualArray.toTypedArray()) {
@@ -122,10 +128,12 @@ open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject
         }
     }
 
-    fun containsAnyIn(other: ShortArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: ShortArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: ShortArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: ShortArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: ShortArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: ShortArray): OrderedAsserter<Short> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: ShortArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: ShortArray): OrderedAsserter<Short> = containsExactly(other.toTypedArray())
 }
 
 open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int>(actualArray.toTypedArray()) {
@@ -148,10 +156,12 @@ open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int
         }
     }
 
-    fun containsAnyIn(other: IntArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: IntArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: IntArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: IntArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: IntArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: IntArray): OrderedAsserter<Int> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: IntArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: IntArray): OrderedAsserter<Int> = containsExactly(other.toTypedArray())
 }
 
 open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<Long>(actualArray.toTypedArray()) {
@@ -174,10 +184,12 @@ open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<L
         }
     }
 
-    fun containsAnyIn(other: LongArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: LongArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: LongArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: LongArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: LongArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: LongArray): OrderedAsserter<Long> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: LongArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: LongArray): OrderedAsserter<Long> = containsExactly(other.toTypedArray())
 }
 
 open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject<Float>(actualArray.toTypedArray()) {
@@ -200,10 +212,12 @@ open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject
         }
     }
 
-    fun containsAnyIn(other: FloatArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: FloatArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: FloatArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: FloatArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: FloatArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: FloatArray): OrderedAsserter<Float> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: FloatArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: FloatArray): OrderedAsserter<Float> = containsExactly(other.toTypedArray())
 }
 
 open class DoubleArraySubject(private val actualArray: DoubleArray) : ArraySubject<Double>(actualArray.toTypedArray()) {
@@ -226,8 +240,10 @@ open class DoubleArraySubject(private val actualArray: DoubleArray) : ArraySubje
         }
     }
 
-    fun containsAnyIn(other: DoubleArray) = containsAnyIn(other.toTypedArray())
-    fun containsAllIn(other: DoubleArray) = containsAllIn(other.toTypedArray())
-    fun containsNoneIn(other: DoubleArray) = containsNoneIn(other.toTypedArray())
-    fun containsExactly(other: DoubleArray) = containsExactly(other.toTypedArray())
+    fun containsAnyIn(other: DoubleArray): Unit = containsAnyIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsAllIn(other: DoubleArray): OrderedAsserter<Double> = containsAllIn(other.toTypedArray())
+    fun containsNoneIn(other: DoubleArray): Unit = containsNoneIn(other.toTypedArray())
+    @IgnorableReturnValue
+    fun containsExactly(other: DoubleArray): OrderedAsserter<Double> = containsExactly(other.toTypedArray())
 }

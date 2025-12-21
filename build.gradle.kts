@@ -78,6 +78,13 @@ fun LanguageSettingsBuilder.setToVersion(version: String) {
 }
 
 kotlin {
+    compilerOptions {
+        // By default, returned assertion values should be fluently chained, not ignored. Exceptions will be annotated
+        // explicitly.
+        // See also: https://kotlinlang.org/docs/unused-return-value-checker.html
+        freeCompilerArgs.add("-Xreturn-value-checker=full")
+    }
+
     jvm {
         compilerOptions {
             // We used to support JDK8 but support for it is getting dropped, e.g. on GitHub CIs, so moved to JDK11
@@ -99,9 +106,8 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        // Kotlin 2.3.0 compiler doesn't support compiling for older than 2.0, but we really want to use 2.3.0 so we can
-        // add "must use return results" functionality
-        val targetKotlinVersion = "2.0.0"
+        // For "Unused return value checker" functionality
+        val targetKotlinVersion = "2.3.0"
 
         all {
             languageSettings {

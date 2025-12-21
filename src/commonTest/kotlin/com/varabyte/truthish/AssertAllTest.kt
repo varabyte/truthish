@@ -53,9 +53,9 @@ class AssertAllTest {
             assertAll {
                 that(e.summary).isNull()
                 that(e.reports.size).isEqualTo(2)
-                // that(a).isEqualTo(b)
-                assertThat(e.reports[0].assertSubstrings("A is equal to B"))
-                assertThat(e.reports[1].assertSubstrings("B is equal to C"))
+
+                e.reports[0].assertSubstrings("A is equal to B")
+                e.reports[1].assertSubstrings("B is equal to C")
             }
         }
     }
