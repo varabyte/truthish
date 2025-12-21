@@ -106,8 +106,8 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        // For "Unused return value checker" functionality
-        val targetKotlinVersion = "2.3.0"
+        // 2.2.0 introduced the `IgnorableReturnValue` annotation
+        val targetKotlinVersion = "2.2.0"
 
         all {
             languageSettings {
