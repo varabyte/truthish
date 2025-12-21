@@ -178,6 +178,39 @@ dependencies {
 }
 ```
 
+### Enabling the "unused return value" checker
+
+Starting in Kotlin 2.3.0, you can enable warnings that will be shown if you ignore the return values of marked methods.
+Truthish has updated its own APIs to support this feature.
+
+For example, below, the user _should_ have written `assertThat(myMap).isEmpty()` but instead autocompleted the `isEmpty`
+call in the wrong place, resulting in no-op code. With this feature enabled, they will get a useful warning:
+
+```kotlin
+   assertThat(myMap.isEmpty())
+// ~~~~~~~~~~
+// Unused return value of 'assertThat'
+```
+
+For now, this Kotlin language feature is still experimental, so you will need to opt into it explicitly in your module's
+build script:
+
+```kotlin
+// build.gradle.kts
+
+plugins {
+  kotlin("multiplatform") version "2.3.0"
+}
+
+kotlin {
+  compilerOptions {
+    freeCompilerArgs.add("-Xreturn-value-checker=check")
+  }
+}
+```
+
+See [the official docs](https://kotlinlang.org/docs/whatsnew23.html#unused-return-value-checker) for more details.
+
 ### Testing snapshots
 
 Most users won't ever need to run a Truthish snapshot, so feel free to skip this section! However, occasionally, bug
