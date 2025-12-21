@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
-    kotlin("multiplatform") version "2.1.0"
+    kotlin("multiplatform") version "2.3.0"
     id("org.jetbrains.dokka") version "2.1.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.4"
     id("com.vanniktech.maven.publish") version "0.35.0"
@@ -99,9 +99,9 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
-        // We also use "buildMap" from 1.6
-        val targetKotlinVersion = "1.6.21"
+        // Kotlin 2.3.0 compiler doesn't support compiling for older than 2.0, but we really want to use 2.3.0 so we can
+        // add "must use return results" functionality
+        val targetKotlinVersion = "2.0.0"
 
         all {
             languageSettings {
