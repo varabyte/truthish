@@ -129,7 +129,7 @@ kotlin {
     iosArm64() // iOS M1+
     iosX64() // iOS Intel
     iosSimulatorArm64()
-    androidTarget()
+    android() // For KMP Android library; may be `androidTarget` for older projects
 
     sourceSets {
         commonTest.dependencies {
