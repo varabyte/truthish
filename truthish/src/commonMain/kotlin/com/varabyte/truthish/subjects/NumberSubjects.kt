@@ -25,23 +25,29 @@ class FloatEpsilonAsserter(
     private val epsilon: Float,
     private val within: Boolean = true
 ) {
+    init {
+        require(epsilon >= 0f) { "Epsilon must be a non-negative number, but was $epsilon" }
+    }
+
+    // The checks below are negated so that NaN, which makes every comparison false, fails both `isWithin` and
+    // `isNotWithin`.
     fun of(target: Float) {
         if (within) {
-            if ((target - parent.actual).absoluteValue > epsilon) {
+            if (!((target - parent.actual).absoluteValue <= epsilon)) {
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("within $epsilon of", parent.actual, target)
+                        DetailsFor.expectedActual("within $epsilon of", target, parent.actual)
                     )
                 )
             }
         }
         else {
-            if ((target - parent.actual).absoluteValue <= epsilon) {
+            if (!((target - parent.actual).absoluteValue > epsilon)) {
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("not within $epsilon of", parent.actual, target)
+                        DetailsFor.expectedActual("not within $epsilon of", target, parent.actual)
                     )
                 )
             }
@@ -54,22 +60,28 @@ class DoubleEpsilonAsserter(
     private val epsilon: Double,
     private val within: Boolean = true
 ) {
+    init {
+        require(epsilon >= 0.0) { "Epsilon must be a non-negative number, but was $epsilon" }
+    }
+
+    // The checks below are negated so that NaN, which makes every comparison false, fails both `isWithin` and
+    // `isNotWithin`.
     fun of(target: Double) {
         if (within) {
-            if ((target - parent.actual).absoluteValue > epsilon) {
+            if (!((target - parent.actual).absoluteValue <= epsilon)) {
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("within $epsilon of", parent.actual, target))
+                        DetailsFor.expectedActual("within $epsilon of", target, parent.actual))
                 )
             }
         }
         else {
-            if ((target - parent.actual).absoluteValue <= epsilon) {
+            if (!((target - parent.actual).absoluteValue > epsilon)) {
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COMPARISON,
-                        DetailsFor.expectedActual("not within $epsilon of", parent.actual, target))
+                        DetailsFor.expectedActual("not within $epsilon of", target, parent.actual))
                 )
             }
         }

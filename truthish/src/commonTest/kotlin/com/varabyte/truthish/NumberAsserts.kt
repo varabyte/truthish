@@ -95,10 +95,34 @@ class NumberAssets {
             // Test false statements
             assertThrows<ReportError> {
                 assertThat(5.3f).isNotWithin(0.5f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.3", "5.5")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.3")
             assertThrows<ReportError> {
                 assertThat(5.3f).isWithin(0.1f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.3", "5.5")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.5", "5.3")
+
+            // NaN is never within (or not within) any distance of anything
+            assertThrows<ReportError> {
+                assertThat(Float.NaN).isWithin(0.1f).of(5.5f)
+            }
+            assertThrows<ReportError> {
+                assertThat(5.3f).isWithin(0.1f).of(Float.NaN)
+            }
+            assertThrows<ReportError> {
+                assertThat(Float.NaN).isNotWithin(0.1f).of(5.5f)
+            }
+            assertThrows<ReportError> {
+                assertThat(5.3f).isNotWithin(0.1f).of(Float.NaN)
+            }
+        }
+
+        run {
+            // Test invalid epsilons
+            assertThrows<IllegalArgumentException> {
+                assertThat(5.3f).isWithin(-0.1f)
+            }
+            assertThrows<IllegalArgumentException> {
+                assertThat(5.3f).isNotWithin(Float.NaN)
+            }
         }
     }
 
@@ -123,9 +147,33 @@ class NumberAssets {
             // Test false statements
             assertThrows<ReportError> {
                 assertThat(5.3).isNotWithin(0.5).of(5.5)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.3")
             assertThrows<ReportError> {
                 assertThat(5.3).isWithin(0.1).of(5.5)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.5", "5.3")
+
+            // NaN is never within (or not within) any distance of anything
+            assertThrows<ReportError> {
+                assertThat(Double.NaN).isWithin(0.1).of(5.5)
+            }
+            assertThrows<ReportError> {
+                assertThat(5.3).isWithin(0.1).of(Double.NaN)
+            }
+            assertThrows<ReportError> {
+                assertThat(Double.NaN).isNotWithin(0.1).of(5.5)
+            }
+            assertThrows<ReportError> {
+                assertThat(5.3).isNotWithin(0.1).of(Double.NaN)
+            }
+        }
+
+        run {
+            // Test invalid epsilons
+            assertThrows<IllegalArgumentException> {
+                assertThat(5.3).isWithin(-0.1)
+            }
+            assertThrows<IllegalArgumentException> {
+                assertThat(5.3).isNotWithin(Double.NaN)
             }
         }
     }
