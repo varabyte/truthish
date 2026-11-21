@@ -27,7 +27,7 @@ class BasicAsserts {
             assertThrows<ReportError> {
                 assertThat("str").isNotEqualTo("str")
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "str")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("str1").isEqualTo("str2")
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "str1", "str2")
         }
@@ -69,7 +69,7 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isInstanceOf<Int>()
             }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "IntValue", "Int")
 
@@ -99,7 +99,7 @@ class BasicAsserts {
             val stubValue2 = Stub()
             val stubValue3 = stubValue1
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(stubValue1).isSameAs(stubValue2)
             }.assertSubstrings(Summaries.EXPECTED_SAME)
 

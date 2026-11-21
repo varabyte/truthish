@@ -67,7 +67,7 @@ class ArrayAsserts {
         run {
             // Test false statements
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isEqualTo(arrayOf("a", "b", "d"))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[a, b, d]")
            assertThrows<ReportError> {
@@ -176,7 +176,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEqualTo(booleanArrayOf(true, true, false))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -266,7 +266,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isEqualTo(byteArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -373,7 +373,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEqualTo(charArrayOf('a', 'b', 'd'))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -479,7 +479,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEqualTo(shortArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -585,7 +585,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEqualTo(intArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -691,7 +691,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEqualTo(longArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -797,7 +797,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).isEqualTo(floatArrayOf(1f, 2f, 4f))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {
@@ -903,7 +903,7 @@ class ArrayAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).isEqualTo(doubleArrayOf(1.0, 2.0, 4.0))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
             assertThrows<ReportError> {

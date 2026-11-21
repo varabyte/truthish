@@ -1,5 +1,6 @@
-@file:OptIn(ExperimentalWasmDsl::class)
+@file:OptIn(ExperimentalWasmDsl::class, ExperimentalKotlinGradlePluginApi::class)
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
@@ -103,6 +104,16 @@ kotlin {
     iosX64() // iOS Intel
     iosSimulatorArm64()
 
+    applyDefaultHierarchyTemplate {
+        common {
+            group("nonJvm") {
+                withJs()
+                withWasmJs()
+                withNative()
+            }
+        }
+    }
+
     sourceSets {
         // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
         // We also use "buildMap" from 1.6
@@ -129,6 +140,12 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib", wasmKotlinVersion))
             }
+        }
+        jvmMain.dependencies {
+            // Test tools (IntelliJ, Gradle) offer a diff view for these exception types. We throw them when they're
+            // available at runtime but don't force either dependency on users.
+            compileOnly("junit:junit:4.13.2")
+            compileOnly("org.opentest4j:opentest4j:1.3.0")
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

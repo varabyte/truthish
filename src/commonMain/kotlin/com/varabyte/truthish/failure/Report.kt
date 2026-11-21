@@ -46,13 +46,36 @@ class Report(private val summary: String, details: Details? = null) {
                 }
                 builder.append(pair.first)
                 builder.append(" ".repeat(longestKey - pair.first.length)).append(": ")
-                builder.append(stringifierFor(pair.second))
-                details.extras[pair.first]?.let { extra -> builder.append(" ($extra)") }
+                builder.append(details.render(pair))
             }
         }
         builder.append("\n")
         return builder.toString()
     }
+}
+
+/** Two rendered values that were expected to be equal, which a test runner can show as a diff. */
+internal class ComparedValues(val expected: String, val actual: String)
+
+/**
+ * The "Expected" and "But was" values as rendered in this report, if it has both.
+ *
+ * Labels with a suffix (e.g. "Expected greater than") describe a relation rather than an expected value, so they don't
+ * count. Values that render identically (e.g. two equal but distinct instances) don't either, since a diff between them
+ * would show nothing.
+ */
+private fun Report.findComparedValues(): ComparedValues? {
+    val expected = details.items.find { it.first == DetailsFor.EXPECTED } ?: return null
+    val actual = details.items.find { it.first == DetailsFor.BUT_WAS } ?: return null
+    return ComparedValues(details.render(expected), details.render(actual))
+        .takeIf { it.expected != it.actual }
+}
+
+internal fun Report.toAssertionError(): AssertionError = createAssertionError(findComparedValues())
+
+private fun Details.render(item: Pair<String, Any?>): String {
+    val value = stringifierFor(item.second).toString()
+    return extras[item.first]?.let { extra -> "$value ($extra)" } ?: value
 }
 
 /**
@@ -141,6 +164,9 @@ object DetailsFor {
 
     /**
      * A detail list useful when asserting about an expected value vs. an actual one.
+     *
+     * On platforms where the test runner supports it (e.g. IntelliJ on the JVM), failures with these details can be
+     * shown as a diff between the two values.
      */
     fun expectedActual(expected: Any?, actual: Any?): Details {
         val items = listOf(

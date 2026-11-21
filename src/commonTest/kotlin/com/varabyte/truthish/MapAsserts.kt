@@ -36,7 +36,7 @@ class MapAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).isEqualTo(emptyMap())
             }
 

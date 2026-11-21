@@ -12,6 +12,16 @@ interface FailureStrategy {
 
 internal class ReportError(val report: Report) : AssertionError(report.toString())
 
+/**
+ * Creates the error to throw for this failed report.
+ *
+ * A [ReportError] wrapping the report always works, but some platforms have better options. For example, some test
+ * runners can show a diff for special exception types, using the values in [comparison].
+ *
+ * [comparison] is set when the report compares two values that were expected to be equal.
+ */
+internal expect fun Report.createAssertionError(comparison: ComparedValues?): AssertionError
+
 internal class MultipleReportsError(val reports: List<Report>, val summary: String? = null) : AssertionError(reports.buildErrorMessage(summary)) {
     companion object {
         private fun List<Report>.buildErrorMessage(summary: String?): String {
@@ -41,7 +51,7 @@ internal class MultipleReportsError(val reports: List<Report>, val summary: Stri
  */
 class AssertionStrategy : FailureStrategy {
     override fun handle(report: Report) {
-        throw ReportError(report)
+        throw report.toAssertionError()
     }
 }
 

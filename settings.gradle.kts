@@ -6,3 +6,6 @@ pluginManagement {
 }
 
 rootProject.name = "truthish"
+
+include(":test:jvm:junit4")
+include(":test:jvm:junit5")

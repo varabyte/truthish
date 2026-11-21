@@ -33,4 +33,4 @@ jobs:
           key: kotlin-native-compiler-${{ runner.OS }}
 
       - name: Test with Gradle
-        run: ./gradlew allTests
+        run: ./gradlew check

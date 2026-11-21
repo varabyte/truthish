@@ -16,15 +16,15 @@ class AmbiguityTest {
 
     @Test
     fun extraInformationShownIfToStringIsAmbiguous() {
-        assertThrows<ReportError> {
+        assertThrows<AssertionError> {
             assertThat(ClassA("x")).isEqualTo(ClassB("x"))
         }.assertSubstrings("x (Type: `ClassB`)", "x (Type: `ClassA`)")
 
-        assertThrows<ReportError> {
+        assertThrows<AssertionError> {
             assertThat(ClassA("x")).isEqualTo("x")
         }.assertSubstrings("\"x\" (Type: `String`)", "x (Type: `ClassA`)")
 
-        assertThrows<ReportError> {
+        assertThrows<AssertionError> {
             assertThat("x").isEqualTo(ClassB("x"))
         }.assertSubstrings("x (Type: `ClassB`)", "\"x\" (Type: `String`)")
     }
