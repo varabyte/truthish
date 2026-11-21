@@ -1,6 +1,5 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
@@ -42,67 +41,67 @@ class StringAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("ASDF").isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("???").isBlank()
             }.assertSubstrings(Summaries.EXPECTED_BLANK)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("").isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("       ").isNotBlank()
             }.assertSubstrings(Summaries.EXPECTED_NOT_BLANK)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").hasLength(3)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").startsWith("llo")
             }.assertSubstrings(Summaries.EXPECTED_STARTS_WITH)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").endsWith("llo")
             }.assertSubstrings(Summaries.EXPECTED_ENDS_WITH)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotStartWith("He")
             }.assertSubstrings(Summaries.EXPECTED_NOT_STARTS_WITH)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotEndWith("ld")
             }.assertSubstrings(Summaries.EXPECTED_NOT_ENDS_WITH)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").matches("ASDF")
             }.assertSubstrings(Summaries.EXPECTED_MATCH)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").matches(Regex("[0-9]+"))
             }.assertSubstrings(Summaries.EXPECTED_MATCH)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotMatch("..... .....")
             }.assertSubstrings(Summaries.EXPECTED_NOT_MATCH)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotMatch(Regex(".+"))
             }.assertSubstrings(Summaries.EXPECTED_NOT_MATCH)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").contains("Wello")
             }.assertSubstrings(Summaries.EXPECTED_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").containsMatch("AAA?A")
             }.assertSubstrings(Summaries.EXPECTED_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").containsMatch(Regex("12(34)"))
             }.assertSubstrings(Summaries.EXPECTED_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContain("o Wo")
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContainMatch("l+")
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContainMatch(Regex("or."))
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
         }

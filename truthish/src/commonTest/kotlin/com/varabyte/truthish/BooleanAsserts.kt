@@ -1,9 +1,7 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
-import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
 class BooleanAsserts {
@@ -20,11 +18,11 @@ class BooleanAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(true).isFalse()
             }.assertSubstrings(Summaries.EXPECTED_FALSE)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(false).isTrue()
             }.assertSubstrings(Summaries.EXPECTED_TRUE)
         }

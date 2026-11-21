@@ -39,13 +39,6 @@ fun Report.assertSubstrings(vararg substrings: String) {
 /**
  * @see [Report.assertSubstrings]
  */
-internal fun ReportError.assertSubstrings(vararg substrings: String) {
-    this.report.assertSubstrings(*substrings)
-}
-
-/**
- * @see [Report.assertSubstrings]
- */
 internal fun AssertionError.assertSubstrings(vararg substrings: String) {
     message.orEmpty().assertContains(substrings)
 }

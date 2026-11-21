@@ -1,6 +1,5 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
@@ -22,16 +21,16 @@ class NumberAssets {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5).isGreaterThanEqual(6)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "6", "5")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5).isGreaterThan(5)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5).isLessThanEqual(4)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "4", "5")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5).isLessThan(3)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "3", "5")
         }
@@ -93,24 +92,24 @@ class NumberAssets {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3f).isNotWithin(0.5f).of(5.5f)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.3")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3f).isWithin(0.1f).of(5.5f)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.5", "5.3")
 
             // NaN is never within (or not within) any distance of anything
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(Float.NaN).isWithin(0.1f).of(5.5f)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3f).isWithin(0.1f).of(Float.NaN)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(Float.NaN).isNotWithin(0.1f).of(5.5f)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3f).isNotWithin(0.1f).of(Float.NaN)
             }
         }
@@ -145,24 +144,24 @@ class NumberAssets {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3).isNotWithin(0.5).of(5.5)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.3")
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3).isWithin(0.1).of(5.5)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.5", "5.3")
 
             // NaN is never within (or not within) any distance of anything
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(Double.NaN).isWithin(0.1).of(5.5)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3).isWithin(0.1).of(Double.NaN)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(Double.NaN).isNotWithin(0.1).of(5.5)
             }
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(5.3).isNotWithin(0.1).of(Double.NaN)
             }
         }

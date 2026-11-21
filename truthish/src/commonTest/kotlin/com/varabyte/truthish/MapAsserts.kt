@@ -1,7 +1,5 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
-import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
 class MapAsserts {
@@ -40,55 +38,55 @@ class MapAsserts {
                 assertThat(asciiMap).isEqualTo(emptyMap())
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).isNotEqualTo(asciiMap)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).doesNotContainKey('g')
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap.keys).doesNotContain('g')
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).containsKey('G')
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap.keys).contains('G')
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).doesNotContainValue(107)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap.values).doesNotContain(107)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).containsValue(9999)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap.values).contains(9999)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).doesNotContain('e' to 101)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).contains('e' to 102)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('a' to 122, 'z' to 122)
             }
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('z' to 122, 'a' to 97).inOrder()
             }
         }

@@ -1,8 +1,6 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.assertSubstrings
-import com.varabyte.truthish.failure.withStrategy
 import kotlin.test.Test
 
 class AmbiguityTest {

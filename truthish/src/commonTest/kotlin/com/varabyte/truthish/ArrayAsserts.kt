@@ -1,6 +1,5 @@
 package com.varabyte.truthish
 
-import com.varabyte.truthish.failure.ReportError
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.subjects.containsAllIn
@@ -70,70 +69,70 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isEqualTo(arrayOf("a", "b", "d"))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[a, b, d]")
-           assertThrows<ReportError> {
+           assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isNotEqualTo(arrayOf("a", "b", "c"))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "[a, b, c]")
 
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf(1, 2, 3)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyInts).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf(1, 2, 3)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).contains("d")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).doesNotContain("b")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "a")).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsAnyIn("d", "e", "f")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsAllIn("c", "b", "d")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsAllIn("c", "b", "a").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsNoneIn("c", "d", "e")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("b", "b", "c")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "a", "b", "c")).containsExactly("a", "b", "c")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "a", "b", "c")).containsExactly("a", "b", "b", "c")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("30", "20", "10", "20")).containsExactly("30", "20", "20", "10").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsAllIn("x", "y", "z").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("c").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -179,53 +178,53 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEqualTo(booleanArrayOf(true, true, false))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isNotEqualTo(booleanArrayOf(true, false, true))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyInts).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).contains(false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).doesNotContain(false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).containsAnyIn(false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).containsAllIn(true, false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false)).containsAllIn(false, true).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true)).containsNoneIn(true, false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).containsExactly(true, true, true)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).containsExactly(true, true, false).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true, false, true)).containsExactly(true, false, true)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -269,70 +268,70 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isEqualTo(byteArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isNotEqualTo(byteArrayOf(1, 2, 3))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyBytes).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).contains(4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).doesNotContain(2)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 1)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsAllIn(3, 2, 4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsAllIn(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsNoneIn(3, 4, 5)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(30, 20, 10, 20)).containsExactly(30, 20, 20, 10).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsAllIn(24, 25, 26).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(3).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -376,69 +375,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEqualTo(charArrayOf('a', 'b', 'd'))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isNotEqualTo(charArrayOf('a', 'b', 'c'))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyChars).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).contains('d')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).doesNotContain('b')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'a')).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsAnyIn('d', 'e', 'f')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsAllIn('c', 'b', 'd')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsAllIn('c', 'b', 'a').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsNoneIn('c', 'd', 'e')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('b', 'b', 'c')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('c', 'b', 'a').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'a', 'b', 'c')).containsExactly('a', 'b', 'c')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'a', 'b', 'c')).containsExactly('a', 'b', 'b', 'c')
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('c', 'b', 'a', 'b')).containsExactly('c', 'b', 'b', 'a').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsAllIn('x', 'y', 'z').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('a').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -482,69 +481,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEqualTo(shortArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isNotEqualTo(shortArrayOf(1, 2, 3))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyShorts).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).contains(4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).doesNotContain(2)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 1)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsAllIn(3, 2, 4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsAllIn(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsNoneIn(3, 4, 5)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(30, 20, 10, 20)).containsExactly(30, 20, 20, 10).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsAllIn(24, 25, 26).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(3).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -588,69 +587,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEqualTo(intArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isNotEqualTo(intArrayOf(1, 2, 3))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyInts).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).contains(4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).doesNotContain(2)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 1)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsAllIn(3, 2, 4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsAllIn(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsNoneIn(3, 4, 5)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(30, 20, 10, 20)).containsExactly(30, 20, 20, 10).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsAllIn(24, 25, 26).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(3).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -694,69 +693,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEqualTo(longArrayOf(1, 2, 4))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isNotEqualTo(longArrayOf(1, 2, 3))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyLongs).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).contains(4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).doesNotContain(2)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 1)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsAllIn(3, 2, 4)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsAllIn(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsNoneIn(3, 4, 5)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(30, 20, 10, 20)).containsExactly(30, 20, 20, 10).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsAllIn(24, 25, 26).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(3).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -800,69 +799,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).isEqualTo(floatArrayOf(1f, 2f, 4f))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).isNotEqualTo(floatArrayOf(1f, 2f, 3f))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyFloats).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).contains(4f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).doesNotContain(2f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 1f)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsAnyIn(4f, 5f, 6f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsAllIn(3f, 2f, 4f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsAllIn(3f, 2f, 1f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsNoneIn(3f, 4f, 5f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(2f, 2f, 3f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(3f, 2f, 1f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 1f, 2f, 3f)).containsExactly(1f, 2f, 3f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 1f, 2f, 3f)).containsExactly(1f, 2f, 2f, 3f)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(3f, 2f, 1f, 2f)).containsExactly(3f, 2f, 2f, 1f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsAllIn(4f, 5f, 6f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(3f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }
@@ -906,69 +905,69 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).isEqualTo(doubleArrayOf(1.0, 2.0, 4.0))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).isNotEqualTo(doubleArrayOf(1.0, 2.0, 3.0))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(emptyDoubles).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).hasSize(2)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).contains(4.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).doesNotContain(2.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 1.0)).hasNoDuplicates()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NO_DUPLICATES)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAnyIn(4.0, 5.0, 6.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAllIn(3.0, 2.0, 4.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAllIn(3.0, 2.0, 1.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsNoneIn(3.0, 4.0, 5.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(2.0, 2.0, 3.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(3.0, 2.0, 1.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 1.0, 2.0, 3.0)).containsExactly(1.0, 2.0, 3.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 1.0, 2.0, 3.0)).containsExactly(1.0, 2.0, 2.0, 3.0)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(3.0, 2.0, 1.0, 2.0)).containsExactly(3.0, 2.0, 2.0, 1.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
 
             // Verify inOrder doesn't get triggered if the original assert already failed
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAllIn(4.0, 5.0, 6.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(3.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
         }

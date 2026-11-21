@@ -1,7 +1,6 @@
 package com.varabyte.truthish
 
 import com.varabyte.truthish.failure.*
-import com.varabyte.truthish.failure.ReportError
 import kotlin.test.Test
 
 class BasicAsserts {
@@ -24,7 +23,7 @@ class BasicAsserts {
 
         run {
             // Test false statements
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat("str").isNotEqualTo("str")
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "str")
             assertThrows<AssertionError> {
@@ -47,12 +46,12 @@ class BasicAsserts {
         run {
             // Test false statements
             var stub: Stub? = Stub()
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(stub).isNull()
             }.assertSubstrings(Summaries.EXPECTED_NULL)
 
             stub = null
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(stub).isNotNull()
             }.assertSubstrings(Summaries.EXPECTED_NOT_NULL)
         }
@@ -73,7 +72,7 @@ class BasicAsserts {
                 assertThat(IntValue(234)).isInstanceOf<Int>()
             }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "Int", "IntValue")
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isNotInstanceOf<IntValue>()
             }.assertSubstrings(Summaries.EXPECTED_NOT_INSTANCE, "IntValue")
         }
@@ -103,7 +102,7 @@ class BasicAsserts {
                 assertThat(stubValue1).isSameAs(stubValue2)
             }.assertSubstrings(Summaries.EXPECTED_SAME)
 
-            assertThrows<ReportError> {
+            assertThrows<AssertionError> {
                 assertThat(stubValue1).isNotSameAs(stubValue3)
             }.assertSubstrings(Summaries.EXPECTED_NOT_SAME)
         }
@@ -112,7 +111,7 @@ class BasicAsserts {
     @Test
     fun assertNamed() {
         val stub: Stub? = Stub()
-        assertThrows<ReportError> {
+        assertThrows<AssertionError> {
             assertThat(stub).named("Stubby McStubberson").isNull()
         }.assertSubstrings("Stubby McStubberson")
     }
