@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation(project(":"))
+    testImplementation(project(":truthish"))
     testImplementation(kotlin("test-junit5"))
 }
 
