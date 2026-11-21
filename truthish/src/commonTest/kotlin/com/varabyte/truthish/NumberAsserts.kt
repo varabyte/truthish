@@ -24,16 +24,16 @@ class NumberAssets {
             // Test false statements
             assertThrows<ReportError> {
                 assertThat(5).isGreaterThanEqual(6)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "6")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "6", "5")
             assertThrows<ReportError> {
                 assertThat(5).isGreaterThan(5)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5")
             assertThrows<ReportError> {
                 assertThat(5).isLessThanEqual(4)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "4")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "4", "5")
             assertThrows<ReportError> {
                 assertThat(5).isLessThan(3)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5", "3")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "3", "5")
         }
     }
 
@@ -95,10 +95,10 @@ class NumberAssets {
             // Test false statements
             assertThrows<ReportError> {
                 assertThat(5.3f).isNotWithin(0.5f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5.3", "0.5", "5.5")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.3", "5.5")
             assertThrows<ReportError> {
                 assertThat(5.3f).isWithin(0.1f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5.3", "0.1", "5.5")
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.3", "5.5")
         }
     }
 

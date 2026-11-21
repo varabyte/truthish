@@ -29,7 +29,7 @@ class BasicAsserts {
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "str")
             assertThrows<AssertionError> {
                 assertThat("str1").isEqualTo("str2")
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "str1", "str2")
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "str2", "str1")
         }
     }
 
@@ -71,7 +71,7 @@ class BasicAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isInstanceOf<Int>()
-            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "IntValue", "Int")
+            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "Int", "IntValue")
 
             assertThrows<ReportError> {
                 assertThat(IntValue(234)).isNotInstanceOf<IntValue>()
