@@ -12,6 +12,11 @@ interface FailureStrategy {
 
 internal class ReportError(val report: Report) : AssertionError(report.toString())
 
+// `cause` is overridden because common Kotlin (as of the stdlib version we target) has no `AssertionError` constructor
+// that takes one.
+@PublishedApi
+internal class AssertionWithCauseError(message: String, override val cause: Throwable?) : AssertionError(message)
+
 /**
  * Creates the error to throw for this failed report.
  *

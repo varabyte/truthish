@@ -177,18 +177,22 @@ class SummarizedSubjectBuilder(private val message: String, private val strategy
 // code (such as `assertThrows { val _ = explode() }`) to suppress it.
 // See also: https://github.com/varabyte/truthish/issues/13
 inline fun <reified T : Throwable> assertThrows(message: String? = null, block: () -> Any?): T {
-    val report = try {
+    val unexpectedException = try {
         block()
-        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class).apply { if (message != null) add("Message" to message) })
+        null
     }
     catch (t: Throwable) {
-        if (t !is T) {
-            Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expectedActual(T::class, t::class).apply { if (message != null) add("Message" to message) })
-        }
-        else {
-            return t
-        }
+        if (t is T) return t
+        t
     }
 
-    throw AssertionError(report)
+    val report = if (unexpectedException == null) {
+        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class).apply { if (message != null) add("Message" to message) })
+    }
+    else {
+        Report(Summaries.EXPECTED_EXCEPTION_TYPE, DetailsFor.expectedActual(T::class, unexpectedException::class).apply { if (message != null) add("Message" to message) })
+    }
+
+    // Keep the unexpected exception as the cause, since its message and stack trace are usually what's needed to debug
+    throw AssertionWithCauseError(report.toString(), cause = unexpectedException)
 }

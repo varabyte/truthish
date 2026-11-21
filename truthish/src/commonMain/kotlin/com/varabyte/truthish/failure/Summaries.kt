@@ -17,6 +17,7 @@ object Summaries {
     const val EXPECTED_FALSE = "A value was true"
 
     const val EXPECTED_EXCEPTION = "An exception was not thrown"
+    const val EXPECTED_EXCEPTION_TYPE = "An unexpected exception type was thrown"
 
     const val EXPECTED_COMPARISON = "Two values did not compare with each other as expected"
 
