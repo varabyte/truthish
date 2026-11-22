@@ -3,6 +3,17 @@ package com.varabyte.truthish.failure
 import com.varabyte.truthish.assertWithMessage
 
 /**
+ * Adds a custom message, provided by the user when making an assertion, to these details.
+ *
+ * The message is inserted first, since the user wrote it to explain the failure, so it's usually the most important
+ * detail.
+ */
+@PublishedApi
+internal fun Details.addMessage(message: String) {
+    add(0, DetailsFor.MESSAGE to AnyStringifier(message))
+}
+
+/**
  * Base class for any object that may want to send a failure report.
  */
 abstract class Reportable {
@@ -17,7 +28,7 @@ abstract class Reportable {
         // Note: The following lines are in reverse order, since each add to the 0th element. In
         // practice, it's rare that both will even be set at the same time.
         name?.let { report.details.add(0, DetailsFor.NAME to AnyStringifier(it)) }
-        message?.let { report.details.add(0, DetailsFor.MESSAGE to AnyStringifier(it)) }
+        message?.let { report.details.addMessage(it) }
 
         strategy.handle(report)
     }

@@ -166,9 +166,12 @@ class BasicAsserts {
                 assertThrows<IllegalArgumentException>(message = "inner assert") {
                 }
             }
-            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION)
-            assertThat(e.message!!).contains("IllegalArgumentException")
-            assertThat(e.message!!).contains("inner assert")
+            e.assertSubstrings(
+                Summaries.EXPECTED_EXCEPTION,
+                DetailsFor.MESSAGE, "inner assert",
+                DetailsFor.EXPECTED, "IllegalArgumentException",
+            )
+            assertThat(e.message!!).doesNotContain("\"inner assert\"")
             assertThat(e.message!!).doesNotContain("outer assert")
         }
 
@@ -179,10 +182,13 @@ class BasicAsserts {
                     throw IllegalStateException()
                 }
             }
-            assertThat(e.message!!).contains(Summaries.EXPECTED_EXCEPTION_TYPE)
-            assertThat(e.message!!).contains("IllegalArgumentException")
-            assertThat(e.message!!).contains("IllegalStateException")
-            assertThat(e.message!!).contains("inner assert")
+            e.assertSubstrings(
+                Summaries.EXPECTED_EXCEPTION_TYPE,
+                DetailsFor.MESSAGE, "inner assert",
+                DetailsFor.EXPECTED, "IllegalArgumentException",
+                DetailsFor.BUT_WAS, "IllegalStateException",
+            )
+            assertThat(e.message!!).doesNotContain("\"inner assert\"")
             assertThat(e.message!!).doesNotContain("outer assert")
         }
     }
