@@ -107,8 +107,10 @@ kotlin {
     applyDefaultHierarchyTemplate {
         common {
             group("nonJvm") {
-                withJs()
-                withWasmJs()
+                group("web") {
+                    withJs()
+                    withWasmJs()
+                }
                 withNative()
             }
         }

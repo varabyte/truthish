@@ -25,5 +25,9 @@ class AmbiguityTest {
         assertThrows<AssertionError> {
             assertThat("x").isEqualTo(ClassB("x"))
         }.assertSubstrings("x (Type: `ClassB`)", "\"x\" (Type: `String`)")
+
+        assertThrows<AssertionError> {
+            assertThat(ClassA("x")).isEqualTo(ClassA("x"))
+        }.assertSubstrings("x", "x (a different value that prints the same)")
     }
 }

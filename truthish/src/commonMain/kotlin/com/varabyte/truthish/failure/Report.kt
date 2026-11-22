@@ -132,7 +132,7 @@ object DetailsFor {
     }
 
     private fun createExpectedActualDetails(expectedLabel: String, expected: Any?, actual: Any?): Details {
-        val extras = buildMap {
+        val extras = buildMap<String, String> {
             if (expected != null && actual != null) {
                 val expectedStringifier = stringifierFor(expected)
                 val actualStringifier = stringifierFor(actual)
@@ -150,8 +150,16 @@ object DetailsFor {
                 }
 
                 if (isOutputAmbiguous) {
-                    put(expectedLabel, "Type: `${expected::class.simpleName}`")
-                    put(BUT_WAS, "Type: `${actual::class.simpleName}`")
+                    val expectedDetail = expectedStringifier.toDetailString()
+                    val actualDetail = actualStringifier.toDetailString()
+                    if (expectedDetail != actualDetail) {
+                        put(expectedLabel, expectedDetail)
+                        put(BUT_WAS, actualDetail)
+                    }
+                    // If the values are equal, the failure is about something we can't show
+                    else if (expected != actual) {
+                        put(BUT_WAS, "a different value that prints the same")
+                    }
                 }
             }
         }

@@ -70,10 +70,7 @@ class BasicAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isInstanceOf<Int>()
-            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "IntValue")
-//            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "Int", "IntValue")
-            // TODO: ^ We temporarily removed "Int" as a type because we were getting Java's "Integer". Put this back
-            //  after we fix this in a followup commit
+            }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "Int", "IntValue")
 
             assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isNotInstanceOf<IntValue>()
