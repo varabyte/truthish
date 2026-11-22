@@ -68,10 +68,10 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isEqualTo(arrayOf("a", "b", "d"))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[a, b, d]")
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ \"a\", \"b\", \"d\" ]", "[ \"a\", \"b\", \"c\" ]")
            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isNotEqualTo(arrayOf("a", "b", "c"))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[a, b, c]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ \"a\", \"b\", \"c\" ]")
 
 
             assertThrows<AssertionError> {
@@ -177,10 +177,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEqualTo(booleanArrayOf(true, true, false))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ true, true, false ]", "[ true, false, true ]")
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isNotEqualTo(booleanArrayOf(true, false, true))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ true, false, true ]")
 
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEmpty()
@@ -267,10 +267,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isEqualTo(byteArrayOf(1, 2, 4))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isNotEqualTo(byteArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
 
 
             assertThrows<AssertionError> {
@@ -374,10 +374,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEqualTo(charArrayOf('a', 'b', 'd'))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 'a', 'b', 'd' ]", "[ 'a', 'b', 'c' ]")
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isNotEqualTo(charArrayOf('a', 'b', 'c'))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 'a', 'b', 'c' ]")
 
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEmpty()
@@ -480,10 +480,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEqualTo(shortArrayOf(1, 2, 4))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isNotEqualTo(shortArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEmpty()
@@ -586,10 +586,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEqualTo(intArrayOf(1, 2, 4))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isNotEqualTo(intArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEmpty()
@@ -692,10 +692,10 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEqualTo(longArrayOf(1, 2, 4))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isNotEqualTo(longArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEmpty()
