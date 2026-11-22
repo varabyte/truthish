@@ -71,7 +71,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[a, b, d]")
            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isNotEqualTo(arrayOf("a", "b", "c"))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "[a, b, c]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[a, b, c]")
 
 
             assertThrows<AssertionError> {

@@ -60,10 +60,10 @@ class StringAsserts {
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").startsWith("llo")
-            }.assertSubstrings(Summaries.EXPECTED_STARTS_WITH)
+            }.assertSubstrings(Summaries.EXPECTED_STARTS_WITH, "Expected to start with")
             assertThrows<AssertionError> {
                 assertThat("Hello World").endsWith("llo")
-            }.assertSubstrings(Summaries.EXPECTED_ENDS_WITH)
+            }.assertSubstrings(Summaries.EXPECTED_ENDS_WITH, "Expected to end with")
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotStartWith("He")
             }.assertSubstrings(Summaries.EXPECTED_NOT_STARTS_WITH)
@@ -97,10 +97,10 @@ class StringAsserts {
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContain("o Wo")
-            }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS, "Expected not to contain")
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContainMatch("l+")
-            }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS, "Expected not to contain match")
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContainMatch(Regex("or."))
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)

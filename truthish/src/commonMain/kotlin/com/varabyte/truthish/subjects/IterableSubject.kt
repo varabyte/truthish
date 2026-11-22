@@ -110,13 +110,13 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun containsNoneIn(other: Iterable<T>) {
         val other = other.toList()
 
-        val commonElements = actual.intersect(other)
+        val commonElements = actual.intersect(other).toList()
         if (commonElements.isNotEmpty()) {
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
                     DetailsFor.expectedActual("no elements from", other, actual).apply {
-                        add("Containing" to commonElements)
+                        add("Unexpected" to commonElements)
                     }
                 )
             )

@@ -35,7 +35,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
 
     fun isNotEqualTo(expected: Map<K, V>) {
         if (actual == expected) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actual)))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actual)))
         }
     }
 

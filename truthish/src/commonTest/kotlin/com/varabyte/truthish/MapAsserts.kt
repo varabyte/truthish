@@ -1,5 +1,7 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
 
 class MapAsserts {
@@ -40,7 +42,7 @@ class MapAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).isNotEqualTo(asciiMap)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).doesNotContainKey('g')

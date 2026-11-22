@@ -18,7 +18,7 @@ open class ArraySubject<T>(private val actualArray: Array<T>) : IterableSubject<
 
     fun isNotEqualTo(expected: Array<T>) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 }
@@ -40,7 +40,7 @@ open class BooleanArraySubject(private val actualArray: BooleanArray) :
 
     fun isNotEqualTo(expected: BooleanArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -66,7 +66,7 @@ open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<B
 
     fun isNotEqualTo(expected: ByteArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -92,7 +92,7 @@ open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<C
 
     fun isNotEqualTo(expected: CharArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -118,7 +118,7 @@ open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject
 
     fun isNotEqualTo(expected: ShortArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -144,7 +144,7 @@ open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int
 
     fun isNotEqualTo(expected: IntArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -170,7 +170,7 @@ open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<L
 
     fun isNotEqualTo(expected: LongArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -196,7 +196,7 @@ open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject
 
     fun isNotEqualTo(expected: FloatArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 
@@ -222,7 +222,7 @@ open class DoubleArraySubject(private val actualArray: DoubleArray) : ArraySubje
 
     fun isNotEqualTo(expected: DoubleArray) {
         if (actualArray.contentEquals(expected)) {
-            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.expected(actualArray.contentToString())))
+            report(Report(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.actual(actualArray.contentToString())))
         }
     }
 

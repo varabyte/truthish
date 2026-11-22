@@ -46,7 +46,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun startsWith(expected: CharSequence) {
         if (!actual.startsWith(expected)) {
             report(
-                Report(Summaries.EXPECTED_STARTS_WITH, DetailsFor.expectedActual("starts with", expected, actual))
+                Report(Summaries.EXPECTED_STARTS_WITH, DetailsFor.expectedActual("to start with", expected, actual))
             )
         }
     }
@@ -65,7 +65,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun endsWith(expected: CharSequence) {
         if (!actual.endsWith(expected)) {
             report(
-                Report(Summaries.EXPECTED_ENDS_WITH, DetailsFor.expectedActual("ends with", expected, actual))
+                Report(Summaries.EXPECTED_ENDS_WITH, DetailsFor.expectedActual("to end with", expected, actual))
             )
         }
     }
@@ -131,7 +131,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun doesNotContain(expected: CharSequence) {
         if (actual.contains(expected)) {
             report(
-                Report(Summaries.EXPECTED_NOT_CONTAINS, DetailsFor.expectedActual("to not contain", expected, actual))
+                Report(Summaries.EXPECTED_NOT_CONTAINS, DetailsFor.expectedActual("not to contain", expected, actual))
             )
         }
     }
@@ -141,7 +141,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
             report(
                 Report(
                     Summaries.EXPECTED_NOT_CONTAINS,
-                    DetailsFor.expectedActual("to not contain match", regex.pattern, actual)
+                    DetailsFor.expectedActual("not to contain match", regex.pattern, actual)
                 )
             )
         }

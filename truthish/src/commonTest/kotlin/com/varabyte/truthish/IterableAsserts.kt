@@ -85,7 +85,7 @@ class IterableAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsNoneIn("c", "d", "e")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "Unexpected", "[ \"c\" ]")
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("b", "b", "c")
