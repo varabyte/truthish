@@ -131,35 +131,31 @@ object DetailsFor {
         return Details(listOf(EXPECTED to expected))
     }
 
-    private fun createExpectedActualExtrasFor(
-        expected: Pair<String, Any?>,
-        actual: Pair<String, Any?>
-    ): Map<String, String> {
-        return buildMap {
-            val expectedValue = expected.second
-            val actualValue = actual.second
-            if (expectedValue != null && actualValue != null) {
-                val expectedStringifier = stringifierFor(expectedValue)
-                val actualStringifier = stringifierFor(actualValue)
+    private fun createExpectedActualDetails(expectedLabel: String, expected: Any?, actual: Any?): Details {
+        val extras = buildMap {
+            if (expected != null && actual != null) {
+                val expectedStringifier = stringifierFor(expected)
+                val actualStringifier = stringifierFor(actual)
 
                 var isOutputAmbiguous = expectedStringifier.toString() == actualStringifier.toString()
 
                 // String output adds surrounding quotes, but that can still result in confusing error like
                 // Expected: "x"    But was: x
                 // so handle those cases too.
-                if (!isOutputAmbiguous && expectedValue is String && actualValue !is String && expectedValue == actualStringifier.toString()) {
+                if (!isOutputAmbiguous && expected is String && actual !is String && expected == actualStringifier.toString()) {
                     isOutputAmbiguous = true
                 }
-                if (!isOutputAmbiguous && expectedValue !is String && actualValue is String && expectedStringifier.toString() == actualValue) {
+                if (!isOutputAmbiguous && expected !is String && actual is String && expectedStringifier.toString() == actual) {
                     isOutputAmbiguous = true
                 }
 
                 if (isOutputAmbiguous) {
-                    put(EXPECTED, "Type: `${expectedValue::class.simpleName}`")
-                    put(BUT_WAS, "Type: `${actualValue::class.simpleName}`")
+                    put(expectedLabel, "Type: `${expected::class.simpleName}`")
+                    put(BUT_WAS, "Type: `${actual::class.simpleName}`")
                 }
             }
         }
+        return Details(listOf(expectedLabel to expected, BUT_WAS to actual), extras)
     }
 
     /**
@@ -169,11 +165,7 @@ object DetailsFor {
      * shown as a diff between the two values.
      */
     fun expectedActual(expected: Any?, actual: Any?): Details {
-        val items = listOf(
-            EXPECTED to expected,
-            BUT_WAS to actual
-        )
-        return Details(items, createExpectedActualExtrasFor(items[0], items[1]))
+        return createExpectedActualDetails(EXPECTED, expected, actual)
     }
 
     /**
@@ -184,10 +176,6 @@ object DetailsFor {
      *   between the "expected" label and the extra information.
      */
     fun expectedActual(expectedSuffix: String, expected: Any?, actual: Any?): Details {
-        val items = listOf(
-            "$EXPECTED $expectedSuffix" to expected,
-            BUT_WAS to actual
-        )
-        return Details(items, createExpectedActualExtrasFor(items[0], items[1]))
+        return createExpectedActualDetails("$EXPECTED $expectedSuffix", expected, actual)
     }
 }
