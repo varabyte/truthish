@@ -92,12 +92,14 @@ class NumberAssets {
 
         run {
             // Test false statements
+            // NOTE: Special values chosen to ensure string output is the same on all platforms. If you change, be sure to
+            // retest all targets.
             assertThrows<AssertionError> {
-                assertThat(5.3f).isNotWithin(0.5f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.3")
+                assertThat(5.25f).isNotWithin(0.5f).of(5.5f)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.5", "5.5", "5.25")
             assertThrows<AssertionError> {
-                assertThat(5.3f).isWithin(0.1f).of(5.5f)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.1", "5.5", "5.3")
+                assertThat(5.25f).isWithin(0.125f).of(5.5f)
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "0.125", "5.5", "5.25")
 
             // NaN is never within (or not within) any distance of anything
             assertThrows<AssertionError> {
