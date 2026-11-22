@@ -35,6 +35,9 @@ class ReportTest {
                     "List" to listOf(1, 2),
                     "Set" to setOf(1, 2),
                     "Map" to mapOf("a" to 1),
+                    "Pair" to ('a' to 1),
+                    "Nested pair" to ((1 to 2) to (3 to 4)),
+                    "Triple" to Triple("a", 'b', 3),
                     "Empty list" to emptyList<Int>(),
                     "Empty set" to emptySet<Int>(),
                     "Empty map" to emptyMap<String, Int>(),
@@ -45,15 +48,18 @@ class ReportTest {
             """
             Summary
 
-            String    : "x"
-            Char      : 'c'
-            Null      : (null)
-            List      : [ 1, 2 ]
-            Set       : { 1, 2 }
-            Map       : { a=1 }
-            Empty list: []
-            Empty set : {}
-            Empty map : {}
+            String     : "x"
+            Char       : 'c'
+            Null       : (null)
+            List       : [ 1, 2 ]
+            Set        : { 1, 2 }
+            Map        : { "a" to 1 }
+            Pair       : 'a' to 1
+            Nested pair: (1 to 2) to (3 to 4)
+            Triple     : ("a", 'b', 3)
+            Empty list : []
+            Empty set  : {}
+            Empty map  : {}
 
             """.trimIndent()
         )

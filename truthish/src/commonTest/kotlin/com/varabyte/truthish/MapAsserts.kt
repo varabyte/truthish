@@ -39,7 +39,7 @@ class MapAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(asciiMap).isEqualTo(emptyMap())
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.BUT_WAS, "{ a=97, b=98")
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.BUT_WAS, "{ 'a' to 97, 'b' to 98")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).isNotEqualTo(asciiMap)
@@ -79,15 +79,15 @@ class MapAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).doesNotContain('e' to 101)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "(e, 101)")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "'e' to 101")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).contains('e' to 102)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "(e, 102)")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "'e' to 102")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('a' to 122, 'z' to 122)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ (a, 122) ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 'a' to 122 ]")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('z' to 122, 'a' to 97).inOrder()

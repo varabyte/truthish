@@ -8,6 +8,9 @@ internal fun stringifierFor(value: Any?): ValueStringifier {
         is Char -> CharStringifier(value)
         is CharSequence -> StringStringifier(value)
         is Map<*, *> -> MapStringifier(value)
+        is Map.Entry<*, *> -> PairStringifier(value, value.key, value.value)
+        is Pair<*, *> -> PairStringifier(value, value.first, value.second)
+        is Triple<*, *, *> -> TripleStringifier(value)
         is Set<*> -> SetStringifier(value)
         is Iterable<*> -> IterableStringifier(value)
         is KClass<*> -> KClassStringifier(value)
@@ -50,10 +53,14 @@ internal class StringStringifier(private val value: CharSequence) : ValueStringi
 
 /**
  * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
+ *
+ * @param padded Whether to put spaces inside [open] and [close]. Collections use them, while fixed-size groups like
+ *   triples read better tight, e.g. `(1, 2, 3)`.
  */
-private fun Iterable<*>.joinValues(open: String, close: String): String {
+private fun Iterable<*>.joinValues(open: String, close: String, padded: Boolean = true): String {
     if (none()) return "$open$close"
-    return joinToString(", ", prefix = "$open ", postfix = " $close") { stringifierFor(it).toString() }
+    val padding = if (padded) " " else ""
+    return joinToString(", ", prefix = "$open$padding", postfix = "$padding$close") { stringifierFor(it).toString() }
 }
 
 internal class IterableStringifier(private val value: Iterable<*>) : ValueStringifier(value) {
@@ -67,6 +74,27 @@ internal class MapStringifier(private val value: Map<*, *>) : ValueStringifier(v
 // This should take precedence over IterableStringifier!
 internal class SetStringifier(private val value: Set<*>) : ValueStringifier(value) {
     override fun toString() = value.joinValues("{", "}")
+}
+
+/**
+ * Formats a pair (or map entry) the way it's usually written in Kotlin code, e.g. `"a" to 1`.
+ */
+internal class PairStringifier(
+    value: Any,
+    private val first: Any?,
+    private val second: Any?,
+) : ValueStringifier(value) {
+    override fun toString() =
+        "${stringifierFor(first).wrapInParensIfNecessary()} to ${stringifierFor(second).wrapInParensIfNecessary()}"
+
+    // A nested value that is itself a pair needs parentheses to stay unambiguous, e.g. `(1 to 2) to 3`
+    private fun ValueStringifier.wrapInParensIfNecessary(): String {
+        return if (this is PairStringifier) "($this)" else toString()
+    }
+}
+
+internal class TripleStringifier(private val value: Triple<*, *, *>) : ValueStringifier(value) {
+    override fun toString() = value.toList().joinValues("(", ")", padded = false)
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {
