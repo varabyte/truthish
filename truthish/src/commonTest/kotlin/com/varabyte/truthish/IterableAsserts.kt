@@ -89,16 +89,23 @@ class IterableAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("b", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"b\" ]", "Extraneous", "[ \"a\" ]"
+            )
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b")).containsExactly("a", "b", "c")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"c\" ]")
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "a", "b", "c")).containsExactly("a", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Extraneous", "[ \"a\" ]")
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "a", "b", "c")).containsExactly("a", "b", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"b\" ]", "Extraneous", "[ \"a\" ]"
+            )
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -111,7 +118,7 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("c").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Extraneous", "[ \"a\", \"b\" ]")
         }
     }
 

@@ -136,7 +136,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
         if (remainingActual.isNotEmpty() || remainingOther.isNotEmpty()) {
             report(
                 Report(
-                    Summaries.EXPECTED_COLLECTION_CONTAINS,
+                    Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
                     DetailsFor.expectedActual("exactly all elements from", other, actual).apply {
                         if (remainingOther.isNotEmpty()) {
                             add("Missing" to remainingOther)

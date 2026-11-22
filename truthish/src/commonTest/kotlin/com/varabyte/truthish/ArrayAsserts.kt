@@ -112,16 +112,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("b", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "a", "b", "c")).containsExactly("a", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "a", "b", "c")).containsExactly("a", "b", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -134,7 +134,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsExactly("c").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -220,13 +220,13 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).containsExactly(true, true, true)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).containsExactly(true, true, false).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true, false, true)).containsExactly(true, false, true)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -311,16 +311,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -333,7 +333,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsExactly(3).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -417,16 +417,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('b', 'b', 'c')
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('c', 'b', 'a').inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'a', 'b', 'c')).containsExactly('a', 'b', 'c')
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'a', 'b', 'c')).containsExactly('a', 'b', 'b', 'c')
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -439,7 +439,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsExactly('a').inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -523,16 +523,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -545,7 +545,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsExactly(3).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -629,16 +629,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -651,7 +651,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsExactly(3).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -735,16 +735,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(3, 2, 1).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 1, 2, 3)).containsExactly(1, 2, 2, 3)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -757,7 +757,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsExactly(3).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -841,16 +841,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(2f, 2f, 3f)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(3f, 2f, 1f).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 1f, 2f, 3f)).containsExactly(1f, 2f, 3f)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 1f, 2f, 3f)).containsExactly(1f, 2f, 2f, 3f)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -863,7 +863,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(3f).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 
@@ -947,16 +947,16 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(2.0, 2.0, 3.0)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(3.0, 2.0, 1.0).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 1.0, 2.0, 3.0)).containsExactly(1.0, 2.0, 3.0)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 1.0, 2.0, 3.0)).containsExactly(1.0, 2.0, 2.0, 3.0)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
@@ -969,7 +969,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(3.0).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY)
         }
     }
 }
