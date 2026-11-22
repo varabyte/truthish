@@ -26,7 +26,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
 
     fun isNotBlank() {
         if (actual.isBlank()) {
-            report(Report(Summaries.EXPECTED_NOT_BLANK))
+            report(Report(Summaries.EXPECTED_NOT_BLANK, DetailsFor.actual(actual)))
         }
     }
 

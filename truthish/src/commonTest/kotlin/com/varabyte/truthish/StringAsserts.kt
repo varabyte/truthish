@@ -1,5 +1,6 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
@@ -43,16 +44,16 @@ class StringAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat("ASDF").isEmpty()
-            }.assertSubstrings(Summaries.EXPECTED_EMPTY)
+            }.assertSubstrings(Summaries.EXPECTED_EMPTY, DetailsFor.VALUE, "\"ASDF\"")
             assertThrows<AssertionError> {
                 assertThat("???").isBlank()
-            }.assertSubstrings(Summaries.EXPECTED_BLANK)
+            }.assertSubstrings(Summaries.EXPECTED_BLANK, DetailsFor.VALUE, "\"???\"")
             assertThrows<AssertionError> {
                 assertThat("").isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat("       ").isNotBlank()
-            }.assertSubstrings(Summaries.EXPECTED_NOT_BLANK)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_BLANK, DetailsFor.VALUE, "\"       \"")
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").hasLength(3)
