@@ -25,6 +25,7 @@ object Summaries {
     const val EXPECTED_BLANK = "A value was not blank"
     const val EXPECTED_NOT_EMPTY = "A value was empty"
     const val EXPECTED_NOT_BLANK = "A value was blank"
+    const val EXPECTED_LENGTH = "A value had an unexpected length"
 
     const val EXPECTED_STARTS_WITH = "A value did not start with another"
     const val EXPECTED_NOT_STARTS_WITH = "A value started with another"
@@ -37,6 +38,7 @@ object Summaries {
 
     const val EXPECTED_COLLECTION_EMPTY = "A collection was not empty"
     const val EXPECTED_COLLECTION_NOT_EMPTY = "A collection was empty"
+    const val EXPECTED_COLLECTION_SIZE = "A collection had an unexpected size"
     const val EXPECTED_COLLECTION_CONTAINS = "A collection did not contain element(s)"
     const val EXPECTED_COLLECTION_NOT_CONTAINS = "A collection contained element(s)"
     const val EXPECTED_COLLECTION_NO_DUPLICATES = "A collection had duplicates"

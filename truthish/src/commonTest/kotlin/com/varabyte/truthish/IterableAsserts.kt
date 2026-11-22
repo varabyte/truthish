@@ -59,7 +59,7 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(listOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).contains("d")

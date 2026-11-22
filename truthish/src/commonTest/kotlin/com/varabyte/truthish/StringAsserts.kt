@@ -56,7 +56,7 @@ class StringAsserts {
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").hasLength(3)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_LENGTH, "3", "11", "\"Hello World\"")
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").startsWith("llo")

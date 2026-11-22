@@ -34,8 +34,10 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         if (actual.length != expectedLength) {
             report(
                 Report(
-                    Summaries.EXPECTED_COMPARISON,
-                    DetailsFor.expectedActual("length", expectedLength, actual.length)
+                    Summaries.EXPECTED_LENGTH,
+                    DetailsFor.expectedActual(expectedLength, actual.length).apply {
+                        add(DetailsFor.VALUE to actual)
+                    }
                 )
             )
         }

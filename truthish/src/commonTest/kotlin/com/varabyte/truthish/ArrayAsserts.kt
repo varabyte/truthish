@@ -82,7 +82,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(arrayOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).contains("d")
@@ -190,7 +190,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ true, false, true ]")
 
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).contains(false)
@@ -281,7 +281,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).contains(4)
@@ -387,7 +387,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 'a', 'b', 'c' ]")
 
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).contains('d')
@@ -493,7 +493,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).contains(4)
@@ -599,7 +599,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).contains(4)
@@ -705,7 +705,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3", "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).contains(4)
@@ -811,7 +811,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3")
 
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).contains(4f)
@@ -917,7 +917,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).hasSize(2)
-            }.assertSubstrings(Summaries.EXPECTED_COMPARISON)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SIZE, "2", "3")
 
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).contains(4.0)

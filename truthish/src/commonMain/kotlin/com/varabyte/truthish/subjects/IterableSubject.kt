@@ -24,7 +24,12 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun hasSize(size: Int) {
         val actualSize = actual.count()
         if (actualSize != size) {
-            report(Report(Summaries.EXPECTED_COMPARISON, DetailsFor.expectedActual("size", size, actualSize)))
+            report(
+                Report(
+                    Summaries.EXPECTED_COLLECTION_SIZE,
+                    DetailsFor.expectedActual(size, actualSize).apply { add(DetailsFor.VALUE to actual) }
+                )
+            )
         }
     }
 
