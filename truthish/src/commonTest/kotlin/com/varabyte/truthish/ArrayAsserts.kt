@@ -1,5 +1,6 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.subjects.containsAllIn
@@ -69,9 +70,9 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isEqualTo(arrayOf("a", "b", "d"))
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ \"a\", \"b\", \"d\" ]", "[ \"a\", \"b\", \"c\" ]")
-           assertThrows<AssertionError> {
+            assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isNotEqualTo(arrayOf("a", "b", "c"))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ \"a\", \"b\", \"c\" ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ \"a\", \"b\", \"c\" ]")
 
 
             assertThrows<AssertionError> {
@@ -180,7 +181,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ true, true, false ]", "[ true, false, true ]")
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isNotEqualTo(booleanArrayOf(true, false, true))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ true, false, true ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ true, false, true ]")
 
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEmpty()
@@ -270,7 +271,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).isNotEqualTo(byteArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ 1, 2, 3 ]")
 
 
             assertThrows<AssertionError> {
@@ -377,7 +378,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 'a', 'b', 'd' ]", "[ 'a', 'b', 'c' ]")
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isNotEqualTo(charArrayOf('a', 'b', 'c'))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 'a', 'b', 'c' ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ 'a', 'b', 'c' ]")
 
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).isEmpty()
@@ -483,7 +484,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isNotEqualTo(shortArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).isEmpty()
@@ -589,7 +590,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isNotEqualTo(intArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).isEmpty()
@@ -695,7 +696,7 @@ class ArrayAsserts {
             }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ 1, 2, 4 ]", "[ 1, 2, 3 ]")
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isNotEqualTo(longArrayOf(1, 2, 3))
-            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, "Value", "[ 1, 2, 3 ]")
+            }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ 1, 2, 3 ]")
 
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).isEmpty()

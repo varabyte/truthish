@@ -1,5 +1,6 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
@@ -85,26 +86,30 @@ class IterableAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsNoneIn("c", "d", "e")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "Unexpected", "[ \"c\" ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, DetailsFor.UNEXPECTED, "[ \"c\" ]")
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("b", "b", "c")
             }.assertSubstrings(
-                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"b\" ]", "Extraneous", "[ \"a\" ]"
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                DetailsFor.MISSING, "[ \"b\" ]",
+                DetailsFor.EXTRANEOUS, "[ \"a\" ]",
             )
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b")).containsExactly("a", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"c\" ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ \"c\" ]")
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "a", "b", "c")).containsExactly("a", "b", "c")
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Extraneous", "[ \"a\" ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.EXTRANEOUS, "[ \"a\" ]")
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "a", "b", "c")).containsExactly("a", "b", "b", "c")
             }.assertSubstrings(
-                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Missing", "[ \"b\" ]", "Extraneous", "[ \"a\" ]"
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                DetailsFor.MISSING, "[ \"b\" ]",
+                DetailsFor.EXTRANEOUS, "[ \"a\" ]",
             )
 
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
@@ -118,7 +123,9 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("c").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, "Extraneous", "[ \"a\", \"b\" ]")
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.EXTRANEOUS, "[ \"a\", \"b\" ]"
+            )
         }
     }
 
@@ -148,33 +155,33 @@ class IterableAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(evensThru10).isEmpty()
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY, DetailsFor.VALUE, "[ 2, 4, 6, 8, 10 ]")
             assertThrows<AssertionError> {
                 assertThat(setOf<Int>()).isNotEmpty()
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
 
             assertThrows<AssertionError> {
                 assertThat(evensThru10).contains(9)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "9", "[ 2, 4, 6, 8, 10 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).doesNotContain(8)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "8", "[ 2, 4, 6, 8, 10 ]")
 
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAnyIn(1, 3, 5)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "[ 1, 3, 5 ]", "[ 2, 4, 6, 8, 10 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAllIn(1, 4, 8)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 1 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAllIn(8, 10, 4).inOrder()
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, "[ 8, 10, 4 ]", "[ 2, 4, 6, 8, 10 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsNoneIn(2, 5, 7, 8)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, DetailsFor.UNEXPECTED, "[ 2, 8 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsExactly(0, 2, 4, 6, 8, 10)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ 0 ]")
         }
     }
 

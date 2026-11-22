@@ -99,6 +99,12 @@ class AssertAllTest {
                 that(arrayOf(1, 2, 3)).containsAllIn(4, 5, 6).inOrder()
                 that(arrayOf(1, 2, 3)).containsExactly(1, 2, 3, 4).inOrder()
             }
+        }.let { e ->
+            e.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 4, 5, 6 ]",
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ 4 ]",
+            )
+            assertThat(e.message!!).doesNotContain(Summaries.EXPECTED_COLLECTION_ORDERED)
         }
     }
 

@@ -104,16 +104,16 @@ class NumberAssets {
             // NaN is never within (or not within) any distance of anything
             assertThrows<AssertionError> {
                 assertThat(Float.NaN).isWithin(0.1f).of(5.5f)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(5.3f).isWithin(0.1f).of(Float.NaN)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(Float.NaN).isNotWithin(0.1f).of(5.5f)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(5.3f).isNotWithin(0.1f).of(Float.NaN)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
         }
 
         run {
@@ -156,16 +156,16 @@ class NumberAssets {
             // NaN is never within (or not within) any distance of anything
             assertThrows<AssertionError> {
                 assertThat(Double.NaN).isWithin(0.1).of(5.5)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(5.3).isWithin(0.1).of(Double.NaN)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(Double.NaN).isNotWithin(0.1).of(5.5)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
             assertThrows<AssertionError> {
                 assertThat(5.3).isNotWithin(0.1).of(Double.NaN)
-            }
+            }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
         }
 
         run {
