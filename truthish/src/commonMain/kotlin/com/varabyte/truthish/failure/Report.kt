@@ -86,10 +86,12 @@ private fun Details.render(item: Pair<String, Any?>): String {
  *   the detail ("Expected" to "xyz") can be decorated with extra information by adding the extra entry
  *   ("Expected" to "Type is `ClassXyz`").
  */
-class Details(
-    items: List<Pair<String, Any?>> = emptyList(),
-    internal val extras: Map<String, String> = emptyMap()
+class Details internal constructor(
+    items: List<Pair<String, Any?>>,
+    internal val extras: Map<String, String>,
 ) {
+    constructor(items: List<Pair<String, Any?>> = emptyList()) : this(items, emptyMap())
+
     private val _items = items.toMutableList()
     val items: List<Pair<String, Any?>> = _items
 
