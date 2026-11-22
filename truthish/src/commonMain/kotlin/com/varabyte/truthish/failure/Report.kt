@@ -110,10 +110,16 @@ fun Details.find(key: String): Any? {
  * Helpful utility methods providing detail lists for common scenarios.
  */
 object DetailsFor {
+    const val MESSAGE = "Message"
+    const val NAME = "Name"
     const val VALUE = "Value"
     const val EXPECTED = "Expected"
     const val BUT_WAS = "But was"
     const val AT = "At"
+    const val MISSING = "Missing"
+    const val EXTRANEOUS = "Extraneous"
+    const val UNEXPECTED = "Unexpected"
+    const val DUPLICATES = "Duplicates"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was

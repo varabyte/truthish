@@ -187,10 +187,10 @@ inline fun <reified T : Throwable> assertThrows(message: String? = null, block: 
     }
 
     val report = if (unexpectedException == null) {
-        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class).apply { if (message != null) add("Message" to message) })
+        Report(Summaries.EXPECTED_EXCEPTION, DetailsFor.expected(T::class).apply { if (message != null) add(DetailsFor.MESSAGE to message) })
     }
     else {
-        Report(Summaries.EXPECTED_EXCEPTION_TYPE, DetailsFor.expectedActual(T::class, unexpectedException::class).apply { if (message != null) add("Message" to message) })
+        Report(Summaries.EXPECTED_EXCEPTION_TYPE, DetailsFor.expectedActual(T::class, unexpectedException::class).apply { if (message != null) add(DetailsFor.MESSAGE to message) })
     }
 
     // Keep the unexpected exception as the cause, since its message and stack trace are usually what's needed to debug

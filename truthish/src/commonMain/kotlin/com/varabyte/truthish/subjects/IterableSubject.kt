@@ -62,7 +62,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
                     DetailsFor.actual(actual).apply {
-                        add("Duplicates" to duplicates.map { it.key }.toList())
+                        add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList())
                     }
                 )
             )
@@ -96,7 +96,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
                     DetailsFor.expectedActual("all elements from", other, actual).apply {
-                        add("Missing" to (other - actual))
+                        add(DetailsFor.MISSING to (other - actual))
                     }
                 )
             )
@@ -116,7 +116,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
                     DetailsFor.expectedActual("no elements from", other, actual).apply {
-                        add("Unexpected" to commonElements)
+                        add(DetailsFor.UNEXPECTED to commonElements)
                     }
                 )
             )
@@ -139,10 +139,10 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                     Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
                     DetailsFor.expectedActual("exactly all elements from", other, actual).apply {
                         if (remainingOther.isNotEmpty()) {
-                            add("Missing" to remainingOther)
+                            add(DetailsFor.MISSING to remainingOther)
                         }
                         if (remainingActual.isNotEmpty()) {
-                            add("Extraneous" to remainingActual)
+                            add(DetailsFor.EXTRANEOUS to remainingActual)
                         }
                     }
                 )

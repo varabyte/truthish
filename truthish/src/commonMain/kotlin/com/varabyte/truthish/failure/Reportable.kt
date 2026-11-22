@@ -16,8 +16,8 @@ abstract class Reportable {
     fun report(report: Report) {
         // Note: The following lines are in reverse order, since each add to the 0th element. In
         // practice, it's rare that both will even be set at the same time.
-        name?.let { report.details.add(0, "Name" to AnyStringifier(it)) }
-        message?.let { report.details.add(0, "Message" to AnyStringifier(it)) }
+        name?.let { report.details.add(0, DetailsFor.NAME to AnyStringifier(it)) }
+        message?.let { report.details.add(0, DetailsFor.MESSAGE to AnyStringifier(it)) }
 
         strategy.handle(report)
     }
