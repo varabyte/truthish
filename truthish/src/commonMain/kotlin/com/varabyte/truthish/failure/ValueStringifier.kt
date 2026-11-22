@@ -27,7 +27,9 @@ internal expect fun KClass<*>.toQualifiedString(): String
 /**
  * The most elements a collection shows before the rest are summarized as `… (N more)`.
  */
-private const val MAX_ELEMENTS = 10
+// NOTE: An odd number was intentionally chosen so that truncations that happen around a pivot point can show the same
+// number of elements before and after.
+private const val MAX_ELEMENTS = 11
 
 /**
  * A base class for rendering a value in a report.

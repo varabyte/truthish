@@ -101,11 +101,11 @@ class ReportTest {
             "Summary",
             Details(
                 listOf(
-                    "Ten" to (1..10).toList(),
                     "Eleven" to (1..11).toList(),
+                    "Twelve" to (1..12).toList(),
                     "Set" to (1..20).toSet(),
-                    "Map" to (1..12).associateWith { it },
-                    "Nested" to listOf((1..12).toList()),
+                    "Map" to (1..13).associateWith { it },
+                    "Nested" to listOf((1..13).toList()),
                 )
             )
         )
@@ -113,11 +113,11 @@ class ReportTest {
             """
             Summary
 
-            Ten   : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-            Eleven: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (1 more) ]
-            Set   : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (10 more) }
-            Map   : { 1 to 1, 2 to 2, 3 to 3, 4 to 4, 5 to 5, 6 to 6, 7 to 7, 8 to 8, 9 to 9, 10 to 10, … (2 more) }
-            Nested: [ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (2 more) ] ]
+            Eleven: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
+            Twelve: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (1 more) ]
+            Set   : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) }
+            Map   : { 1 to 1, 2 to 2, 3 to 3, 4 to 4, 5 to 5, 6 to 6, 7 to 7, 8 to 8, 9 to 9, 10 to 10, 11 to 11, … (2 more) }
+            Nested: [ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (2 more) ] ]
 
             """.trimIndent()
         )
