@@ -96,6 +96,34 @@ class ReportTest {
     }
 
     @Test
+    fun longCollectionsAreTruncated() {
+        val report = Report(
+            "Summary",
+            Details(
+                listOf(
+                    "Ten" to (1..10).toList(),
+                    "Eleven" to (1..11).toList(),
+                    "Set" to (1..20).toSet(),
+                    "Map" to (1..12).associateWith { it },
+                    "Nested" to listOf((1..12).toList()),
+                )
+            )
+        )
+        assertThat(report.toString()).isEqualTo(
+            """
+            Summary
+
+            Ten   : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+            Eleven: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (1 more) ]
+            Set   : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (10 more) }
+            Map   : { 1 to 1, 2 to 2, 3 to 3, 4 to 4, 5 to 5, 6 to 6, 7 to 7, 8 to 8, 9 to 9, 10 to 10, … (2 more) }
+            Nested: [ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (2 more) ] ]
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun detailsCanBeAdded() {
         val details = Details(listOf("Middle" to 2))
         details.add("Last" to 3)

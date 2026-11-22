@@ -39,6 +39,25 @@ class ComparisonFailureTest {
     }
 
     @Test
+    fun diffValuesAreNotTruncated() {
+        val e = assertThrows<ComparisonFailure> {
+            assertThat((1..12).toList()).isEqualTo((1..13).toList())
+        }
+
+        assertThat(e.expected).isEqualTo("[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]")
+        assertThat(e.actual).isEqualTo("[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]")
+        assertThat(e.message!!).isEqualTo(
+            """
+            Two objects were not equal
+
+            Expected: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (3 more) ]
+            But was : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … (2 more) ]
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun noDiffWhenValuesPrintTheSame() {
         data class Point(val x: Int, val y: Int)
 

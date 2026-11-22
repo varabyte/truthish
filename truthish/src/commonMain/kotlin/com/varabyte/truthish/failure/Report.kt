@@ -67,14 +67,14 @@ internal class ComparedValues(val expected: String, val actual: String)
 private fun Report.findComparedValues(): ComparedValues? {
     val expected = details.items.find { it.first == DetailsFor.EXPECTED } ?: return null
     val actual = details.items.find { it.first == DetailsFor.BUT_WAS } ?: return null
-    return ComparedValues(details.render(expected), details.render(actual))
+    return ComparedValues(details.render(expected, truncate = false), details.render(actual, truncate = false))
         .takeIf { it.expected != it.actual }
 }
 
 internal fun Report.toAssertionError(): AssertionError = createAssertionError(findComparedValues())
 
-private fun Details.render(item: Pair<String, Any?>): String {
-    val value = stringifierFor(item.second).toString()
+private fun Details.render(item: Pair<String, Any?>, truncate: Boolean = true): String {
+    val value = stringifierFor(item.second).render(truncate)
     return extras[item.first]?.let { extra -> "$value ($extra)" } ?: value
 }
 

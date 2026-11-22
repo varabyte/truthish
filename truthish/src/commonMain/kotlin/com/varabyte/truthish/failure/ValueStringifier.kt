@@ -25,10 +25,24 @@ internal fun stringifierFor(value: Any?): ValueStringifier {
 internal expect fun KClass<*>.toQualifiedString(): String
 
 /**
- * A base class which forces subclasses to override their [toString] method.
+ * The most elements a collection shows before the rest are summarized as `… (N more)`.
+ */
+private const val MAX_ELEMENTS = 10
+
+/**
+ * A base class for rendering a value in a report.
  */
 internal sealed class ValueStringifier(private val value: Any?) {
-    abstract override fun toString(): String
+    /**
+     * Renders the value.
+     *
+     * @param truncate Whether to shorten large values (e.g. long collections) to keep reports readable. Values
+     *   handed to a diff viewer are rendered in full, since it can show them better. It is up to each child stringifier
+     *   to decide how to handle this -- most can simply ignore it.
+     */
+    abstract fun render(truncate: Boolean): String
+
+    final override fun toString() = render(truncate = true)
 
     /**
      * Extra detail to tell this value apart from another value that prints the same.
@@ -40,7 +54,7 @@ internal sealed class ValueStringifier(private val value: Any?) {
  * A default Stringifier that can handle any case.
  */
 internal class AnyStringifier(private val value: Any?) : ValueStringifier(value) {
-    override fun toString() = value?.let { "$it" } ?: "(null)"
+    override fun render(truncate: Boolean) = value?.let { "$it" } ?: "(null)"
 }
 
 private enum class Quote(val char: Char) {
@@ -68,11 +82,11 @@ private fun Char.toEscapedString(quote: Quote): String {
 }
 
 internal class CharStringifier(private val value: Char) : ValueStringifier(value) {
-    override fun toString() = "'${value.toEscapedString(Quote.SINGLE)}'"
+    override fun render(truncate: Boolean) = "'${value.toEscapedString(Quote.SINGLE)}'"
 }
 
 internal class StringStringifier(private val value: CharSequence) : ValueStringifier(value) {
-    override fun toString() = buildString {
+    override fun render(truncate: Boolean) = buildString {
         append('"')
         value.forEach { append(it.toEscapedString(Quote.DOUBLE)) }
         append('"')
@@ -82,26 +96,35 @@ internal class StringStringifier(private val value: CharSequence) : ValueStringi
 /**
  * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
  *
+ * @param truncate Whether to show only the first [MAX_ELEMENTS] values, followed by a count of the rest.
  * @param padded Whether to put spaces inside [open] and [close]. Collections use them, while fixed-size groups like
  *   triples read better tight, e.g. `(1, 2, 3)`.
  */
-private fun Iterable<*>.joinValues(open: String, close: String, padded: Boolean = true): String {
-    if (none()) return "$open$close"
+private fun Iterable<*>.joinValues(open: String, close: String, truncate: Boolean, padded: Boolean = true): String {
+    val values = toList()
+    if (values.isEmpty()) return "$open$close"
+
+    val shown = if (truncate && values.size > MAX_ELEMENTS) values.take(MAX_ELEMENTS) else values
+    val parts = shown.map { stringifierFor(it).render(truncate) }.toMutableList()
+    if (shown.size < values.size) {
+        parts.add("… (${values.size - shown.size} more)")
+    }
+
     val padding = if (padded) " " else ""
-    return joinToString(", ", prefix = "$open$padding", postfix = "$padding$close") { stringifierFor(it).toString() }
+    return parts.joinToString(", ", prefix = "$open$padding", postfix = "$padding$close")
 }
 
 internal class IterableStringifier(private val value: Iterable<*>) : ValueStringifier(value) {
-    override fun toString() = value.joinValues("[", "]")
+    override fun render(truncate: Boolean) = value.joinValues("[", "]", truncate = truncate)
 }
 
 internal class MapStringifier(private val value: Map<*, *>) : ValueStringifier(value) {
-    override fun toString() = value.entries.joinValues("{", "}")
+    override fun render(truncate: Boolean) = value.entries.joinValues("{", "}", truncate = truncate)
 }
 
 // This should take precedence over IterableStringifier!
 internal class SetStringifier(private val value: Set<*>) : ValueStringifier(value) {
-    override fun toString() = value.joinValues("{", "}")
+    override fun render(truncate: Boolean) = value.joinValues("{", "}", truncate = truncate)
 }
 
 /**
@@ -112,21 +135,23 @@ internal class PairStringifier(
     private val first: Any?,
     private val second: Any?,
 ) : ValueStringifier(value) {
-    override fun toString() =
-        "${stringifierFor(first).wrapInParensIfNecessary()} to ${stringifierFor(second).wrapInParensIfNecessary()}"
+    override fun render(truncate: Boolean) =
+        "${stringifierFor(first).wrapInParensIfNecessary(truncate)} to " +
+            stringifierFor(second).wrapInParensIfNecessary(truncate)
 
     // A nested value that is itself a pair needs parentheses to stay unambiguous, e.g. `(1 to 2) to 3`
-    private fun ValueStringifier.wrapInParensIfNecessary(): String {
-        return if (this is PairStringifier) "($this)" else toString()
+    private fun ValueStringifier.wrapInParensIfNecessary(truncate: Boolean): String {
+        val rendered = render(truncate)
+        return if (this is PairStringifier) "($rendered)" else rendered
     }
 }
 
 internal class TripleStringifier(private val value: Triple<*, *, *>) : ValueStringifier(value) {
-    override fun toString() = value.toList().joinValues("(", ")", padded = false)
+    override fun render(truncate: Boolean) = value.toList().joinValues("(", ")", truncate = truncate, padded = false)
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {
     // Anonymous classes have no simple name
-    override fun toString() = value.simpleName ?: value.toQualifiedString()
+    override fun render(truncate: Boolean) = value.simpleName ?: value.toQualifiedString()
     override fun toDetailString() = value.toQualifiedString()
 }
