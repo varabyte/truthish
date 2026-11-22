@@ -35,6 +35,9 @@ class ReportTest {
                     "List" to listOf(1, 2),
                     "Set" to setOf(1, 2),
                     "Map" to mapOf("a" to 1),
+                    "Empty list" to emptyList<Int>(),
+                    "Empty set" to emptySet<Int>(),
+                    "Empty map" to emptyMap<String, Int>(),
                 )
             )
         )
@@ -42,12 +45,15 @@ class ReportTest {
             """
             Summary
 
-            String: "x"
-            Char  : 'c'
-            Null  : (null)
-            List  : [ 1, 2 ]
-            Set   : { 1, 2 }
-            Map   : { a=1 }
+            String    : "x"
+            Char      : 'c'
+            Null      : (null)
+            List      : [ 1, 2 ]
+            Set       : { 1, 2 }
+            Map       : { a=1 }
+            Empty list: []
+            Empty set : {}
+            Empty map : {}
 
             """.trimIndent()
         )

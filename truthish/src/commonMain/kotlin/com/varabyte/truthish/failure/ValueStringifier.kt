@@ -48,17 +48,25 @@ internal class StringStringifier(private val value: CharSequence) : ValueStringi
     override fun toString() = "\"$value\""
 }
 
+/**
+ * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
+ */
+private fun Iterable<*>.joinValues(open: String, close: String): String {
+    if (none()) return "$open$close"
+    return joinToString(", ", prefix = "$open ", postfix = " $close") { stringifierFor(it).toString() }
+}
+
 internal class IterableStringifier(private val value: Iterable<*>) : ValueStringifier(value) {
-    override fun toString() = "[ ${value.joinToString(", ") { stringifierFor(it).toString() }} ]"
+    override fun toString() = value.joinValues("[", "]")
 }
 
 internal class MapStringifier(private val value: Map<*, *>) : ValueStringifier(value) {
-    override fun toString() = "{ ${value.entries.joinToString(", ") { stringifierFor(it).toString() }} }"
+    override fun toString() = value.entries.joinValues("{", "}")
 }
 
 // This should take precedence over IterableStringifier!
 internal class SetStringifier(private val value: Set<*>) : ValueStringifier(value) {
-    override fun toString() = "{ ${value.joinToString(", ") { stringifierFor(it).toString() }} }"
+    override fun toString() = value.joinValues("{", "}")
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {
