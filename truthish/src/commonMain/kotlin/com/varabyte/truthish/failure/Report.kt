@@ -146,16 +146,20 @@ object DetailsFor {
             if (expected != null && actual != null) {
                 val expectedStringifier = stringifierFor(expected)
                 val actualStringifier = stringifierFor(actual)
+                // Compare full renderings, since otherwise different values might look the same after relevant elements
+                // were elided.
+                val expectedString = expectedStringifier.render(truncate = false)
+                val actualString = actualStringifier.render(truncate = false)
 
-                var isOutputAmbiguous = expectedStringifier.toString() == actualStringifier.toString()
+                var isOutputAmbiguous = expectedString == actualString
 
                 // String output adds surrounding quotes, but that can still result in confusing error like
                 // Expected: "x"    But was: x
                 // so handle those cases too.
-                if (!isOutputAmbiguous && expected is String && actual !is String && expected == actualStringifier.toString()) {
+                if (!isOutputAmbiguous && expected is String && actual !is String && expected == actualString) {
                     isOutputAmbiguous = true
                 }
-                if (!isOutputAmbiguous && expected !is String && actual is String && expectedStringifier.toString() == actual) {
+                if (!isOutputAmbiguous && expected !is String && actual is String && expectedString == actual) {
                     isOutputAmbiguous = true
                 }
 
