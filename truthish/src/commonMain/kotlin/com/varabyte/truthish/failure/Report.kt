@@ -122,6 +122,8 @@ object DetailsFor {
     const val EXTRANEOUS = "Extraneous"
     const val UNEXPECTED = "Unexpected"
     const val DUPLICATES = "Duplicates"
+    const val IN_ORDER_SO_FAR = "In order so far"
+    const val OUT_OF_ORDER = "Out of order"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was

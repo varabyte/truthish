@@ -82,7 +82,11 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsAllIn("c", "b", "a").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.IN_ORDER_SO_FAR, "[ \"c\" ]",
+                DetailsFor.OUT_OF_ORDER, "\"b\"",
+            )
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsNoneIn("c", "d", "e")
@@ -100,7 +104,11 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ \"c\" ]")
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.IN_ORDER_SO_FAR, "[ \"c\" ]",
+                DetailsFor.OUT_OF_ORDER, "\"b\"",
+            )
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "a", "b", "c")).containsExactly("a", "b", "c")
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.EXTRANEOUS, "[ \"a\" ]")
@@ -115,7 +123,11 @@ class IterableAsserts {
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
                 assertThat(listOf("30", "20", "10", "20")).containsExactly("30", "20", "20", "10").inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.IN_ORDER_SO_FAR, "[ \"30\", \"20\", \"20\" ]",
+                DetailsFor.OUT_OF_ORDER, "\"10\"",
+            )
 
             // Verify inOrder doesn't get triggered if the original assert already failed
             assertThrows<AssertionError> {
@@ -175,7 +187,12 @@ class IterableAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 1 ]")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAllIn(8, 10, 4).inOrder()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, "[ 8, 10, 4 ]", "[ 2, 4, 6, 8, 10 ]")
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                "[ 8, 10, 4 ]", "[ 2, 4, 6, 8, 10 ]",
+                DetailsFor.IN_ORDER_SO_FAR, "[ 8, 10 ]",
+                DetailsFor.OUT_OF_ORDER, "4",
+            )
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsNoneIn(2, 5, 7, 8)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, DetailsFor.UNEXPECTED, "[ 2, 8 ]")

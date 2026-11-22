@@ -200,7 +200,10 @@ class OrderedAsserter<T>(
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COLLECTION_ORDERED,
-                        DetailsFor.expectedActual("in order", other, actual)
+                        DetailsFor.expectedActual("in order", other, actual).apply {
+                            add(DetailsFor.IN_ORDER_SO_FAR to other.subList(0, otherIndex))
+                            add(DetailsFor.OUT_OF_ORDER to lookingFor)
+                        }
                     )
                 )
                 break
