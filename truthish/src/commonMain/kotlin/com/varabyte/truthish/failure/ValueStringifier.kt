@@ -43,12 +43,40 @@ internal class AnyStringifier(private val value: Any?) : ValueStringifier(value)
     override fun toString() = value?.let { "$it" } ?: "(null)"
 }
 
+private enum class Quote(val char: Char) {
+    SINGLE('\''),
+    DOUBLE('"'),
+}
+
+/**
+ * Escapes this character the way it would be written inside a Kotlin literal delimited by [quote].
+ *
+ * This makes invisible characters like tabs, newlines and ANSI escape codes show up in reports, and lets a reported value
+ * be pasted straight back into a test.
+ */
+private fun Char.toEscapedString(quote: Quote): String {
+    return when {
+        this == '\t' -> "\\t"
+        this == '\n' -> "\\n"
+        this == '\r' -> "\\r"
+        this == '\b' -> "\\b"
+        this == '\\' -> "\\\\"
+        this == quote.char -> "\\$this"
+        isISOControl() -> "\\u" + code.toString(16).uppercase().padStart(4, '0')
+        else -> toString()
+    }
+}
+
 internal class CharStringifier(private val value: Char) : ValueStringifier(value) {
-    override fun toString() = "'$value'"
+    override fun toString() = "'${value.toEscapedString(Quote.SINGLE)}'"
 }
 
 internal class StringStringifier(private val value: CharSequence) : ValueStringifier(value) {
-    override fun toString() = "\"$value\""
+    override fun toString() = buildString {
+        append('"')
+        value.forEach { append(it.toEscapedString(Quote.DOUBLE)) }
+        append('"')
+    }
 }
 
 /**

@@ -66,6 +66,36 @@ class ReportTest {
     }
 
     @Test
+    fun specialCharactersAreEscaped() {
+        val report = Report(
+            "Summary",
+            Details(
+                listOf(
+                    "Whitespace" to "a\tb\nc\r",
+                    "Quotes" to "\"x\" 'y'",
+                    "Backslash" to "a\\b",
+                    "ANSI" to "\u001B[31mred\u001B[0m",
+                    "Char quote" to '\'',
+                    "Char tab" to '\t',
+                )
+            )
+        )
+        assertThat(report.toString()).isEqualTo(
+            """
+            Summary
+
+            Whitespace: "a\tb\nc\r"
+            Quotes    : "\"x\" 'y'"
+            Backslash : "a\\b"
+            ANSI      : "\u001B[31mred\u001B[0m"
+            Char quote: '\''
+            Char tab  : '\t'
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun detailsCanBeAdded() {
         val details = Details(listOf("Middle" to 2))
         details.add("Last" to 3)
