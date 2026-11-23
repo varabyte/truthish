@@ -11,7 +11,7 @@ internal sealed interface TruncatedPart<out T> {
 /**
  * How to shorten a long value so a report stays readable.
  */
-internal sealed interface Truncation {
+sealed interface Truncation {
     /** Shows the whole value, e.g. for a diff viewer, which can handle long values better than a report. */
     object None : Truncation
 
@@ -25,7 +25,7 @@ internal sealed interface Truncation {
 /**
  * Where to truncate a long list, for a window of elements that must stay visible (e.g. where two lists first differ).
  */
-internal sealed interface Anchor {
+sealed interface Anchor {
     /**
      * A window centered on [index].
      *

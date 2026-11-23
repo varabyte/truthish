@@ -84,7 +84,7 @@ private fun Details.render(
     context: StringifierContext = context(item.first),
 ): String {
     val (label, value) = item
-    val rendered = stringifierFor(value, context).render()
+    val rendered = ValueStringifier.createFor(value, context).render()
     return extras[label]?.let { extra -> "$rendered ($extra)" } ?: rendered
 }
 
@@ -101,19 +101,30 @@ private fun Details.render(
 class Details internal constructor(
     items: List<Pair<String, Any?>>,
     internal val extras: Map<String, String>,
-    internal val contexts: Map<String, StringifierContext> = emptyMap(),
+    contexts: Map<String, StringifierContext> = emptyMap(),
 ) {
     constructor(items: List<Pair<String, Any?>> = emptyList()) : this(items, emptyMap())
 
     private val _items = items.toMutableList()
     val items: List<Pair<String, Any?>> = _items
 
-    fun add(index: Int, element: Pair<String, Any?>) {
+    private val _contexts = contexts.toMutableMap()
+    internal val contexts: Map<String, StringifierContext> = _contexts
+
+    /**
+     * @param context How to render the value, e.g. `StringifierContext(Truncation.None)` to never truncate it.
+     */
+    fun add(index: Int, element: Pair<String, Any?>, context: StringifierContext = StringifierContext.Default) {
         _items.add(index, element)
+        _contexts[element.first] = context
     }
 
-    fun add(element: Pair<String, Any?>) {
+    /**
+     * @param context How to render the value, e.g. `StringifierContext(Truncation.None)` to never truncate it.
+     */
+    fun add(element: Pair<String, Any?>, context: StringifierContext = StringifierContext.Default) {
         _items.add(element)
+        _contexts[element.first] = context
     }
 }
 
@@ -168,8 +179,8 @@ object DetailsFor {
                 // were elided.
                 fun contextWithFullRender(label: String) =
                     (contexts[label] ?: StringifierContext.Default).copy(truncation = Truncation.None)
-                val expectedStringifier = stringifierFor(expected, contextWithFullRender(expectedLabel))
-                val actualStringifier = stringifierFor(actual, contextWithFullRender(BUT_WAS))
+                val expectedStringifier = ValueStringifier.createFor(expected, contextWithFullRender(expectedLabel))
+                val actualStringifier = ValueStringifier.createFor(actual, contextWithFullRender(BUT_WAS))
                 val expectedString = expectedStringifier.render()
                 val actualString = actualStringifier.render()
 
@@ -225,9 +236,20 @@ object DetailsFor {
      *
      * For consistency / readability, [expectedSuffix] should be lower-case. A space will automatically be inserted
      *   between the "expected" label and the extra information.
+     *
+     * @param expectedContext How to render [expected], e.g. `StringifierContext(Truncation.None)` to never truncate it.
+     * @param actualContext How to render [actual].
      */
-    fun expectedActual(expectedSuffix: String, expected: Any?, actual: Any?): Details {
-        return createExpectedActualDetails("$EXPECTED $expectedSuffix", expected, actual)
+    fun expectedActual(
+        expectedSuffix: String,
+        expected: Any?,
+        actual: Any?,
+        expectedContext: StringifierContext = StringifierContext.Default,
+        actualContext: StringifierContext = StringifierContext.Default,
+    ): Details {
+        val expectedLabel = "$EXPECTED $expectedSuffix"
+        val contexts = mapOf(expectedLabel to expectedContext, BUT_WAS to actualContext)
+        return createExpectedActualDetails(expectedLabel, expected, actual, contexts)
     }
 }
 

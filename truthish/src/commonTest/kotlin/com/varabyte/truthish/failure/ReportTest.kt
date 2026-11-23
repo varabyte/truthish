@@ -142,6 +142,44 @@ class ReportTest {
     }
 
     @Test
+    fun addedDetailsCanSetHowTheyAreRendered() {
+        val details = Details(listOf("Middle" to (1..20).toList()))
+        details.add("Last" to (1..20).toList(), StringifierContext(Truncation.None))
+        details.add(0, "First" to (1..20).toList(), StringifierContext(Truncation.Anchored(Anchor.CenteredOn(9))))
+
+        assertThat(Report("Summary", details).toString()).isEqualTo(
+            """
+            Summary
+
+            First : [ … (4 more), 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, … (5 more) ]
+            Middle: [ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]
+            Last  : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun expectedActualCanSetHowValuesAreRendered() {
+        val details = DetailsFor.expectedActual(
+            "to contain",
+            (1..20).toList(),
+            listOf((1..20).toList()),
+            expectedContext = StringifierContext(Truncation.None),
+        )
+
+        assertThat(Report("Summary", details).toString()).isEqualTo(
+            """
+            Summary
+
+            Expected to contain: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+            But was            : [ [ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ] ]
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun findReturnsRawValues() {
         val details = Details(listOf("Number" to 1, "List" to listOf("a")))
 
