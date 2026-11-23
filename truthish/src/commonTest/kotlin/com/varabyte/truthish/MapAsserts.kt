@@ -92,6 +92,18 @@ class MapAsserts {
             assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('z' to 122, 'a' to 97).inOrder()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
+
+            // Entries are rendered using set formatting (e.g. "{ ... }")
+            assertThrows<AssertionError> {
+                assertThat(mapOf('a' to 97, 'b' to 98)).contains('c' to 99)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.BUT_WAS, "{ 'a' to 97, 'b' to 98 }")
+            assertThrows<AssertionError> {
+                assertThat(mapOf('a' to 97)).containsExactly(mapOf('a' to 97, 'b' to 98))
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                "{ 'a' to 97, 'b' to 98 }",
+                DetailsFor.BUT_WAS, "{ 'a' to 97 }",
+            )
         }
     }
 

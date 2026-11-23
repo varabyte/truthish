@@ -7,7 +7,8 @@ import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.Truncation
 
-private fun <K, V> Map<K, V>.toIterable(): Iterable<Pair<K, V>> = entries.map { it.toPair() }
+// Return as a set, so reports show the entries the way a map is shown, e.g. `{ "a" to 1 }`
+private fun <K, V> Map<K, V>.toIterable(): Iterable<Pair<K, V>> = entries.map { it.toPair() }.toSet()
 
 /**
  * A subject useful for testing the state of a [Map]'s entries.
