@@ -142,6 +142,36 @@ class IterableAsserts {
     }
 
     @Test
+    fun longListsAreTruncatedAroundTheFirstDifference() {
+        // One element replaced
+        assertThrows<AssertionError> {
+            assertThat((1..30).map { if (it == 16) 99 else it }).isEqualTo((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 99, 17, 18, 19, 20, 21, … (9 more) ]",
+        )
+
+        // The lists differ only in length
+        assertThrows<AssertionError> {
+            assertThat((1..20).toList()).isEqualTo((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        // A list short enough to show whole
+        assertThrows<AssertionError> {
+            assertThat((1..30).toList()).isEqualTo((1..5).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5 ]",
+            DetailsFor.BUT_WAS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+        )
+    }
+
+    @Test
     fun setChecks() {
         // Sets are basically just iterables, but we include tests just to make sure using them feels right
         val evensThru10 = (2 .. 10 step 2).toSet()
@@ -200,6 +230,18 @@ class IterableAsserts {
                 assertThat(evensThru10).containsExactly(0, 2, 4, 6, 8, 10)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ 0 ]")
         }
+    }
+
+    @Test
+    fun longSetsAreTruncatedAtBothEnds() {
+        // Sets aren't ordered, so they have no first difference to truncate around
+        assertThrows<AssertionError> {
+            assertThat((1..30).toSet()).isEqualTo((1..31).toSet())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "{ 1, 2, 3, 4, 5, 6, … (20 more), 27, 28, 29, 30, 31 }",
+            DetailsFor.BUT_WAS, "{ 1, 2, 3, 4, 5, 6, … (19 more), 26, 27, 28, 29, 30 }",
+        )
     }
 
     @Test

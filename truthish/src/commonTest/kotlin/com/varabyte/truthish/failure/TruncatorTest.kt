@@ -1,6 +1,8 @@
 package com.varabyte.truthish.failure
 
 import com.varabyte.truthish.assertThat
+import com.varabyte.truthish.failure.Anchor.CenteredOn
+import com.varabyte.truthish.failure.Anchor.EndingAt
 import com.varabyte.truthish.failure.TruncatedPart.Hidden
 import com.varabyte.truthish.failure.TruncatedPart.Shown
 import kotlin.test.Test
@@ -14,17 +16,17 @@ class TruncatorTest {
         val truncator = Truncator(maxElements = 4)
 
         assertThat(truncator.truncate(zeroToThree, 0, 3)).containsExactly(Shown(listOf(0, 1, 2, 3)))
-        assertThat(truncator.truncate(zeroToThree, 2)).containsExactly(Shown(listOf(0, 1, 2, 3)))
+        assertThat(truncator.truncate(zeroToThree, CenteredOn(2))).containsExactly(Shown(listOf(0, 1, 2, 3)))
     }
 
     @Test
     fun oddLimitCentersOnAnchor() {
         val truncator = Truncator(maxElements = 11)
 
-        assertThat(truncator.truncate(zeroToNinetyNine, 49))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(49)))
             .containsExactly(Hidden(44), Shown(listOf(44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54)), Hidden(45))
             .inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 50))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(50)))
             .containsExactly(Hidden(45), Shown(listOf(45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55)), Hidden(44))
             .inOrder()
     }
@@ -33,13 +35,13 @@ class TruncatorTest {
     fun evenLimitLeansTowardTheNearerEnd() {
         val truncator = Truncator(maxElements = 4)
 
-        assertThat(truncator.truncate(zeroToNinetyNine, 4))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(4)))
             .containsExactly(Hidden(2), Shown(listOf(2, 3, 4, 5)), Hidden(94)).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 49))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(49)))
             .containsExactly(Hidden(47), Shown(listOf(47, 48, 49, 50)), Hidden(49)).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 50))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(50)))
             .containsExactly(Hidden(49), Shown(listOf(49, 50, 51, 52)), Hidden(47)).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 94))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(94)))
             .containsExactly(Hidden(93), Shown(listOf(93, 94, 95, 96)), Hidden(3)).inOrder()
     }
 
@@ -47,13 +49,13 @@ class TruncatorTest {
     fun windowsSlideInwardNearTheEnds() {
         val truncator = Truncator(maxElements = 4)
 
-        assertThat(truncator.truncate(zeroToNinetyNine, 0))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(0)))
             .containsExactly(Shown(listOf(0, 1, 2, 3)), Hidden(96)).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 1))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(1)))
             .containsExactly(Shown(listOf(0, 1, 2, 3)), Hidden(96)).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 98))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(98)))
             .containsExactly(Hidden(96), Shown(listOf(96, 97, 98, 99))).inOrder()
-        assertThat(truncator.truncate(zeroToNinetyNine, 99))
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(99)))
             .containsExactly(Hidden(96), Shown(listOf(96, 97, 98, 99))).inOrder()
     }
 
@@ -82,5 +84,35 @@ class TruncatorTest {
         // The windows overlap
         assertThat(truncator.truncate(zeroToNinetyNine, 10, 11))
             .containsExactly(Hidden(9), Shown(listOf(9, 10, 11, 12)), Hidden(87)).inOrder()
+    }
+
+    @Test
+    fun listSizeOverridePlacesTheWindowAsIfTheListWereLonger() {
+        val truncator = Truncator(maxElements = 5)
+        val zeroToTwentyNine = (0..29).toList()
+
+        // Near the end of the list, the window slides inward
+        assertThat(truncator.truncate(zeroToTwentyNine, CenteredOn(28)))
+            .containsExactly(Hidden(25), Shown(listOf(25, 26, 27, 28, 29))).inOrder()
+
+        // A longer list compared with it has room to center the window...
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(28)))
+            .containsExactly(Hidden(26), Shown(listOf(26, 27, 28, 29, 30)), Hidden(69)).inOrder()
+        // ...so the shorter list keeps the same window and shows only the part of it that it has
+        assertThat(truncator.truncate(zeroToTwentyNine, CenteredOn(28, listSizeOverride = 100)))
+            .containsExactly(Hidden(26), Shown(listOf(26, 27, 28, 29))).inOrder()
+    }
+
+    @Test
+    fun endingAtShowsTheElementsUpToTheIndex() {
+        val truncator = Truncator(maxElements = 4)
+
+        assertThat(truncator.truncate(zeroToNinetyNine, EndingAt(10)))
+            .containsExactly(Hidden(7), Shown(listOf(7, 8, 9, 10)), Hidden(89)).inOrder()
+        assertThat(truncator.truncate(zeroToNinetyNine, EndingAt(2)))
+            .containsExactly(Shown(listOf(0, 1, 2, 3)), Hidden(96)).inOrder()
+        // A list that ends before the index shows its last elements
+        assertThat(truncator.truncate((0..9).toList(), EndingAt(10)))
+            .containsExactly(Hidden(7), Shown(listOf(7, 8, 9))).inOrder()
     }
 }

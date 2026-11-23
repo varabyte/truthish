@@ -50,8 +50,8 @@ class ComparisonFailureTest {
             """
             Two objects were not equal
 
-            Expected: [ 1, 2, 3, 4, 5, 6, … (2 more), 9, 10, 11, 12, 13 ]
-            But was : [ 1, 2, 3, 4, 5, 6, … (1 more), 8, 9, 10, 11, 12 ]
+            Expected: [ … (2 more), 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+            But was : [ … (2 more), 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
 
             """.trimIndent()
         )

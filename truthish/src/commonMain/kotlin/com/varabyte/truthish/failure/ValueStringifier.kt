@@ -2,7 +2,15 @@ package com.varabyte.truthish.failure
 
 import kotlin.reflect.KClass
 
-internal fun stringifierFor(value: Any?): ValueStringifier {
+/**
+ * Extra information about how to render a value, beyond the value itself. Stringifiers that don't need a piece of it
+ * ignore it.
+ *
+ * @property anchor Where to truncate the value, if it's a long list.
+ */
+internal class StringifierContext(val anchor: Anchor? = null)
+
+internal fun stringifierFor(value: Any?, context: StringifierContext? = null): ValueStringifier {
     return when (value) {
         is ValueStringifier -> value // In case caller already wrapped `value` in a stringifier themselves
         is Char -> CharStringifier(value)
@@ -12,7 +20,7 @@ internal fun stringifierFor(value: Any?): ValueStringifier {
         is Pair<*, *> -> PairStringifier(value, value.first, value.second)
         is Triple<*, *, *> -> TripleStringifier(value)
         is Set<*> -> SetStringifier(value)
-        is Iterable<*> -> IterableStringifier(value)
+        is Iterable<*> -> IterableStringifier(value, context?.anchor)
         is KClass<*> -> KClassStringifier(value)
         else -> AnyStringifier(value)
     }
@@ -23,15 +31,6 @@ internal fun stringifierFor(value: Any?): ValueStringifier {
  * simple name.
  */
 internal expect fun KClass<*>.toQualifiedString(): String
-
-/**
- * The most elements a collection shows before the rest are summarized as `… (N more)`.
- */
-// NOTE: An odd number was intentionally chosen so that truncations that happen around an anchor can show the same
-// number of elements before and after.
-private const val MAX_ELEMENTS = 11
-
-private val truncator = Truncator(MAX_ELEMENTS)
 
 /**
  * A base class for rendering a value in a report.
@@ -98,24 +97,40 @@ internal class StringStringifier(private val value: CharSequence) : ValueStringi
 }
 
 /**
+ * How [joinValues] shortens a long collection.
+ */
+private sealed interface Truncation {
+    object None : Truncation
+    object BothEnds : Truncation
+    class Anchored(val anchor: Anchor) : Truncation
+}
+
+/**
  * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
  *
- * @param truncate Whether to show at most [MAX_ELEMENTS] values, from both ends, with a count in place of the rest.
  * @param padded Whether to put spaces inside [open] and [close]. Collections use them, while fixed-size groups like
  *   triples read better tight, e.g. `(1, 2, 3)`.
  */
-private fun Iterable<*>.joinValues(open: String, close: String, truncate: Boolean, padded: Boolean = true): String {
+private fun Iterable<*>.joinValues(
+    open: String,
+    close: String,
+    truncation: Truncation,
+    padded: Boolean = true,
+): String {
     val values = toList()
     if (values.isEmpty()) return "$open$close"
 
-    val truncatedValues = if (truncate) {
-        truncator.truncate(values, firstAnchor = 0, secondAnchor = values.lastIndex)
-    } else {
-        listOf(TruncatedPart.Shown(values))
+    val truncator = Truncator.forReports
+    val truncatedValues = when (truncation) {
+        Truncation.None -> listOf(TruncatedPart.Shown(values))
+        Truncation.BothEnds -> truncator.truncate(values, firstAnchor = 0, secondAnchor = values.lastIndex)
+        is Truncation.Anchored -> truncator.truncate(values, truncation.anchor)
     }
+    // Nested collections don't share their parent's anchor, since its index doesn't apply to them
+    val truncateNested = truncation != Truncation.None
     val parts = truncatedValues.flatMap { part ->
         when (part) {
-            is TruncatedPart.Shown -> part.values.map { stringifierFor(it).render(truncate) }
+            is TruncatedPart.Shown -> part.values.map { stringifierFor(it).render(truncateNested) }
             is TruncatedPart.Hidden -> listOf("… (${part.count} more)")
         }
     }
@@ -124,17 +139,34 @@ private fun Iterable<*>.joinValues(open: String, close: String, truncate: Boolea
     return parts.joinToString(", ", prefix = "$open$padding", postfix = "$padding$close")
 }
 
-internal class IterableStringifier(private val value: Iterable<*>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.joinValues("[", "]", truncate = truncate)
+// For simple boolean cases, we only consider truncating long collections from both ends or not truncating at all.
+private fun Boolean.toTruncation() = if (this) Truncation.BothEnds else Truncation.None
+
+/**
+ * @param anchor If set, a long list is truncated around it, rather than the default behavior of truncating from both
+ *   ends.
+ */
+internal class IterableStringifier(
+    private val value: Iterable<*>,
+    private val anchor: Anchor? = null,
+) : ValueStringifier(value) {
+    override fun render(truncate: Boolean): String {
+        val truncation = when {
+            !truncate -> Truncation.None
+            anchor != null -> Truncation.Anchored(anchor)
+            else -> Truncation.BothEnds
+        }
+        return value.joinValues("[", "]", truncation)
+    }
 }
 
 internal class MapStringifier(private val value: Map<*, *>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.entries.joinValues("{", "}", truncate = truncate)
+    override fun render(truncate: Boolean) = value.entries.joinValues("{", "}", truncate.toTruncation())
 }
 
 // This should take precedence over IterableStringifier!
 internal class SetStringifier(private val value: Set<*>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.joinValues("{", "}", truncate = truncate)
+    override fun render(truncate: Boolean) = value.joinValues("{", "}", truncate.toTruncation())
 }
 
 /**
@@ -157,7 +189,8 @@ internal class PairStringifier(
 }
 
 internal class TripleStringifier(private val value: Triple<*, *, *>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.toList().joinValues("(", ")", truncate = truncate, padded = false)
+    override fun render(truncate: Boolean) =
+        value.toList().joinValues("(", ")", truncate.toTruncation(), padded = false)
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {

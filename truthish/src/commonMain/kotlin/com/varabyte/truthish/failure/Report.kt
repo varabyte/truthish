@@ -74,8 +74,9 @@ private fun Report.findComparedValues(): ComparedValues? {
 internal fun Report.toAssertionError(): AssertionError = createAssertionError(findComparedValues())
 
 private fun Details.render(item: Pair<String, Any?>, truncate: Boolean = true): String {
-    val value = stringifierFor(item.second).render(truncate)
-    return extras[item.first]?.let { extra -> "$value ($extra)" } ?: value
+    val (label, value) = item
+    val rendered = stringifierFor(value, contexts[label]).render(truncate)
+    return extras[label]?.let { extra -> "$rendered ($extra)" } ?: rendered
 }
 
 /**
@@ -85,10 +86,13 @@ private fun Details.render(item: Pair<String, Any?>, truncate: Boolean = true): 
  *   somehow. The key for the extra information should be the same as the key for the details item. For example,
  *   the detail ("Expected" to "xyz") can be decorated with extra information by adding the extra entry
  *   ("Expected" to "Type is `ClassXyz`").
+ * @property contexts Optional extra information about how to render values, keyed like [extras], e.g. where to
+ *   truncate a long list.
  */
 class Details internal constructor(
     items: List<Pair<String, Any?>>,
     internal val extras: Map<String, String>,
+    internal val contexts: Map<String, StringifierContext> = emptyMap(),
 ) {
     constructor(items: List<Pair<String, Any?>> = emptyList()) : this(items, emptyMap())
 
@@ -141,7 +145,12 @@ object DetailsFor {
         return Details(listOf(EXPECTED to expected))
     }
 
-    private fun createExpectedActualDetails(expectedLabel: String, expected: Any?, actual: Any?): Details {
+    private fun createExpectedActualDetails(
+        expectedLabel: String,
+        expected: Any?,
+        actual: Any?,
+        contexts: Map<String, StringifierContext> = emptyMap(),
+    ): Details {
         val extras = buildMap<String, String> {
             if (expected != null && actual != null) {
                 val expectedStringifier = stringifierFor(expected)
@@ -177,7 +186,7 @@ object DetailsFor {
                 }
             }
         }
-        return Details(listOf(expectedLabel to expected, BUT_WAS to actual), extras)
+        return Details(listOf(expectedLabel to expected, BUT_WAS to actual), extras, contexts)
     }
 
     /**
@@ -187,7 +196,14 @@ object DetailsFor {
      * shown as a diff between the two values.
      */
     fun expectedActual(expected: Any?, actual: Any?): Details {
-        return createExpectedActualDetails(EXPECTED, expected, actual)
+        val anchor = if (expected is List<*> && actual is List<*>) expected.findSharedAnchor(actual) else null
+        val contexts = if (anchor != null) {
+            val context = StringifierContext(anchor = anchor)
+            mapOf(EXPECTED to context, BUT_WAS to context)
+        } else {
+            emptyMap()
+        }
+        return createExpectedActualDetails(EXPECTED, expected, actual, contexts)
     }
 
     /**
@@ -199,5 +215,24 @@ object DetailsFor {
      */
     fun expectedActual(expectedSuffix: String, expected: Any?, actual: Any?): Details {
         return createExpectedActualDetails("$EXPECTED $expectedSuffix", expected, actual)
+    }
+}
+
+/**
+ * Finds where to truncate this list and [other], two lists being compared, so both show where they first differ and
+ * their shown elements line up. Returns `null` if the lists are equal.
+ */
+private fun List<*>.findSharedAnchor(other: List<*>): Anchor? {
+    val shorterSize = minOf(size, other.size)
+    val firstDifference = (0 until shorterSize).firstOrNull { this[it] != other[it] }
+        ?: shorterSize.takeIf { size != other.size }
+        ?: return null
+
+    return when {
+        // A list that fits is never truncated, so the other list starts where it does, to line up
+        shorterSize <= Truncator.forReports.maxElements -> Anchor.CenteredOn(0)
+        // One list starts with the other, so show where the shorter one ends
+        firstDifference == shorterSize -> Anchor.EndingAt(firstDifference)
+        else -> Anchor.CenteredOn(firstDifference, listSizeOverride = maxOf(size, other.size))
     }
 }
