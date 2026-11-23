@@ -114,10 +114,10 @@ class ReportTest {
             Summary
 
             Eleven: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
-            Twelve: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (1 more) ]
-            Set   : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) }
-            Map   : { 1 to 1, 2 to 2, 3 to 3, 4 to 4, 5 to 5, 6 to 6, 7 to 7, 8 to 8, 9 to 9, 10 to 10, 11 to 11, … (2 more) }
-            Nested: [ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (2 more) ] ]
+            Twelve: [ 1, 2, 3, 4, 5, 6, … (1 more), 8, 9, 10, 11, 12 ]
+            Set   : { 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 }
+            Map   : { 1 to 1, 2 to 2, 3 to 3, 4 to 4, 5 to 5, 6 to 6, … (2 more), 9 to 9, 10 to 10, 11 to 11, 12 to 12, 13 to 13 }
+            Nested: [ [ 1, 2, 3, 4, 5, 6, … (2 more), 9, 10, 11, 12, 13 ] ]
 
             """.trimIndent()
         )

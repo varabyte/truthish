@@ -27,9 +27,11 @@ internal expect fun KClass<*>.toQualifiedString(): String
 /**
  * The most elements a collection shows before the rest are summarized as `… (N more)`.
  */
-// NOTE: An odd number was intentionally chosen so that truncations that happen around a pivot point can show the same
+// NOTE: An odd number was intentionally chosen so that truncations that happen around an anchor can show the same
 // number of elements before and after.
 private const val MAX_ELEMENTS = 11
+
+private val truncator = Truncator(MAX_ELEMENTS)
 
 /**
  * A base class for rendering a value in a report.
@@ -98,7 +100,7 @@ internal class StringStringifier(private val value: CharSequence) : ValueStringi
 /**
  * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
  *
- * @param truncate Whether to show only the first [MAX_ELEMENTS] values, followed by a count of the rest.
+ * @param truncate Whether to show at most [MAX_ELEMENTS] values, from both ends, with a count in place of the rest.
  * @param padded Whether to put spaces inside [open] and [close]. Collections use them, while fixed-size groups like
  *   triples read better tight, e.g. `(1, 2, 3)`.
  */
@@ -106,10 +108,16 @@ private fun Iterable<*>.joinValues(open: String, close: String, truncate: Boolea
     val values = toList()
     if (values.isEmpty()) return "$open$close"
 
-    val shown = if (truncate && values.size > MAX_ELEMENTS) values.take(MAX_ELEMENTS) else values
-    val parts = shown.map { stringifierFor(it).render(truncate) }.toMutableList()
-    if (shown.size < values.size) {
-        parts.add("… (${values.size - shown.size} more)")
+    val truncatedValues = if (truncate) {
+        truncator.truncate(values, firstAnchor = 0, secondAnchor = values.lastIndex)
+    } else {
+        listOf(TruncatedPart.Shown(values))
+    }
+    val parts = truncatedValues.flatMap { part ->
+        when (part) {
+            is TruncatedPart.Shown -> part.values.map { stringifierFor(it).render(truncate) }
+            is TruncatedPart.Hidden -> listOf("… (${part.count} more)")
+        }
     }
 
     val padding = if (padded) " " else ""
