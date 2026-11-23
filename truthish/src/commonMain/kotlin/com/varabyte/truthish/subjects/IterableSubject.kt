@@ -136,9 +136,9 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
         val commonElements = actual.intersect(other).toList()
         if (commonElements.isNotEmpty()) {
-            // `intersect` keeps the order of `actual`, so its first element is the first one found there
-            val firstFoundIndex = actual.indexOf(commonElements.first())
-            val firstFoundContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(firstFoundIndex)))
+            // `intersect` keeps the order of `actual`, so its first element is the first one found there. Both lists
+            // are centered on their copy of it.
+            val firstSharedElement = commonElements.first()
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
@@ -146,7 +146,8 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                         "no elements from",
                         other,
                         actual,
-                        actualContext = firstFoundContext,
+                        expectedContext = other.indexOf(firstSharedElement).toCenteredContext(),
+                        actualContext = actual.indexOf(firstSharedElement).toCenteredContext(),
                     ).apply {
                         add(DetailsFor.UNEXPECTED to commonElements, FailureValueContext)
                     }
@@ -169,7 +170,13 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-                    DetailsFor.expectedActual("exactly all elements from", other, actual).apply {
+                    DetailsFor.expectedActual(
+                        "exactly all elements from",
+                        other,
+                        actual,
+                        expectedContext = other.anchorOnFirstUnmatched(actual),
+                        actualContext = actual.anchorOnFirstUnmatched(other),
+                    ).apply {
                         if (remainingOther.isNotEmpty()) {
                             add(DetailsFor.MISSING to remainingOther, FailureValueContext)
                         }
@@ -186,6 +193,40 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     }
 
     fun containsExactly(vararg elements: T) = containsExactly(elements.asIterable())
+}
+
+/**
+ * Creates a context centered on the first element of this list that [other] has no copy of.
+ *
+ * If that element appears more than once in this list, any copy could be the unmatched one, so the context shows the
+ * first two copies instead.
+ */
+private fun <T> List<T>.anchorOnFirstUnmatched(other: List<T>): StringifierContext {
+    /**
+     * Finds the first element of this list that [other] has no copy of, e.g. the first missing or extraneous element.
+     *
+     * Each element of [other] matches at most one element of this list, so a duplicate beyond the copies in [other]
+     * counts as unmatched.
+     */
+    fun List<T>.findFirstUnmatchedIndex(other: List<T>): Int? {
+        val unmatchedCounts = other.groupingBy { it }.eachCount().toMutableMap()
+        return indexOfFirst { element ->
+            val count = unmatchedCounts[element] ?: 0
+            unmatchedCounts[element] = count - 1
+            count <= 0
+        }.takeIf { it >= 0 }
+    }
+
+    val index = findFirstUnmatchedIndex(other) ?: return StringifierContext.Default
+    val copyIndices = indices.filter { this[it] == this[index] }
+    if (copyIndices.size < 2) return index.toCenteredContext()
+    return StringifierContext(Truncation.Anchored(Anchor.CenteredOn(copyIndices[0]), Anchor.CenteredOn(copyIndices[1])))
+}
+
+// Centers a long list on this int value (which should be an index), or keeps both ends if there's nothing to center on
+private fun Int?.toCenteredContext(): StringifierContext {
+    val index = this ?: return StringifierContext.Default
+    return StringifierContext(Truncation.Anchored(Anchor.CenteredOn(index)))
 }
 
 fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other)
@@ -217,23 +258,40 @@ class OrderedAsserter<T>(
     fun inOrder() {
         var actualIndex = 0
         var otherIndex = 0
+        var lastMatchIndex: Int? = null
 
         while (otherIndex < other.size) {
             val lookingFor = other[otherIndex]
             while (actualIndex < actual.size) {
                 if (!usedIndices.contains(actualIndex) && actual[actualIndex] == lookingFor) {
                     usedIndices.add(actualIndex)
+                    lastMatchIndex = actualIndex
                     break
                 }
                 ++actualIndex
             }
             if (actualIndex == actual.size) {
                 // If we got here, we couldn't find the next element from [other]
+                // Where the element sits in the actual list, which is before where the elements so far were found
+                val foundIndex = actual.indices.firstOrNull { !usedIndices.contains(it) && actual[it] == lookingFor }
+                // Show the element next to the previous match, which it was expected to come after
+                val actualContext = if (foundIndex != null && lastMatchIndex != null) {
+                    StringifierContext(
+                        Truncation.Anchored(Anchor.CenteredOn(foundIndex), Anchor.CenteredOn(lastMatchIndex))
+                    )
+                } else {
+                    foundIndex.toCenteredContext()
+                }
                 parent.report(
                     Report(
                         Summaries.EXPECTED_COLLECTION_ORDERED,
-                        DetailsFor.expectedActual("in order", other, actual).apply {
-                            add(DetailsFor.IN_ORDER_SO_FAR to other.subList(0, otherIndex))
+                        DetailsFor.expectedActual(
+                            "in order",
+                            other,
+                            actual,
+                            expectedContext = otherIndex.toCenteredContext(),
+                            actualContext = actualContext,
+                        ).apply {
                             add(DetailsFor.OUT_OF_ORDER to lookingFor, FailureValueContext)
                         }
                     )

@@ -84,7 +84,6 @@ class IterableAsserts {
                 assertThat(listOf("a", "b", "c")).containsAllIn("c", "b", "a").inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                DetailsFor.IN_ORDER_SO_FAR, "[ \"c\" ]",
                 DetailsFor.OUT_OF_ORDER, "\"b\"",
             )
 
@@ -106,7 +105,6 @@ class IterableAsserts {
                 assertThat(listOf("a", "b", "c")).containsExactly("c", "b", "a").inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                DetailsFor.IN_ORDER_SO_FAR, "[ \"c\" ]",
                 DetailsFor.OUT_OF_ORDER, "\"b\"",
             )
             assertThrows<AssertionError> {
@@ -125,7 +123,6 @@ class IterableAsserts {
                 assertThat(listOf("30", "20", "10", "20")).containsExactly("30", "20", "20", "10").inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                DetailsFor.IN_ORDER_SO_FAR, "[ \"30\", \"20\", \"20\" ]",
                 DetailsFor.OUT_OF_ORDER, "\"10\"",
             )
 
@@ -273,7 +270,6 @@ class IterableAsserts {
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
                 "[ 8, 10, 4 ]", "[ 2, 4, 6, 8, 10 ]",
-                DetailsFor.IN_ORDER_SO_FAR, "[ 8, 10 ]",
                 DetailsFor.OUT_OF_ORDER, "4",
             )
             assertThrows<AssertionError> {
@@ -303,12 +299,53 @@ class IterableAsserts {
             DetailsFor.DUPLICATES, "[ 3, 7 ]",
         )
 
-        // The first shared element
+        // Both lists are centered on their copy of the first shared element (16)
         assertThrows<AssertionError> {
-            assertThat((1..30).toList()).containsNoneIn(40, 16, 20)
+            assertThat((1..30).toList()).containsNoneIn((40..69).map { if (it == 55) 16 else it })
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            "[ … (10 more), 50, 51, 52, 53, 54, 16, 56, 57, 58, 59, 60, … (9 more) ]",
             DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+            DetailsFor.UNEXPECTED, "[ 16 ]",
+        )
+    }
+
+    @Test
+    fun longListsAreTruncatedAroundWhatIsOutOfPlace() {
+        // Expected is centered on its first missing element (5), and But was on its first extraneous one (99)
+        assertThrows<AssertionError> {
+            assertThat((1..30).filter { it != 5 } + 99).containsExactly((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+            DetailsFor.BUT_WAS, "[ … (19 more), 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 99 ]",
+            DetailsFor.MISSING, "[ 5 ]",
+            DetailsFor.EXTRANEOUS, "[ 99 ]",
+        )
+
+        // The extraneous element (27) has two copies, and either could be the extra one, so both are shown
+        assertThrows<AssertionError> {
+            assertThat((1..30).map { if (it == 16) 27 else it }).containsExactly((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.BUT_WAS,
+            "[ … (13 more), 14, 15, 27, 17, 18, 19, … (5 more), 25, 26, 27, 28, 29, … (1 more) ]",
+            DetailsFor.MISSING, "[ 16 ]",
+            DetailsFor.EXTRANEOUS, "[ 27 ]",
+        )
+
+        // Expected is centered on the out-of-order element (11). But was shows where it is in the actual list, and
+        // where the element expected before it (20) was found.
+        assertThrows<AssertionError> {
+            assertThat((1..30).toList())
+                .containsExactly((1..30).map { if (it == 10) 20 else if (it == 20) 10 else it })
+                .inOrder()
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_ORDERED,
+            "[ … (5 more), 6, 7, 8, 9, 20, 11, 12, 13, 14, 15, 16, … (14 more) ]",
+            DetailsFor.BUT_WAS,
+            "[ … (7 more), 8, 9, 10, 11, 12, 13, … (4 more), 18, 19, 20, 21, 22, … (8 more) ]",
+            DetailsFor.OUT_OF_ORDER, "11",
         )
     }
 
