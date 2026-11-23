@@ -49,7 +49,11 @@ sealed interface Anchor {
      * @param listSizeOverride Place the window as if the list had this many elements, e.g. the size of the longer of
      *   two lists being compared, so both get the same window.
      */
-    class CenteredOn(override val index: Int, val listSizeOverride: Int? = null) : Anchor
+    // NOTE: `listSizeOverride` is internal because we don't expect a third-party use case for it. We can make it public
+    // later if we become aware of one.
+    class CenteredOn internal constructor(override val index: Int, internal val listSizeOverride: Int?) : Anchor {
+        constructor(index: Int) : this(index, listSizeOverride = null)
+    }
 
     /**
      * A window whose last element is [index], or the end of the list if it's shorter.
