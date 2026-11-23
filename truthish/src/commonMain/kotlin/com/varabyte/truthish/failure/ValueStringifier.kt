@@ -125,8 +125,8 @@ private fun Iterable<*>.joinValues(
     val truncator = Truncator.forReports
     val truncatedValues = when (truncation) {
         Truncation.None -> listOf(TruncatedPart.Shown(values))
-        Truncation.BothEnds -> truncator.truncate(values, firstAnchor = 0, secondAnchor = values.lastIndex)
-        is Truncation.Anchored -> truncator.truncate(values, truncation.anchor)
+        Truncation.BothEnds -> truncator.truncate(values, Anchor.CenteredOn(0), Anchor.CenteredOn(values.lastIndex))
+        is Truncation.Anchored -> truncator.truncate(values, truncation.firstAnchor, truncation.secondAnchor)
     }
     val nestedContext = StringifierContext(truncation.inherited())
     val parts = truncatedValues.flatMap { part ->

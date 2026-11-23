@@ -18,14 +18,24 @@ sealed interface Truncation {
     /** Keeps the start and end of a long collection. */
     object BothEnds : Truncation
 
-    /** Keeps a window at [anchor]. */
-    class Anchored(val anchor: Anchor) : Truncation
+    /**
+     * Keeps a window at [firstAnchor], and another at [secondAnchor] if set.
+     *
+     * Two anchors result in two windows, each window sharing half of the amount of allowed elements, the first getting
+     * any extra element. Windows that meet become one window instead.
+     */
+    class Anchored(val firstAnchor: Anchor, val secondAnchor: Anchor?) : Truncation {
+        constructor(anchor: Anchor) : this(anchor, null)
+    }
 }
 
 /**
  * Where to truncate a long list, for a window of elements that must stay visible (e.g. where two lists first differ).
  */
 sealed interface Anchor {
+    /** The index the window is relative to. */
+    val index: Int
+
     /**
      * A window centered on [index].
      *
@@ -39,18 +49,18 @@ sealed interface Anchor {
      * @param listSizeOverride Place the window as if the list had this many elements, e.g. the size of the longer of
      *   two lists being compared, so both get the same window.
      */
-    class CenteredOn(val index: Int, val listSizeOverride: Int? = null) : Anchor
+    class CenteredOn(override val index: Int, val listSizeOverride: Int? = null) : Anchor
 
     /**
      * A window whose last element is [index], or the end of the list if it's shorter.
      */
-    class EndingAt(val index: Int) : Anchor
+    class EndingAt(override val index: Int) : Anchor
 }
 
 /**
  * Shortens long collections so a report stays readable.
  *
- * The shown elements are kept in a window at an [Anchor], or in two windows at both ends of the collection.
+ * The shown elements are kept in a window at each [Anchor].
  */
 internal class Truncator(val maxElements: Int) {
     companion object {
@@ -63,38 +73,50 @@ internal class Truncator(val maxElements: Int) {
     }
 
     /**
-     * Truncates [values] to a window at [anchor], or keeps them whole if they fit in the limit.
+     * Truncates [values] to a window at [anchor].
+     *
+     * Truncation will not happen if the whole list fits into the element limit.
      */
-    fun <T> truncate(values: List<T>, anchor: Anchor): List<TruncatedPart<T>> {
+    fun <T> truncate(values: List<T>, anchor: Anchor) = truncate(values, anchor, null)
+
+    /**
+     * Truncates [values] to a window at [firstAnchor], and another at [secondAnchor] if set.
+     *
+     * Truncation will not happen if the whole list fits into the element limit.
+     *
+     * Two windows split the limit, [firstAnchor] getting any extra element. Windows that meet become one window
+     * instead. The anchors can be in either order.
+     */
+    fun <T> truncate(values: List<T>, firstAnchor: Anchor, secondAnchor: Anchor?): List<TruncatedPart<T>> {
         if (values.size <= maxElements) return listOf(TruncatedPart.Shown(values))
 
-        val window = when (anchor) {
-            is Anchor.CenteredOn -> findWindow(anchor.listSizeOverride ?: values.size, anchor.index, maxElements)
-            is Anchor.EndingAt -> {
-                val start = (anchor.index - maxElements + 1).coerceAtLeast(0)
-                start until start + maxElements
-            }
+        if (secondAnchor == null) {
+            val window = firstAnchor.findWindow(values.size, maxElements)
+            return split(values, listOf(window.first..minOf(window.last, values.lastIndex)))
         }
-        return split(values, listOf(window.first..minOf(window.last, values.lastIndex)))
+
+        val (earlier, later) = listOf(
+            firstAnchor.findWindow(values.size, (maxElements + 1) / 2),
+            secondAnchor.findWindow(values.size, maxElements / 2),
+        ).sortedBy { it.first }
+        if (later.first > earlier.last + 1) {
+            return split(values, listOf(earlier, later).map { it.first..minOf(it.last, values.lastIndex) })
+        }
+
+        // The windows overlap or touch, so one full-size window starting at the earlier one can hold them both
+        val start = earlier.first.coerceAtMost(values.size - maxElements)
+        return split(values, listOf(start until start + maxElements))
     }
 
     /**
-     * Truncates [values] to one window around each anchor, or keeps them whole if they fit in the limit.
-     *
-     * The two windows split the limit, the first getting any extra element. Windows that meet become one window
-     * instead.
+     * Finds the window of [count] indices at this anchor in a collection of [size] elements.
      */
-    fun <T> truncate(values: List<T>, firstAnchor: Int, secondAnchor: Int): List<TruncatedPart<T>> {
-        require(firstAnchor <= secondAnchor) { "Anchors out of order: $firstAnchor, $secondAnchor" }
-        if (values.size <= maxElements) return listOf(TruncatedPart.Shown(values))
-
-        val first = findWindow(values.size, firstAnchor, (maxElements + 1) / 2)
-        val second = findWindow(values.size, secondAnchor, maxElements / 2)
-        if (second.first > first.last + 1) return split(values, listOf(first, second))
-
-        // The windows overlap or touch, so one full-size window starting at the first one can hold them both
-        val start = first.first.coerceAtMost(values.size - maxElements)
-        return split(values, listOf(start until start + maxElements))
+    private fun Anchor.findWindow(size: Int, count: Int): IntRange = when (this) {
+        is Anchor.CenteredOn -> findCenteredWindow(listSizeOverride ?: size, index, count)
+        is Anchor.EndingAt -> {
+            val start = (index - count + 1).coerceAtLeast(0)
+            start until start + count
+        }
     }
 
     /**
@@ -104,7 +126,7 @@ internal class Truncator(val maxElements: Int) {
      * can't sit exactly in the middle, the extra index goes toward the nearer end, so early anchors are biased to the
      * start of the collection and later anchors to the end.
      */
-    private fun findWindow(size: Int, anchor: Int, count: Int): IntRange {
+    private fun findCenteredWindow(size: Int, anchor: Int, count: Int): IntRange {
         val others = count - 1
         val isInFirstHalf = anchor <= (size - 1) / 2
         val before = if (isInFirstHalf) (others + 1) / 2 else others / 2

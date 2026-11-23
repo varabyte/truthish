@@ -15,7 +15,7 @@ class TruncatorTest {
     fun collectionsThatFitAreShownWhole() {
         val truncator = Truncator(maxElements = 4)
 
-        assertThat(truncator.truncate(zeroToThree, 0, 3)).containsExactly(Shown(listOf(0, 1, 2, 3)))
+        assertThat(truncator.truncate(zeroToThree, CenteredOn(0), CenteredOn(3))).containsExactly(Shown(listOf(0, 1, 2, 3)))
         assertThat(truncator.truncate(zeroToThree, CenteredOn(2))).containsExactly(Shown(listOf(0, 1, 2, 3)))
     }
 
@@ -64,13 +64,32 @@ class TruncatorTest {
         val evenTruncator = Truncator(maxElements = 4)
         val oddTruncator = Truncator(maxElements = 11)
 
-        assertThat(evenTruncator.truncate(zeroToNinetyNine, 0, 99))
+        assertThat(evenTruncator.truncate(zeroToNinetyNine, CenteredOn(0), CenteredOn(99)))
             .containsExactly(Shown(listOf(0, 1)), Hidden(96), Shown(listOf(98, 99))).inOrder()
-        assertThat(oddTruncator.truncate(zeroToNinetyNine, 0, 99))
+        assertThat(oddTruncator.truncate(zeroToNinetyNine, CenteredOn(0), CenteredOn(99)))
             .containsExactly(Shown(listOf(0, 1, 2, 3, 4, 5)), Hidden(89), Shown(listOf(95, 96, 97, 98, 99)))
             .inOrder()
-        assertThat(evenTruncator.truncate(zeroToNinetyNine, 20, 80))
+        assertThat(evenTruncator.truncate(zeroToNinetyNine, CenteredOn(20), CenteredOn(80)))
             .containsExactly(Hidden(19), Shown(listOf(19, 20)), Hidden(59), Shown(listOf(80, 81)), Hidden(18))
+            .inOrder()
+    }
+
+    @Test
+    fun twoAnchorsCanBeOfDifferentKinds() {
+        val truncator = Truncator(maxElements = 4)
+
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(20), EndingAt(80)))
+            .containsExactly(Hidden(19), Shown(listOf(19, 20)), Hidden(58), Shown(listOf(79, 80)), Hidden(19))
+            .inOrder()
+    }
+
+    @Test
+    fun anchorsCanBeInEitherOrder() {
+        val truncator = Truncator(maxElements = 5)
+
+        // The first anchor still gets the extra element
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(80), CenteredOn(20)))
+            .containsExactly(Hidden(19), Shown(listOf(19, 20)), Hidden(58), Shown(listOf(79, 80, 81)), Hidden(18))
             .inOrder()
     }
 
@@ -78,11 +97,11 @@ class TruncatorTest {
     fun windowsThatMeetAreMerged() {
         val truncator = Truncator(maxElements = 4)
 
-        // The windows touch without overlapping
-        assertThat(truncator.truncate(zeroToNinetyNine, 10, 12))
+        // These windows touch without overlapping
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(10), CenteredOn(12)))
             .containsExactly(Hidden(9), Shown(listOf(9, 10, 11, 12)), Hidden(87)).inOrder()
-        // The windows overlap
-        assertThat(truncator.truncate(zeroToNinetyNine, 10, 11))
+        // These windows overlap
+        assertThat(truncator.truncate(zeroToNinetyNine, CenteredOn(10), CenteredOn(11)))
             .containsExactly(Hidden(9), Shown(listOf(9, 10, 11, 12)), Hidden(87)).inOrder()
     }
 
