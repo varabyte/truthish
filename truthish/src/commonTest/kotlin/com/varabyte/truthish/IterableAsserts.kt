@@ -142,6 +142,59 @@ class IterableAsserts {
     }
 
     @Test
+    fun valuesThatCauseFailuresAreNeverTruncated() {
+        assertThrows<AssertionError> {
+            assertThat((1..5).toList()).containsAllIn((1..20).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS,
+            DetailsFor.MISSING, "[ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat((1..20).toList()).containsExactly(1)
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.EXTRANEOUS, "[ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat((1..20).toList()).containsNoneIn((1..20).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            DetailsFor.UNEXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat((1..20).toList() + (1..20).toList()).hasNoDuplicates()
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
+            DetailsFor.DUPLICATES, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        // Single elements that are long lists themselves
+        assertThrows<AssertionError> {
+            assertThat(listOf(listOf(1))).contains((1..20).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS,
+            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(listOf((1..20).toList())).doesNotContain((1..20).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(listOf((1..20).toList(), listOf(1))).containsExactly(listOf(1), (1..20).toList()).inOrder()
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_ORDERED,
+            DetailsFor.OUT_OF_ORDER, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+        )
+    }
+
+    @Test
     fun longListsAreTruncatedAroundTheFirstDifference() {
         // One element replaced
         assertThrows<AssertionError> {

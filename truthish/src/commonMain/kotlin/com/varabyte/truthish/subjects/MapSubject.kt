@@ -44,7 +44,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
-                    DetailsFor.expectedActual("to contain key", key, actual.keys)
+                    DetailsFor.expectedActual("to contain key", key, actual.keys, expectedContext = FailureValueContext)
                 )
             )
         }
@@ -55,7 +55,12 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
-                    DetailsFor.expectedActual("to contain value", value, actual.values)
+                    DetailsFor.expectedActual(
+                        "to contain value",
+                        value,
+                        actual.values,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }
@@ -66,7 +71,12 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                    DetailsFor.expectedActual("not to contain key", key, actual.keys)
+                    DetailsFor.expectedActual(
+                        "not to contain key",
+                        key,
+                        actual.keys,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }
@@ -77,7 +87,12 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                    DetailsFor.expectedActual("not to contain value", value, actual.values)
+                    DetailsFor.expectedActual(
+                        "not to contain value",
+                        value,
+                        actual.values,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }

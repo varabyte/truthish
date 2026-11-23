@@ -3,7 +3,12 @@ package com.varabyte.truthish.subjects
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Reportable
+import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.Truncation
+
+// Never truncate values that made an assertion fail, since they're what the user needs to see
+internal val FailureValueContext = StringifierContext(Truncation.None)
 
 @Suppress("NAME_SHADOWING")
 open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
@@ -38,7 +43,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
-                    DetailsFor.expectedActual("to contain", element, actual)
+                    DetailsFor.expectedActual("to contain", element, actual, expectedContext = FailureValueContext)
                 )
             )
         }
@@ -49,7 +54,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                    DetailsFor.expectedActual("not to contain", element, actual)
+                    DetailsFor.expectedActual("not to contain", element, actual, expectedContext = FailureValueContext)
                 )
             )
         }
@@ -62,7 +67,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
                     DetailsFor.actual(actual).apply {
-                        add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList())
+                        add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList(), FailureValueContext)
                     }
                 )
             )
@@ -96,7 +101,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
                     DetailsFor.expectedActual("all elements from", other, actual).apply {
-                        add(DetailsFor.MISSING to (other - actual))
+                        add(DetailsFor.MISSING to (other - actual), FailureValueContext)
                     }
                 )
             )
@@ -116,7 +121,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
                     DetailsFor.expectedActual("no elements from", other, actual).apply {
-                        add(DetailsFor.UNEXPECTED to commonElements)
+                        add(DetailsFor.UNEXPECTED to commonElements, FailureValueContext)
                     }
                 )
             )
@@ -139,10 +144,10 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                     Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
                     DetailsFor.expectedActual("exactly all elements from", other, actual).apply {
                         if (remainingOther.isNotEmpty()) {
-                            add(DetailsFor.MISSING to remainingOther)
+                            add(DetailsFor.MISSING to remainingOther, FailureValueContext)
                         }
                         if (remainingActual.isNotEmpty()) {
-                            add(DetailsFor.EXTRANEOUS to remainingActual)
+                            add(DetailsFor.EXTRANEOUS to remainingActual, FailureValueContext)
                         }
                     }
                 )
@@ -202,7 +207,7 @@ class OrderedAsserter<T>(
                         Summaries.EXPECTED_COLLECTION_ORDERED,
                         DetailsFor.expectedActual("in order", other, actual).apply {
                             add(DetailsFor.IN_ORDER_SO_FAR to other.subList(0, otherIndex))
-                            add(DetailsFor.OUT_OF_ORDER to lookingFor)
+                            add(DetailsFor.OUT_OF_ORDER to lookingFor, FailureValueContext)
                         }
                     )
                 )
