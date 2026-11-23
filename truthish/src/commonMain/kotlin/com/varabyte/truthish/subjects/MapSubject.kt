@@ -1,8 +1,11 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.Truncation
 
 private fun <K, V> Map<K, V>.toIterable(): Iterable<Pair<K, V>> = entries.map { it.toPair() }
 
@@ -68,6 +71,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
 
     fun doesNotContainKey(key: K) {
         if (actual.containsKey(key)) {
+            val foundAtContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(actual.keys.indexOf(key))))
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
@@ -76,6 +80,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                         key,
                         actual.keys,
                         expectedContext = FailureValueContext,
+                        actualContext = foundAtContext,
                     )
                 )
             )
@@ -84,6 +89,9 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
 
     fun doesNotContainValue(value: V) {
         if (actual.containsValue(value)) {
+            val foundAtContext = StringifierContext(
+                Truncation.Anchored(Anchor.CenteredOn(actual.values.indexOf(value)))
+            )
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
@@ -92,6 +100,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                         value,
                         actual.values,
                         expectedContext = FailureValueContext,
+                        actualContext = foundAtContext,
                     )
                 )
             )

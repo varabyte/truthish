@@ -286,6 +286,33 @@ class IterableAsserts {
     }
 
     @Test
+    fun longListsAreTruncatedAroundTheElementThatCausedTheFailure() {
+        assertThrows<AssertionError> {
+            assertThat((1..30).toList()).doesNotContain(16)
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+        )
+
+        // Both copies of the first duplicate (3), even though there are more (7)
+        assertThrows<AssertionError> {
+            assertThat((1..30).map { if (it == 16) 3 else if (it == 25) 7 else it }).hasNoDuplicates()
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
+            DetailsFor.VALUE, "[ 1, 2, 3, 4, 5, 6, … (7 more), 14, 15, 3, 17, 18, … (12 more) ]",
+            DetailsFor.DUPLICATES, "[ 3, 7 ]",
+        )
+
+        // The first shared element
+        assertThrows<AssertionError> {
+            assertThat((1..30).toList()).containsNoneIn(40, 16, 20)
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+        )
+    }
+
+    @Test
     fun longSetsAreTruncatedAtBothEnds() {
         // Sets aren't ordered, so they have no first difference to truncate around
         assertThrows<AssertionError> {

@@ -1,5 +1,7 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.failure.Anchor
+import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Reportable
@@ -51,10 +53,17 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
     fun doesNotContain(element: T) {
         if (actual.contains(element)) {
+            val foundAtContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(actual.indexOf(element))))
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                    DetailsFor.expectedActual("not to contain", element, actual, expectedContext = FailureValueContext)
+                    DetailsFor.expectedActual(
+                        "not to contain",
+                        element,
+                        actual,
+                        expectedContext = FailureValueContext,
+                        actualContext = foundAtContext,
+                    )
                 )
             )
         }
@@ -63,10 +72,20 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun hasNoDuplicates() {
         val duplicates = actual.groupingBy { it }.eachCount().filter { it.value > 1 }
         if (duplicates.isNotEmpty()) {
+            // Show both copies of the first duplicate as an example. Others, if any, are still listed in full under
+            // Duplicates.
+            val seen = mutableSetOf<T>()
+            // `add` returns false for an element that was already seen
+            val repeatIndex = actual.indexOfFirst { !seen.add(it) }
+            val originalIndex = actual.indexOf(actual[repeatIndex])
+            val firstDuplicateContext = StringifierContext(
+                Truncation.Anchored(Anchor.CenteredOn(originalIndex), Anchor.CenteredOn(repeatIndex))
+            )
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
-                    DetailsFor.actual(actual).apply {
+                    Details().apply {
+                        add(DetailsFor.VALUE to actual, firstDuplicateContext)
                         add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList(), FailureValueContext)
                     }
                 )
@@ -117,10 +136,18 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
         val commonElements = actual.intersect(other).toList()
         if (commonElements.isNotEmpty()) {
+            // `intersect` keeps the order of `actual`, so its first element is the first one found there
+            val firstFoundIndex = actual.indexOf(commonElements.first())
+            val firstFoundContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(firstFoundIndex)))
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                    DetailsFor.expectedActual("no elements from", other, actual).apply {
+                    DetailsFor.expectedActual(
+                        "no elements from",
+                        other,
+                        actual,
+                        actualContext = firstFoundContext,
+                    ).apply {
                         add(DetailsFor.UNEXPECTED to commonElements, FailureValueContext)
                     }
                 )

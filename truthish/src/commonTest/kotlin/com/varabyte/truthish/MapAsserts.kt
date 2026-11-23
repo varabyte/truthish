@@ -94,4 +94,23 @@ class MapAsserts {
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED)
         }
     }
+
+    @Test
+    fun longMapsAreTruncatedAroundTheElementThatCausedTheFailure() {
+        val tens = (1..30).associateWith { it * 10 }
+
+        assertThrows<AssertionError> {
+            assertThat(tens).doesNotContainKey(16)
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "{ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) }",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(tens).doesNotContainValue(160)
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "[ … (10 more), 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, … (9 more) ]",
+        )
+    }
 }
