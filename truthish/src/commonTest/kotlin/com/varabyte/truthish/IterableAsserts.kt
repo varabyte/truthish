@@ -247,21 +247,21 @@ class IterableAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(evensThru10).isEmpty()
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY, DetailsFor.VALUE, "[ 2, 4, 6, 8, 10 ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_EMPTY, DetailsFor.VALUE, "{ 2, 4, 6, 8, 10 }")
             assertThrows<AssertionError> {
                 assertThat(setOf<Int>()).isNotEmpty()
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_EMPTY)
 
             assertThrows<AssertionError> {
                 assertThat(evensThru10).contains(9)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "9", "[ 2, 4, 6, 8, 10 ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "9", "{ 2, 4, 6, 8, 10 }")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).doesNotContain(8)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "8", "[ 2, 4, 6, 8, 10 ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "8", "{ 2, 4, 6, 8, 10 }")
 
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAnyIn(1, 3, 5)
-            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "[ 1, 3, 5 ]", "[ 2, 4, 6, 8, 10 ]")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "[ 1, 3, 5 ]", "{ 2, 4, 6, 8, 10 }")
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsAllIn(1, 4, 8)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 1 ]")
@@ -269,7 +269,7 @@ class IterableAsserts {
                 assertThat(evensThru10).containsAllIn(8, 10, 4).inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                "[ 8, 10, 4 ]", "[ 2, 4, 6, 8, 10 ]",
+                "[ 8, 10, 4 ]", "{ 2, 4, 6, 8, 10 }",
                 DetailsFor.OUT_OF_ORDER, "4",
             )
             assertThrows<AssertionError> {
@@ -278,6 +278,16 @@ class IterableAsserts {
             assertThrows<AssertionError> {
                 assertThat(evensThru10).containsExactly(0, 2, 4, 6, 8, 10)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.MISSING, "[ 0 ]")
+            assertThrows<AssertionError> {
+                assertThat(evensThru10).containsExactly(setOf(2, 4, 6))
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                "{ 2, 4, 6 }", "{ 2, 4, 6, 8, 10 }",
+                DetailsFor.EXTRANEOUS, "[ 8, 10 ]",
+            )
+            assertThrows<AssertionError> {
+                assertThat(evensThru10).containsExactly(setOf(10, 8, 6, 4, 2)).inOrder()
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, "{ 10, 8, 6, 4, 2 }", "{ 2, 4, 6, 8, 10 }")
         }
     }
 
@@ -368,5 +378,7 @@ class IterableAsserts {
         assertThat(sequenceOf<String>()).isEmpty()
         assertThat(sequenceOf(1, 2, 3)).isNotEmpty()
         assertThat(('a' .. 'z').asSequence()).hasSize(26)
+        // Some sequences can only be iterated once
+        assertThat(sequenceOf(1, 2, 3).constrainOnce()).containsExactly(1, 2, 3).inOrder()
     }
 }
