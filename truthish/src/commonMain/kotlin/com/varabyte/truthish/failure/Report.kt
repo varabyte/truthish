@@ -219,7 +219,12 @@ object DetailsFor {
      * shown as a diff between the two values.
      */
     fun expectedActual(expected: Any?, actual: Any?): Details {
-        val anchor = if (expected is List<*> && actual is List<*>) expected.findSharedAnchor(actual) else null
+        val anchor = when {
+            expected is List<*> && actual is List<*> -> expected.findSharedAnchor(actual, Truncator.forReports)
+            expected is CharSequence && actual is CharSequence ->
+                expected.toList().findSharedAnchor(actual.toList(), Truncator.forStrings)
+            else -> null
+        }
         val contexts = if (anchor != null) {
             val context = StringifierContext(Truncation.Anchored(anchor))
             mapOf(EXPECTED to context, BUT_WAS to context)
@@ -253,10 +258,10 @@ object DetailsFor {
 }
 
 /**
- * Finds where to truncate this list and [other], two lists being compared, so both show where they first differ and
- * their shown elements line up. Returns `null` if the lists are equal.
+ * Finds where [truncator] should cut this list and [other], two lists (for strings, character lists) being compared, so
+ * both show where they first differ and their shown elements line up. Returns `null` if the lists are equal.
  */
-private fun List<*>.findSharedAnchor(other: List<*>): Anchor? {
+private fun List<*>.findSharedAnchor(other: List<*>, truncator: Truncator): Anchor? {
     val shorterSize = minOf(size, other.size)
     val firstDifference = (0 until shorterSize).firstOrNull { this[it] != other[it] }
         ?: shorterSize.takeIf { size != other.size }
@@ -264,7 +269,7 @@ private fun List<*>.findSharedAnchor(other: List<*>): Anchor? {
 
     return when {
         // A list that fits is never truncated, so the other list starts where it does, to line up
-        shorterSize <= Truncator.forReports.maxElements -> Anchor.CenteredOn(0)
+        shorterSize <= truncator.maxElements -> Anchor.CenteredOn(0)
         // One list starts with the other, so show where the shorter one ends
         firstDifference == shorterSize -> Anchor.EndingAt(firstDifference)
         else -> Anchor.CenteredOn(firstDifference, listSizeOverride = maxOf(size, other.size))

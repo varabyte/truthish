@@ -138,4 +138,36 @@ class StringAsserts {
             DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
         )
     }
+
+    @Test
+    fun longStringsAreTruncatedAroundTheFirstDifference() {
+        val numbers = (1..100).joinToString(",")
+
+        // One character replaced (the "5" of "50")
+        assertThrows<AssertionError> {
+            assertThat(numbers.replace(",50,", ",X0,")).isEqualTo(numbers)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+            DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,X0,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+        )
+
+        // The strings differ only in length
+        assertThrows<AssertionError> {
+            assertThat((1..60).joinToString(",")).isEqualTo(numbers)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,\" … (120 more chars)",
+            DetailsFor.BUT_WAS, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60\"",
+        )
+
+        // A string short enough to show whole
+        assertThrows<AssertionError> {
+            assertThat(numbers).isEqualTo("1,2,3")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "\"1,2,3\"",
+            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+        )
+    }
 }
