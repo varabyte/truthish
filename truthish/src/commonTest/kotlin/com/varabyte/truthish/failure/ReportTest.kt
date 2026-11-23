@@ -124,6 +124,36 @@ class ReportTest {
     }
 
     @Test
+    fun longStringsAreTruncated() {
+        val numbers = (1..100).joinToString(",")
+        val details = Details(
+            listOf(
+                "Hundred" to numbers.take(100), // Max allowed before truncation
+                "All" to numbers,
+                "Escapes" to "\n".repeat(101),
+                "Nested" to listOf(numbers),
+            )
+        )
+        val fiftyIndex = numbers.indexOf(",50,") + 1
+        details.add("Anchored" to numbers, StringifierContext(Truncation.Anchored(Anchor.CenteredOn(fiftyIndex))))
+        details.add("Full" to numbers, StringifierContext(Truncation.None))
+
+        assertThat(Report("Summary", details).toString()).isEqualTo(
+            """
+            Summary
+
+            Hundred : "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3"
+            All     : "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20" … (191 more chars) "4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100"
+            Escapes : "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" … (1 more char) "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            Nested  : [ "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20" … (191 more chars) "4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100" ]
+            Anchored: … (88 more chars) "3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66" … (103 more chars)
+            Full    : "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100"
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun detailsCanBeAdded() {
         val details = Details(listOf("Middle" to 2))
         details.add("Last" to 3)

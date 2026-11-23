@@ -41,7 +41,7 @@ sealed class ValueStringifier(private val value: Any?) {
             return when (value) {
                 is ValueStringifier -> value // In case caller already wrapped `value` in a stringifier themselves
                 is Char -> CharStringifier(value)
-                is CharSequence -> StringStringifier(value)
+                is CharSequence -> StringStringifier(value, truncation)
                 is Map<*, *> -> MapStringifier(value, truncation)
                 is Map.Entry<*, *> -> PairStringifier(value, truncation)
                 is Pair<*, *> -> PairStringifier(value, truncation)
@@ -99,13 +99,33 @@ internal class CharStringifier(private val value: Char) : ValueStringifier(value
     override fun render() = "'${value.toEscapedString(Quote.SINGLE)}'"
 }
 
-internal class StringStringifier(private val value: CharSequence) : ValueStringifier(value) {
-    override fun render() = buildString {
-        append('"')
-        value.forEach { append(it.toEscapedString(Quote.DOUBLE)) }
-        append('"')
+/**
+ * Renders a string in quotes, e.g. `"abc"`.
+ */
+internal class StringStringifier(
+    private val value: CharSequence,
+    private val truncation: Truncation,
+) : ValueStringifier(value) {
+    // Characters are cut before they're escaped, so an escape like `\n` is never split
+    override fun render() = Truncator.forStrings.truncate(value.toList(), truncation).joinToString(" ") { part ->
+        when (part) {
+            is TruncatedPart.Shown -> part.values.joinToString("", prefix = "\"", postfix = "\"") {
+                it.toEscapedString(Quote.DOUBLE)
+            }
+            is TruncatedPart.Hidden -> "… (${part.count} more ${if (part.count == 1) "char" else "chars"})"
+        }
     }
 }
+
+/**
+ * Truncates [values] the way [truncation] asks for.
+ */
+private fun <T> Truncator.truncate(values: List<T>, truncation: Truncation): List<TruncatedPart<T>> =
+    when (truncation) {
+        Truncation.None -> listOf(TruncatedPart.Shown(values))
+        Truncation.BothEnds -> truncate(values, Anchor.CenteredOn(0), Anchor.CenteredOn(values.lastIndex))
+        is Truncation.Anchored -> truncate(values, truncation.firstAnchor, truncation.secondAnchor)
+    }
 
 /**
  * Joins these values, each formatted with its own stringifier, between [open] and [close], e.g. `[ 1, 2 ]` or `[]`.
@@ -122,12 +142,7 @@ private fun Iterable<*>.joinValues(
     val values = toList()
     if (values.isEmpty()) return "$open$close"
 
-    val truncator = Truncator.forReports
-    val truncatedValues = when (truncation) {
-        Truncation.None -> listOf(TruncatedPart.Shown(values))
-        Truncation.BothEnds -> truncator.truncate(values, Anchor.CenteredOn(0), Anchor.CenteredOn(values.lastIndex))
-        is Truncation.Anchored -> truncator.truncate(values, truncation.firstAnchor, truncation.secondAnchor)
-    }
+    val truncatedValues = Truncator.forReports.truncate(values, truncation)
     val nestedContext = StringifierContext(truncation.inherited())
     val parts = truncatedValues.flatMap { part ->
         when (part) {

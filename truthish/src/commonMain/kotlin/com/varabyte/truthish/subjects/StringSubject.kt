@@ -46,7 +46,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun startsWith(expected: CharSequence) {
         if (!actual.startsWith(expected)) {
             report(
-                Report(Summaries.EXPECTED_STARTS_WITH, DetailsFor.expectedActual("to start with", expected, actual))
+                Report(
+                    Summaries.EXPECTED_STARTS_WITH,
+                    DetailsFor.expectedActual(
+                        "to start with",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -56,7 +64,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
             report(
                 Report(
                     Summaries.EXPECTED_NOT_STARTS_WITH,
-                    DetailsFor.expectedActual("not to start with", expected, actual)
+                    DetailsFor.expectedActual(
+                        "not to start with",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }
@@ -65,7 +78,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun endsWith(expected: CharSequence) {
         if (!actual.endsWith(expected)) {
             report(
-                Report(Summaries.EXPECTED_ENDS_WITH, DetailsFor.expectedActual("to end with", expected, actual))
+                Report(
+                    Summaries.EXPECTED_ENDS_WITH,
+                    DetailsFor.expectedActual(
+                        "to end with",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -75,7 +96,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
             report(
                 Report(
                     Summaries.EXPECTED_NOT_ENDS_WITH,
-                    DetailsFor.expectedActual("not to end with", expected, actual)
+                    DetailsFor.expectedActual(
+                        "not to end with",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }
@@ -84,7 +110,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun matches(regex: Regex) {
         if (!regex.matches(actual)) {
             report(
-                Report(Summaries.EXPECTED_MATCH, DetailsFor.expectedActual("to match", regex.pattern, actual))
+                Report(
+                    Summaries.EXPECTED_MATCH,
+                    DetailsFor.expectedActual(
+                        "to match",
+                        regex.pattern,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -96,7 +130,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun doesNotMatch(regex: Regex) {
         if (regex.matches(actual)) {
             report(
-                Report(Summaries.EXPECTED_NOT_MATCH, DetailsFor.expectedActual("not to match", regex.pattern, actual))
+                Report(
+                    Summaries.EXPECTED_NOT_MATCH,
+                    DetailsFor.expectedActual(
+                        "not to match",
+                        regex.pattern,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -108,7 +150,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun contains(expected: CharSequence) {
         if (!actual.contains(expected)) {
             report(
-                Report(Summaries.EXPECTED_CONTAINS, DetailsFor.expectedActual("to contain", expected, actual))
+                Report(
+                    Summaries.EXPECTED_CONTAINS,
+                    DetailsFor.expectedActual(
+                        "to contain",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -118,7 +168,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
             report(
                 Report(
                     Summaries.EXPECTED_CONTAINS,
-                    DetailsFor.expectedActual("to contain match", regex.pattern, actual)
+                    DetailsFor.expectedActual(
+                        "to contain match",
+                        regex.pattern,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }
@@ -131,7 +186,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun doesNotContain(expected: CharSequence) {
         if (actual.contains(expected)) {
             report(
-                Report(Summaries.EXPECTED_NOT_CONTAINS, DetailsFor.expectedActual("not to contain", expected, actual))
+                Report(
+                    Summaries.EXPECTED_NOT_CONTAINS,
+                    DetailsFor.expectedActual(
+                        "not to contain",
+                        expected,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
+                )
             )
         }
     }
@@ -141,7 +204,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
             report(
                 Report(
                     Summaries.EXPECTED_NOT_CONTAINS,
-                    DetailsFor.expectedActual("not to contain match", regex.pattern, actual)
+                    DetailsFor.expectedActual(
+                        "not to contain match",
+                        regex.pattern,
+                        actual,
+                        expectedContext = FailureValueContext,
+                    )
                 )
             )
         }

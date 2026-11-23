@@ -62,7 +62,7 @@ sealed interface Anchor {
 }
 
 /**
- * Shortens long collections so a report stays readable.
+ * Shortens long collections (or strings, as lists of characters) so a report stays readable.
  *
  * The shown elements are kept in a window at each [Anchor].
  */
@@ -74,6 +74,11 @@ internal class Truncator(val maxElements: Int) {
         // NOTE: An odd number was intentionally chosen so that truncations that happen around an anchor can show the
         // same number of elements before and after.
         val forReports = Truncator(maxElements = 11)
+
+        /**
+         * The truncator reports use for strings, which shows at most 100 characters.
+         */
+        val forStrings = Truncator(maxElements = 100)
     }
 
     /**

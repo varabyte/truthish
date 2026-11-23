@@ -107,4 +107,35 @@ class StringAsserts {
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS)
         }
     }
+
+    @Test
+    fun valuesThatCauseFailuresAreNeverTruncated() {
+        val numbers = (1..100).joinToString(",")
+
+        assertThrows<AssertionError> {
+            assertThat("Hello World").contains(numbers)
+        }.assertSubstrings(
+            Summaries.EXPECTED_CONTAINS,
+            "Expected to contain", "\"$numbers\"",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat("Hello World").matches(numbers)
+        }.assertSubstrings(
+            Summaries.EXPECTED_MATCH,
+            "Expected to match", "\"$numbers\"",
+        )
+    }
+
+    @Test
+    fun longStringsAreTruncatedAtBothEnds() {
+        val numbers = (1..100).joinToString(",")
+
+        assertThrows<AssertionError> {
+            assertThat(numbers).startsWith("x")
+        }.assertSubstrings(
+            Summaries.EXPECTED_STARTS_WITH,
+            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+        )
+    }
 }
