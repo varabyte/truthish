@@ -12,6 +12,8 @@ class AmbiguityTest {
         override fun toString() = value
     }
 
+    class TestEntry(override val key: String, override val value: Int) : Map.Entry<String, Int>
+
     @Test
     fun extraInformationShownIfToStringIsAmbiguous() {
         assertThrows<AssertionError> {
@@ -29,5 +31,12 @@ class AmbiguityTest {
         assertThrows<AssertionError> {
             assertThat(ClassA("x")).isEqualTo(ClassA("x"))
         }.assertSubstrings("x", "x (a different value that prints the same)")
+    }
+
+    @Test
+    fun mapEntriesAndPairsPrintTheSameButReportTheirTypes() {
+        assertThrows<AssertionError> {
+            assertThat(TestEntry("a", 1)).isEqualTo("a" to 1)
+        }.assertSubstrings("\"a\" to 1 (Type: `Pair`)", "\"a\" to 1 (Type: `TestEntry`)")
     }
 }

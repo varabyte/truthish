@@ -16,8 +16,8 @@ internal fun stringifierFor(value: Any?, context: StringifierContext? = null): V
         is Char -> CharStringifier(value)
         is CharSequence -> StringStringifier(value)
         is Map<*, *> -> MapStringifier(value)
-        is Map.Entry<*, *> -> PairStringifier(value, value.key, value.value)
-        is Pair<*, *> -> PairStringifier(value, value.first, value.second)
+        is Map.Entry<*, *> -> PairStringifier(value)
+        is Pair<*, *> -> PairStringifier(value)
         is Triple<*, *, *> -> TripleStringifier(value)
         is Set<*> -> SetStringifier(value)
         is Iterable<*> -> IterableStringifier(value, context?.anchor)
@@ -172,11 +172,14 @@ internal class SetStringifier(private val value: Set<*>) : ValueStringifier(valu
 /**
  * Formats a pair (or map entry) the way it's usually written in Kotlin code, e.g. `"a" to 1`.
  */
-internal class PairStringifier(
+internal class PairStringifier private constructor(
     value: Any,
     private val first: Any?,
     private val second: Any?,
 ) : ValueStringifier(value) {
+    constructor(pair: Pair<*, *>) : this(pair, pair.first, pair.second)
+    constructor(entry: Map.Entry<*, *>) : this(entry, entry.key, entry.value)
+
     override fun render(truncate: Boolean) =
         "${stringifierFor(first).wrapInParensIfNecessary(truncate)} to " +
             stringifierFor(second).wrapInParensIfNecessary(truncate)
