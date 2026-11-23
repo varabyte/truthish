@@ -128,13 +128,43 @@ class StringAsserts {
     }
 
     @Test
-    fun longStringsAreTruncatedAtBothEnds() {
+    fun longStringsAreTruncatedAroundWhatTheAssertionChecked() {
         val numbers = (1..100).joinToString(",")
 
         assertThrows<AssertionError> {
             assertThat(numbers).startsWith("x")
         }.assertSubstrings(
             Summaries.EXPECTED_STARTS_WITH,
+            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(numbers).endsWith("x")
+        }.assertSubstrings(
+            Summaries.EXPECTED_ENDS_WITH,
+            DetailsFor.BUT_WAS, "… (191 more chars) \",68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(numbers).doesNotContain(",50,")
+        }.assertSubstrings(
+            Summaries.EXPECTED_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+        )
+
+        // The window is centered on the middle of the match (",50,…,70"), around "60", not on its start
+        assertThrows<AssertionError> {
+            assertThat(numbers).doesNotContainMatch(Regex(",50,.+,70"))
+        }.assertSubstrings(
+            Summaries.EXPECTED_NOT_CONTAINS,
+            DetailsFor.BUT_WAS, "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
+        )
+
+        // Nothing in particular to show, so both ends are kept
+        assertThrows<AssertionError> {
+            assertThat(numbers).contains("x")
+        }.assertSubstrings(
+            Summaries.EXPECTED_CONTAINS,
             DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
         )
     }

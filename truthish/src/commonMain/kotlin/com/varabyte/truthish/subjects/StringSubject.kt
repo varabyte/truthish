@@ -1,8 +1,11 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
+import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.Truncation
 
 class StringSubject(private val actual: String) : ComparableSubject<String>(actual) {
 
@@ -53,6 +56,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = StartContext,
                     )
                 )
             )
@@ -69,6 +73,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = StartContext,
                     )
                 )
             )
@@ -85,6 +90,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = actual.toEndContext(),
                     )
                 )
             )
@@ -101,6 +107,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = actual.toEndContext(),
                     )
                 )
             )
@@ -184,7 +191,8 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     }
 
     fun doesNotContain(expected: CharSequence) {
-        if (actual.contains(expected)) {
+        val foundIndex = actual.indexOf(expected.toString())
+        if (foundIndex >= 0) {
             report(
                 Report(
                     Summaries.EXPECTED_NOT_CONTAINS,
@@ -193,6 +201,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = (foundIndex until foundIndex + expected.length).toCenteredContext(),
                     )
                 )
             )
@@ -200,7 +209,8 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     }
 
     fun doesNotContainMatch(regex: Regex) {
-        if (actual.contains(regex)) {
+        val match = regex.find(actual)
+        if (match != null) {
             report(
                 Report(
                     Summaries.EXPECTED_NOT_CONTAINS,
@@ -209,6 +219,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         regex.pattern,
                         actual,
                         expectedContext = FailureValueContext,
+                        actualContext = match.range.toCenteredContext(),
                     )
                 )
             )
@@ -219,3 +230,13 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         doesNotContainMatch(Regex(regex))
     }
 }
+
+// Only the start matters to `startsWith` and its opposite, so a long string gives it the whole window
+private val StartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
+
+// Only the end matters to `endsWith` and its opposite, so a long string gives it the whole window
+private fun String.toEndContext() = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(lastIndex)))
+
+// Centers a long string on the middle of this range, e.g. a match, so a long match isn't cut off at one end
+private fun IntRange.toCenteredContext() =
+    StringifierContext(Truncation.Anchored(Anchor.CenteredOn(first + (last - first) / 2)))
