@@ -6,21 +6,26 @@ import kotlin.reflect.KClass
  * Extra information about how to render a value, beyond the value itself. Stringifiers that don't need a piece of it
  * ignore it.
  *
- * @property anchor Where to truncate the value, if it's a long list.
+ * @property truncation How to shorten the value if it's long.
  */
-internal class StringifierContext(val anchor: Anchor? = null)
+internal data class StringifierContext(val truncation: Truncation = Truncation.BothEnds) {
+    companion object {
+        val Default = StringifierContext()
+    }
+}
 
-internal fun stringifierFor(value: Any?, context: StringifierContext? = null): ValueStringifier {
+internal fun stringifierFor(value: Any?, context: StringifierContext = StringifierContext()): ValueStringifier {
+    val truncation = context.truncation
     return when (value) {
         is ValueStringifier -> value // In case caller already wrapped `value` in a stringifier themselves
         is Char -> CharStringifier(value)
         is CharSequence -> StringStringifier(value)
-        is Map<*, *> -> MapStringifier(value)
-        is Map.Entry<*, *> -> PairStringifier(value)
-        is Pair<*, *> -> PairStringifier(value)
-        is Triple<*, *, *> -> TripleStringifier(value)
-        is Set<*> -> SetStringifier(value)
-        is Iterable<*> -> IterableStringifier(value, context?.anchor)
+        is Map<*, *> -> MapStringifier(value, truncation)
+        is Map.Entry<*, *> -> PairStringifier(value, truncation)
+        is Pair<*, *> -> PairStringifier(value, truncation)
+        is Triple<*, *, *> -> TripleStringifier(value, truncation)
+        is Set<*> -> SetStringifier(value, truncation)
+        is Iterable<*> -> IterableStringifier(value, truncation)
         is KClass<*> -> KClassStringifier(value)
         else -> AnyStringifier(value)
     }
@@ -36,16 +41,9 @@ internal expect fun KClass<*>.toQualifiedString(): String
  * A base class for rendering a value in a report.
  */
 internal sealed class ValueStringifier(private val value: Any?) {
-    /**
-     * Renders the value.
-     *
-     * @param truncate Whether to shorten large values (e.g. long collections) to keep reports readable. Values
-     *   handed to a diff viewer are rendered in full, since it can show them better. It is up to each child stringifier
-     *   to decide how to handle this -- most can simply ignore it.
-     */
-    abstract fun render(truncate: Boolean): String
+    abstract fun render(): String
 
-    final override fun toString() = render(truncate = true)
+    final override fun toString() = render()
 
     /**
      * Extra detail to tell this value apart from another value that prints the same.
@@ -57,7 +55,7 @@ internal sealed class ValueStringifier(private val value: Any?) {
  * A default Stringifier that can handle any case.
  */
 internal class AnyStringifier(private val value: Any?) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value?.let { "$it" } ?: "(null)"
+    override fun render() = value?.let { "$it" } ?: "(null)"
 }
 
 private enum class Quote(val char: Char) {
@@ -85,24 +83,15 @@ private fun Char.toEscapedString(quote: Quote): String {
 }
 
 internal class CharStringifier(private val value: Char) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = "'${value.toEscapedString(Quote.SINGLE)}'"
+    override fun render() = "'${value.toEscapedString(Quote.SINGLE)}'"
 }
 
 internal class StringStringifier(private val value: CharSequence) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = buildString {
+    override fun render() = buildString {
         append('"')
         value.forEach { append(it.toEscapedString(Quote.DOUBLE)) }
         append('"')
     }
-}
-
-/**
- * How [joinValues] shortens a long collection.
- */
-private sealed interface Truncation {
-    object None : Truncation
-    object BothEnds : Truncation
-    class Anchored(val anchor: Anchor) : Truncation
 }
 
 /**
@@ -126,11 +115,10 @@ private fun Iterable<*>.joinValues(
         Truncation.BothEnds -> truncator.truncate(values, firstAnchor = 0, secondAnchor = values.lastIndex)
         is Truncation.Anchored -> truncator.truncate(values, truncation.anchor)
     }
-    // Nested collections don't share their parent's anchor, since its index doesn't apply to them
-    val truncateNested = truncation != Truncation.None
+    val nestedContext = StringifierContext(truncation.inherited())
     val parts = truncatedValues.flatMap { part ->
         when (part) {
-            is TruncatedPart.Shown -> part.values.map { stringifierFor(it).render(truncateNested) }
+            is TruncatedPart.Shown -> part.values.map { stringifierFor(it, nestedContext).render() }
             is TruncatedPart.Hidden -> listOf("… (${part.count} more)")
         }
     }
@@ -139,34 +127,25 @@ private fun Iterable<*>.joinValues(
     return parts.joinToString(", ", prefix = "$open$padding", postfix = "$padding$close")
 }
 
-// For simple boolean cases, we only consider truncating long collections from both ends or not truncating at all.
-private fun Boolean.toTruncation() = if (this) Truncation.BothEnds else Truncation.None
+// Nested values don't share their parent's anchor (if an anchored truncation), since its index doesn't apply to them
+private fun Truncation.inherited() = if (this == Truncation.None) Truncation.None else Truncation.BothEnds
 
-/**
- * @param anchor If set, a long list is truncated around it, rather than the default behavior of truncating from both
- *   ends.
- */
 internal class IterableStringifier(
     private val value: Iterable<*>,
-    private val anchor: Anchor? = null,
+    private val truncation: Truncation,
 ) : ValueStringifier(value) {
-    override fun render(truncate: Boolean): String {
-        val truncation = when {
-            !truncate -> Truncation.None
-            anchor != null -> Truncation.Anchored(anchor)
-            else -> Truncation.BothEnds
-        }
-        return value.joinValues("[", "]", truncation)
-    }
+    override fun render() = value.joinValues("[", "]", truncation)
 }
 
-internal class MapStringifier(private val value: Map<*, *>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.entries.joinValues("{", "}", truncate.toTruncation())
+internal class MapStringifier(private val value: Map<*, *>, private val truncation: Truncation) :
+    ValueStringifier(value) {
+    override fun render() = value.entries.joinValues("{", "}", truncation)
 }
 
 // This should take precedence over IterableStringifier!
-internal class SetStringifier(private val value: Set<*>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) = value.joinValues("{", "}", truncate.toTruncation())
+internal class SetStringifier(private val value: Set<*>, private val truncation: Truncation) :
+    ValueStringifier(value) {
+    override fun render() = value.joinValues("{", "}", truncation)
 }
 
 /**
@@ -176,28 +155,31 @@ internal class PairStringifier private constructor(
     value: Any,
     private val first: Any?,
     private val second: Any?,
+    truncation: Truncation,
 ) : ValueStringifier(value) {
-    constructor(pair: Pair<*, *>) : this(pair, pair.first, pair.second)
-    constructor(entry: Map.Entry<*, *>) : this(entry, entry.key, entry.value)
+    constructor(pair: Pair<*, *>, truncation: Truncation) : this(pair, pair.first, pair.second, truncation)
+    constructor(entry: Map.Entry<*, *>, truncation: Truncation) : this(entry, entry.key, entry.value, truncation)
 
-    override fun render(truncate: Boolean) =
-        "${stringifierFor(first).wrapInParensIfNecessary(truncate)} to " +
-            stringifierFor(second).wrapInParensIfNecessary(truncate)
+    private val nestedContext = StringifierContext(truncation.inherited())
+
+    override fun render() =
+        "${stringifierFor(first, nestedContext).wrapInParensIfNecessary()} to " +
+            stringifierFor(second, nestedContext).wrapInParensIfNecessary()
 
     // A nested value that is itself a pair needs parentheses to stay unambiguous, e.g. `(1 to 2) to 3`
-    private fun ValueStringifier.wrapInParensIfNecessary(truncate: Boolean): String {
-        val rendered = render(truncate)
+    private fun ValueStringifier.wrapInParensIfNecessary(): String {
+        val rendered = render()
         return if (this is PairStringifier) "($rendered)" else rendered
     }
 }
 
-internal class TripleStringifier(private val value: Triple<*, *, *>) : ValueStringifier(value) {
-    override fun render(truncate: Boolean) =
-        value.toList().joinValues("(", ")", truncate.toTruncation(), padded = false)
+internal class TripleStringifier(private val value: Triple<*, *, *>, private val truncation: Truncation) :
+    ValueStringifier(value) {
+    override fun render() = value.toList().joinValues("(", ")", truncation, padded = false)
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {
     // Anonymous classes have no simple name
-    override fun render(truncate: Boolean) = value.simpleName ?: value.toQualifiedString()
+    override fun render() = value.simpleName ?: value.toQualifiedString()
     override fun toDetailString() = value.toQualifiedString()
 }

@@ -67,15 +67,24 @@ internal class ComparedValues(val expected: String, val actual: String)
 private fun Report.findComparedValues(): ComparedValues? {
     val expected = details.items.find { it.first == DetailsFor.EXPECTED } ?: return null
     val actual = details.items.find { it.first == DetailsFor.BUT_WAS } ?: return null
-    return ComparedValues(details.render(expected, truncate = false), details.render(actual, truncate = false))
+    return ComparedValues(
+        details.render(expected, details.context(expected.first).copy(truncation = Truncation.None)),
+        details.render(actual, details.context(actual.first).copy(truncation = Truncation.None)),
+    )
         .takeIf { it.expected != it.actual }
 }
 
 internal fun Report.toAssertionError(): AssertionError = createAssertionError(findComparedValues())
 
-private fun Details.render(item: Pair<String, Any?>, truncate: Boolean = true): String {
+/**
+ * Renders [item] the way the report shows it, or with [context] instead, e.g. to show it in full.
+ */
+private fun Details.render(
+    item: Pair<String, Any?>,
+    context: StringifierContext = context(item.first),
+): String {
     val (label, value) = item
-    val rendered = stringifierFor(value, contexts[label]).render(truncate)
+    val rendered = stringifierFor(value, context).render()
     return extras[label]?.let { extra -> "$rendered ($extra)" } ?: rendered
 }
 
@@ -107,6 +116,8 @@ class Details internal constructor(
         _items.add(element)
     }
 }
+
+private fun Details.context(label: String) = contexts[label] ?: StringifierContext.Default
 
 fun Details.find(key: String): Any? {
     return items.find { it.first == key }?.second
@@ -153,12 +164,14 @@ object DetailsFor {
     ): Details {
         val extras = buildMap<String, String> {
             if (expected != null && actual != null) {
-                val expectedStringifier = stringifierFor(expected)
-                val actualStringifier = stringifierFor(actual)
                 // Compare full renderings, since otherwise different values might look the same after relevant elements
                 // were elided.
-                val expectedString = expectedStringifier.render(truncate = false)
-                val actualString = actualStringifier.render(truncate = false)
+                fun contextWithFullRender(label: String) =
+                    (contexts[label] ?: StringifierContext.Default).copy(truncation = Truncation.None)
+                val expectedStringifier = stringifierFor(expected, contextWithFullRender(expectedLabel))
+                val actualStringifier = stringifierFor(actual, contextWithFullRender(BUT_WAS))
+                val expectedString = expectedStringifier.render()
+                val actualString = actualStringifier.render()
 
                 var isOutputAmbiguous = expectedString == actualString
 
@@ -198,7 +211,7 @@ object DetailsFor {
     fun expectedActual(expected: Any?, actual: Any?): Details {
         val anchor = if (expected is List<*> && actual is List<*>) expected.findSharedAnchor(actual) else null
         val contexts = if (anchor != null) {
-            val context = StringifierContext(anchor = anchor)
+            val context = StringifierContext(Truncation.Anchored(anchor))
             mapOf(EXPECTED to context, BUT_WAS to context)
         } else {
             emptyMap()
