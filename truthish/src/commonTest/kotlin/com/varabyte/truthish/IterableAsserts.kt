@@ -139,6 +139,26 @@ class IterableAsserts {
     }
 
     @Test
+    fun containsAllInCountsDuplicates() {
+        assertThat(listOf(1, 2, 1)).containsAllIn(1, 1)
+        assertThat(listOf(1, 2, 1)).containsAllIn(1, 1).inOrder()
+
+        assertThrows<AssertionError> {
+            assertThat(listOf(1)).containsAllIn(1, 1, 2)
+        }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 1, 2 ]")
+
+        // A missing duplicate isn't blamed on the order
+        assertThrows<AssertionError> {
+            assertThat(listOf(1)).containsAllIn(1, 1).inOrder()
+        }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, DetailsFor.MISSING, "[ 1 ]")
+
+        // But if all the duplicates are there, the order can still be wrong: only one 1 comes after the 2
+        assertThrows<AssertionError> {
+            assertThat(listOf(1, 2, 1)).containsAllIn(2, 1, 1).inOrder()
+        }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, DetailsFor.OUT_OF_ORDER, "1")
+    }
+
+    @Test
     fun valuesThatCauseFailuresAreNeverTruncated() {
         assertThrows<AssertionError> {
             assertThat((1..5).toList()).containsAllIn((1..20).toList())

@@ -121,12 +121,15 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun containsAllIn(other: Iterable<T>): OrderedAsserter<T> {
         val other = IterableSnapshot(other)
 
-        if (!actual.list.containsAll(other.list)) {
+        // Each element of `actual` can only account for one expected element, so duplicates must all be there
+        val missing = other.list.toMutableList()
+        actual.list.forEach { missing.remove(it) }
+        if (missing.isNotEmpty()) {
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
                     DetailsFor.expectedActual("all elements from", other.snapshot, actual.snapshot).apply {
-                        add(DetailsFor.MISSING to (other.list - actual.list), FailureValueContext)
+                        add(DetailsFor.MISSING to missing, FailureValueContext)
                     }
                 )
             )
