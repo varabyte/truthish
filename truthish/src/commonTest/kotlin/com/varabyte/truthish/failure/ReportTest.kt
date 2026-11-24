@@ -96,6 +96,36 @@ class ReportTest {
     }
 
     @Test
+    fun multiLineValuesLineUpWithTheValueColumn() {
+        // Strings are escaped onto one line, so pass text through as is, the way messages are
+        val report = Report(
+            "Summary",
+            Details(
+                listOf(
+                    "Title" to AnyStringifier("Release notes"),
+                    "Authors" to AnyStringifier("Ann\nBob"),
+                    "Body" to AnyStringifier("Fixed a crash.\n\nThanks for reporting it!"),
+                ),
+                extras = mapOf("Authors" to "2 total"),
+            )
+        )
+        assertThat(report.toString()).isEqualTo(
+            """
+            Summary
+
+            Title  : Release notes
+            Authors: Ann
+                     Bob
+                     (2 total)
+            Body   : Fixed a crash.
+
+                     Thanks for reporting it!
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun longCollectionsAreTruncated() {
         val report = Report(
             "Summary",

@@ -39,6 +39,8 @@ class Report(private val summary: String, details: Details? = null) {
         if (detailItems.isNotEmpty()) {
             builder.append("\n\n")
             val longestKey = detailItems.maxOf { it.first.length }
+            // A multi-line value's later lines line up with its first one, so the table keeps its shape
+            val valueIndent = " ".repeat(longestKey + ": ".length)
 
             detailItems.forEachIndexed { index, pair ->
                 if (index > 0) {
@@ -46,7 +48,14 @@ class Report(private val summary: String, details: Details? = null) {
                 }
                 builder.append(pair.first)
                 builder.append(" ".repeat(longestKey - pair.first.length)).append(": ")
-                builder.append(details.render(pair))
+                details.render(pair).lines().forEachIndexed { lineIndex, line ->
+                    if (lineIndex > 0) {
+                        builder.append("\n")
+                        // Leave blank lines empty instead of filling them with trailing spaces
+                        if (line.isNotEmpty()) builder.append(valueIndent)
+                    }
+                    builder.append(line)
+                }
             }
         }
         builder.append("\n")
@@ -96,7 +105,9 @@ private fun Details.render(
 ): String {
     val (label, value) = item
     val rendered = ValueStringifier.createFor(value, context).render()
-    return extras[label]?.let { extra -> "$rendered ($extra)" } ?: rendered
+    val extra = extras[label] ?: return rendered
+    // After a multi-line value, an extra on the last line would read as part of it
+    return if (rendered.contains('\n')) "$rendered\n($extra)" else "$rendered ($extra)"
 }
 
 /**

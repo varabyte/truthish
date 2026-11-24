@@ -1,5 +1,7 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.DetailsFor
+import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
 
@@ -109,5 +111,16 @@ class MessageAsserts {
         assertThrows<AssertionError> {
             assertWithMessage(TEST_MESSAGE).that(doubleArrayOf(1.0, 2.0, 3.0)).isEqualTo(doubleArrayOf(1.0, 2.0, 4.0))
         }.assertSubstrings(TEST_MESSAGE)
+    }
+
+    @Test
+    fun multiLineMessagesLineUpWithTheValueColumn() {
+        assertThrows<AssertionError> {
+            assertWithMessage("Checking the total\nafter the discount").that(10).isEqualTo(9)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            "Message : Checking the total\n          after the discount",
+            DetailsFor.EXPECTED, "9",
+        )
     }
 }
