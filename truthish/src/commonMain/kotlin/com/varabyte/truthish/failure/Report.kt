@@ -60,13 +60,24 @@ internal class ComparedValues(val expected: String, val actual: String)
 /**
  * The "Expected" and "But was" values as rendered in this report, if it has both.
  *
- * Labels with a suffix (e.g. "Expected greater than") describe a relation rather than an expected value, so they don't
- * count. Values that render identically (e.g. two equal but distinct instances) don't either, since a diff between them
- * would show nothing.
+ * Multi-line strings are an exception: they're passed as is, unescaped, so a diff view can compare them line by line.
+ *
+ * Expected labels with a suffix (e.g. "Expected greater than") describe a relation rather than an expected value, so
+ * they don't count. Values that render identically (e.g. two equal but distinct instances) don't either, since a diff
+ * between them would show nothing.
  */
 private fun Report.findComparedValues(): ComparedValues? {
     val expected = details.items.find { it.first == DetailsFor.EXPECTED } ?: return null
     val actual = details.items.find { it.first == DetailsFor.BUT_WAS } ?: return null
+    val expectedValue = expected.second
+    val actualValue = actual.second
+    if (expectedValue is CharSequence && actualValue is CharSequence &&
+        (expectedValue.contains('\n') || actualValue.contains('\n'))
+    ) {
+        // Pass the text as is. The IDE's diff viewer can handle whatever you throw at it.
+        return ComparedValues(expectedValue.toString(), actualValue.toString())
+            .takeIf { it.expected != it.actual }
+    }
     return ComparedValues(
         details.render(expected, details.context(expected.first).copy(truncation = Truncation.None)),
         details.render(actual, details.context(actual.first).copy(truncation = Truncation.None)),

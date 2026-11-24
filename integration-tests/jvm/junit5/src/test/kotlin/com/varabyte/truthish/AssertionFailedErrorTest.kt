@@ -58,6 +58,16 @@ class AssertionFailedErrorTest {
     }
 
     @Test
+    fun multilineStringsAreDiffedAsIs() {
+        val e = assertThrows<AssertionFailedError> {
+            assertThat("val s = \"a\"\r\n\tprint(s)\u001B[0m\n").isEqualTo("val s = \"b\"\r\n\tprint(s)\n")
+        }
+
+        assertThat(e.expected.value).isEqualTo("val s = \"b\"\r\n\tprint(s)\n")
+        assertThat(e.actual.value).isEqualTo("val s = \"a\"\r\n\tprint(s)\u001B[0m\n")
+    }
+
+    @Test
     fun noDiffWhenValuesPrintTheSame() {
         data class Point(val x: Int, val y: Int)
 
