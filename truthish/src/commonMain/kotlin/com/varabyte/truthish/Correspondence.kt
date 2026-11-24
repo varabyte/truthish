@@ -2,6 +2,7 @@ package com.varabyte.truthish
 
 import com.varabyte.truthish.subjects.DoubleSubject
 import com.varabyte.truthish.subjects.IterableSubject
+import com.varabyte.truthish.subjects.MapSubject
 import kotlin.math.absoluteValue
 
 /**
@@ -28,10 +29,11 @@ import kotlin.math.absoluteValue
  * ```
  *
  * @param description What an actual element does to the expected element it corresponds to, e.g. "contains" or
- *   "parses to". Reports show it as "actual element contains expected element", so it should read as a verb phrase.
+ *   "parses to". Reports show it as "actual value contains expected value", so it should read as a verb phrase.
  * @param predicate Whether [compare]'s `actual` element corresponds to its `expected` one.
  *
  * @see IterableSubject.comparingElementsUsing
+ * @see MapSubject.comparingValuesUsing
  */
 class Correspondence<in A, in E>(
     val description: String,

@@ -1,5 +1,6 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.Correspondence
 import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -112,4 +113,52 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
     fun containsAllIn(other: Map<K, V>) = containsAllIn(other.toIterable())
     fun containsNoneIn(other: Map<K, V>) = containsNoneIn(other.toIterable())
     fun containsExactly(other: Map<K, V>) = containsExactly(other.toIterable())
+
+    /**
+     * Register a [correspondence] for comparing this map's values more loosely against expected values.
+     *
+     * Meanwhile, its keys are still compared with direct equality.
+     *
+     * For example:
+     * ```
+     * assertThat(prices)
+     *     .comparingValuesUsing(Correspondence.within(0.1))
+     *     .containsExactly(mapOf("apple" to 1.0, "pear" to 2.5))
+     * ```
+     * would allow the test to pass even if "apple" mapped to `1.05`.
+     */
+    fun <E> comparingValuesUsing(correspondence: Correspondence<V, E>) =
+        CorrespondenceSubject(
+            this,
+            IterableSnapshot(actual.toIterable()),
+            Correspondence<Pair<K, V>, Pair<K, E>>(correspondence.description) { actual, expected ->
+                actual.first == expected.first && correspondence.compare(actual.second, expected.second)
+            },
+        )
 }
+
+/**
+ * Like [MapSubject.comparingValuesUsing], for a one-off correspondence written inline.
+ *
+ * ```
+ * assertThat(wordsByLength)
+ *     .comparingValuesUsing("has size") { words, size: Int -> words.size == size }
+ *     .containsExactly(mapOf(3 to 2, 5 to 1))
+ * ```
+ *
+ * @param description What an actual value does to the expected value it corresponds to, e.g. "has size".
+ *   See [Correspondence] for how it's used.
+ */
+fun <K, V, E> MapSubject<K, V>.comparingValuesUsing(
+    description: String,
+    predicate: (actual: V, expected: E) -> Boolean,
+) = comparingValuesUsing(Correspondence(description, predicate))
+
+fun <K, V, E> CorrespondenceSubject<Pair<K, V>, Pair<K, E>>.containsAnyIn(other: Map<K, E>) =
+    containsAnyIn(other.toIterable())
+fun <K, V, E> CorrespondenceSubject<Pair<K, V>, Pair<K, E>>.containsAllIn(other: Map<K, E>) =
+    containsAllIn(other.toIterable())
+fun <K, V, E> CorrespondenceSubject<Pair<K, V>, Pair<K, E>>.containsNoneIn(other: Map<K, E>) =
+    containsNoneIn(other.toIterable())
+fun <K, V, E> CorrespondenceSubject<Pair<K, V>, Pair<K, E>>.containsExactly(other: Map<K, E>) =
+    containsExactly(other.toIterable())

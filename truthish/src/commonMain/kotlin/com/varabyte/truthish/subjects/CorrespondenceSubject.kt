@@ -9,8 +9,8 @@ import com.varabyte.truthish.failure.Reportable
 /**
  * Assertions about a collection whose elements are compared with expected ones using a [Correspondence].
  *
- * Created by [IterableSubject.comparingElementsUsing]. Failures are reported through the collection's subject, so its
- * message, name and failure strategy (e.g. inside `assertAll`) still apply.
+ * Failures are reported through the collection's subject, so any message, name and failure
+ * strategy (e.g. inside `assertAll`) applied to the parent still apply here.
  */
 class CorrespondenceSubject<A, E> internal constructor(
     parent: Reportable,
@@ -51,12 +51,12 @@ fun <A, E> CorrespondenceSubject<A, E>.containsNoneIn(other: Array<out E>) = con
 fun <A, E> CorrespondenceSubject<A, E>.containsExactly(other: Array<out E>) = containsExactly(*other)
 
 /**
- * Adds a detail saying how elements were compared, e.g. "actual element contains expected element", after "But was".
+ * Adds a detail saying how elements were compared, e.g. "actual value contains expected value", after "But was".
  */
 private fun Details.addTestingWhether(correspondence: Correspondence<*, *>) {
     val butWasIndex = items.indexOfFirst { it.first == DetailsFor.BUT_WAS }
     add(
         butWasIndex + 1,
-        DetailsFor.TESTING_WHETHER to AnyStringifier("actual element ${correspondence.description} expected element"),
+        DetailsFor.TESTING_WHETHER to AnyStringifier("actual value ${correspondence.description} expected value"),
     )
 }

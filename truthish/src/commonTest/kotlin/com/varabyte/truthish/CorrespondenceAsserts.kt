@@ -6,6 +6,7 @@ import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.failure.withMessage
 import com.varabyte.truthish.subjects.comparingElementsUsing
+import com.varabyte.truthish.subjects.comparingValuesUsing
 import com.varabyte.truthish.subjects.containsAllIn
 import com.varabyte.truthish.subjects.containsAnyIn
 import com.varabyte.truthish.subjects.containsExactly
@@ -42,7 +43,7 @@ class CorrespondenceAsserts {
                 Summaries.EXPECTED_COLLECTION_CONTAINS,
                 "Expected to contain", "\"Unused variable\"",
                 DetailsFor.BUT_WAS, "[ \"Unresolved reference 'foo'\", \"'val' cannot be reassigned\" ]",
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
             )
 
             assertThrows<AssertionError> {
@@ -50,7 +51,7 @@ class CorrespondenceAsserts {
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
                 "Expected not to contain", "\"cannot be reassigned\"",
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
             )
 
             assertThrows<AssertionError> {
@@ -58,14 +59,14 @@ class CorrespondenceAsserts {
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_CONTAINS,
                 "Expected at least one element from", "[ \"Unused variable\", \"Type mismatch\" ]",
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
             )
 
             assertThrows<AssertionError> {
                 subject.containsAllIn("cannot be reassigned", "Unused variable")
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_CONTAINS,
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
                 DetailsFor.MISSING, "[ \"Unused variable\" ]",
             )
 
@@ -74,7 +75,7 @@ class CorrespondenceAsserts {
                     .inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
                 DetailsFor.OUT_OF_ORDER, "\"Unresolved reference\"",
             )
 
@@ -82,7 +83,7 @@ class CorrespondenceAsserts {
                 subject.containsNoneIn("Unused variable", "cannot be reassigned")
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
                 DetailsFor.UNEXPECTED, "[ \"'val' cannot be reassigned\" ]",
             )
 
@@ -92,7 +93,7 @@ class CorrespondenceAsserts {
                 Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
                 "Expected exactly all elements from", "[ \"Unresolved reference\", \"Unused variable\" ]",
                 DetailsFor.BUT_WAS, "[ \"Unresolved reference 'foo'\", \"'val' cannot be reassigned\" ]",
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
                 DetailsFor.MISSING, "[ \"Unused variable\" ]",
                 DetailsFor.EXTRANEOUS, "[ \"'val' cannot be reassigned\" ]",
             )
@@ -102,7 +103,7 @@ class CorrespondenceAsserts {
                     .inOrder()
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_ORDERED,
-                DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+                DetailsFor.TESTING_WHETHER, "actual value contains expected value",
                 DetailsFor.OUT_OF_ORDER, "\"Unresolved reference\"",
             )
         }
@@ -225,7 +226,7 @@ class CorrespondenceAsserts {
                 .contains("unresolved")
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.TESTING_WHETHER, "actual element contains expected element",
+            DetailsFor.TESTING_WHETHER, "actual value contains expected value",
         )
         assertThrows<AssertionError> {
             assertThat(listOf("Unresolved reference 'foo'"))
@@ -233,7 +234,7 @@ class CorrespondenceAsserts {
                 .contains("bar")
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.TESTING_WHETHER, "actual element contains (ignoring case) expected element",
+            DetailsFor.TESTING_WHETHER, "actual value contains (ignoring case) expected value",
         )
 
         assertThat(listOf("[ERROR] Disk full", "[WARN] Retrying"))
@@ -260,7 +261,7 @@ class CorrespondenceAsserts {
                 .contains(Regex("user-\\d+"))
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.TESTING_WHETHER, "actual element matches expected element",
+            DetailsFor.TESTING_WHETHER, "actual value matches expected value",
         )
 
         assertThat(listOf(0.1 + 0.2, 1.0 / 3))
@@ -273,7 +274,7 @@ class CorrespondenceAsserts {
             assertThat(listOf(0.3)).comparingElementsUsing(Correspondence.within(0.001)).contains(0.31)
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.TESTING_WHETHER, "actual element is within 0.001 of expected element",
+            DetailsFor.TESTING_WHETHER, "actual value is within 0.001 of expected value",
         )
         assertThrows<AssertionError> {
             assertThat(listOf(Double.NaN)).comparingElementsUsing(Correspondence.within(0.001)).contains(Double.NaN)
@@ -293,7 +294,7 @@ class CorrespondenceAsserts {
                 .contains("Bob")
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.TESTING_WHETHER, "actual element is named expected element",
+            DetailsFor.TESTING_WHETHER, "actual value is named expected value",
         )
     }
 
@@ -309,7 +310,7 @@ class CorrespondenceAsserts {
                 .containsExactly(3, 4)
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            DetailsFor.TESTING_WHETHER, "actual element has length expected element",
+            DetailsFor.TESTING_WHETHER, "actual value has length expected value",
             DetailsFor.MISSING, "[ 4 ]",
             DetailsFor.EXTRANEOUS, "[ \"horse\" ]",
         )
@@ -320,6 +321,70 @@ class CorrespondenceAsserts {
         assertThat(mapOf("a" to 1, "b" to 2))
             .comparingElementsUsing(Correspondence.transforming("has key") { entry: Pair<String, Int> -> entry.first })
             .containsExactly("a", "b")
+    }
+
+    @Test
+    fun mapValuesCanBeComparedWithACorrespondence() {
+        val prices = mapOf("apple" to 1.5, "pear" to 2.5)
+        val subject = assertThat(prices).comparingValuesUsing(Correspondence.within(0.1))
+        run {
+            // Test true statements
+            subject.contains("apple" to 1.51)
+            subject.doesNotContain("apple" to 2.5)
+            subject.containsAnyIn(mapOf("apple" to 9.0, "pear" to 2.51))
+            subject.containsAllIn(mapOf("pear" to 2.42))
+            subject.containsNoneIn(mapOf("apple" to 2.5, "plum" to 1.5))
+            subject.containsExactly(mapOf("pear" to 2.59, "apple" to 1.41))
+            subject.containsExactly(mapOf("apple" to 1.49, "pear" to 2.51)).inOrder()
+        }
+
+        run {
+            // Test false statements
+            assertThrows<AssertionError> {
+                subject.containsExactly(mapOf("apple" to 1.5, "pear" to 2.4))
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                "Expected exactly all elements from", "{ \"apple\" to 1.5, \"pear\" to 2.4 }",
+                DetailsFor.BUT_WAS, "{ \"apple\" to 1.5, \"pear\" to 2.5 }",
+                DetailsFor.TESTING_WHETHER, "actual value is within 0.1 of expected value",
+                DetailsFor.MISSING, "[ \"pear\" to 2.4 ]",
+                DetailsFor.EXTRANEOUS, "[ \"pear\" to 2.5 ]",
+            )
+
+            // Keys are still compared with `==`, even if the values correspond
+            assertThrows<AssertionError> {
+                subject.contains("plum" to 1.5)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                "Expected to contain", "\"plum\" to 1.5",
+                DetailsFor.TESTING_WHETHER, "actual value is within 0.1 of expected value",
+            )
+
+            assertThrows<AssertionError> {
+                subject.containsExactly(mapOf("pear" to 2.5, "apple" to 1.5)).inOrder()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.OUT_OF_ORDER, "\"apple\" to 1.5",
+            )
+        }
+    }
+
+    @Test
+    fun mapValueCorrespondencesCanBeWrittenInline() {
+        val wordsByLength = mapOf(3 to listOf("cat", "dog"), 5 to listOf("horse"))
+        assertThat(wordsByLength)
+            .comparingValuesUsing("has size") { words, size: Int -> words.size == size }
+            .containsExactly(mapOf(3 to 2, 5 to 1))
+
+        assertThrows<AssertionError> {
+            assertThat(wordsByLength)
+                .comparingValuesUsing("has size") { words, size: Int -> words.size == size }
+                .containsAllIn(mapOf(3 to 1))
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS,
+            DetailsFor.TESTING_WHETHER, "actual value has size expected value",
+            DetailsFor.MISSING, "[ 3 to 1 ]",
+        )
     }
 
     @Test
