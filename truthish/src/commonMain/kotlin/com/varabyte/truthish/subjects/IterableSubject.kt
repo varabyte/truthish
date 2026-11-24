@@ -128,7 +128,12 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
-                    DetailsFor.expectedActual("all elements from", other.snapshot, actual.snapshot).apply {
+                    DetailsFor.expectedActual(
+                        "all elements from",
+                        other.snapshot,
+                        actual.snapshot,
+                        expectedContext = other.list.anchorOnFirstUnmatched(actual.list),
+                    ).apply {
                         add(DetailsFor.MISSING to missing, FailureValueContext)
                     }
                 )

@@ -353,6 +353,15 @@ class IterableAsserts {
             DetailsFor.EXTRANEOUS, "[ 99 ]",
         )
 
+        // Expected is centered on its first missing element (20)
+        assertThrows<AssertionError> {
+            assertThat((1..30).filter { it != 20 }).containsAllIn((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS,
+            "[ … (14 more), 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, … (5 more) ]",
+            DetailsFor.MISSING, "[ 20 ]",
+        )
+
         // The extraneous element (27) has two copies, and either could be the extra one, so both are shown
         assertThrows<AssertionError> {
             assertThat((1..30).map { if (it == 16) 27 else it }).containsExactly((1..30).toList())
