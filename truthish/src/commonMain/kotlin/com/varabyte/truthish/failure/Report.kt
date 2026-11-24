@@ -150,6 +150,8 @@ object DetailsFor {
     const val DUPLICATES = "Duplicates"
     const val OUT_OF_ORDER = "Out of order"
     const val TESTING_WHETHER = "Testing whether"
+    const val POSSIBLY_MISSING = "Possibly missing"
+    const val POSSIBLY_EXTRANEOUS = "Possibly extraneous"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was

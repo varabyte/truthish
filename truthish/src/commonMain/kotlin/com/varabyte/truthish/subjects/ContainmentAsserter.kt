@@ -1,6 +1,7 @@
 package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.failure.Anchor
+import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -8,6 +9,7 @@ import com.varabyte.truthish.failure.Reportable
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.Truncation
+import com.varabyte.truthish.failure.ValueStringifier
 
 /** How actual elements are compared with expected ones. */
 internal sealed interface ElementComparison<in A, in E> {
@@ -85,17 +87,17 @@ internal class ContainmentAsserter<A, E>(
         val other = IterableSnapshot(other)
 
         val matching = Matching(actual.list, other.list, comparison)
-        if (matching.unmatchedExpectedIndices.isNotEmpty()) {
+        val missing = matching.missing
+        if (missing.isNotEmpty()) {
             report(
                 Summaries.EXPECTED_COLLECTION_CONTAINS,
                 DetailsFor.expectedActual(
                     "all elements from",
                     other.snapshot,
                     actual.snapshot,
-                    expectedContext = other.list.anchorOnCopiesOf(matching.unmatchedExpectedIndices.first()),
+                    expectedContext = other.list.anchorOnCopiesOf(missing.firstIndex),
                 ).apply {
-                    val missing = matching.unmatchedExpectedIndices.map { other.list[it] }
-                    add(DetailsFor.MISSING to missing, FailureValueContext)
+                    addLeftovers(DetailsFor.MISSING, DetailsFor.POSSIBLY_MISSING, missing, other.list)
                 }
             )
             return skipInOrderCheck()
@@ -134,8 +136,8 @@ internal class ContainmentAsserter<A, E>(
         val other = IterableSnapshot(other)
 
         val matching = Matching(actual.list, other.list, comparison)
-        val missing = matching.unmatchedExpectedIndices.map { other.list[it] }
-        val extraneous = matching.unmatchedActualIndices.map { actual.list[it] }
+        val missing = matching.missing
+        val extraneous = matching.extraneous
         if (missing.isNotEmpty() || extraneous.isNotEmpty()) {
             report(
                 Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
@@ -143,15 +145,11 @@ internal class ContainmentAsserter<A, E>(
                     "exactly all elements from",
                     other.snapshot,
                     actual.snapshot,
-                    expectedContext = other.list.anchorOnCopiesOf(matching.unmatchedExpectedIndices.firstOrNull()),
-                    actualContext = actual.list.anchorOnCopiesOf(matching.unmatchedActualIndices.firstOrNull()),
+                    expectedContext = other.list.anchorOnCopiesOf(missing.firstIndex),
+                    actualContext = actual.list.anchorOnCopiesOf(extraneous.firstIndex),
                 ).apply {
-                    if (missing.isNotEmpty()) {
-                        add(DetailsFor.MISSING to missing, FailureValueContext)
-                    }
-                    if (extraneous.isNotEmpty()) {
-                        add(DetailsFor.EXTRANEOUS to extraneous, FailureValueContext)
-                    }
+                    addLeftovers(DetailsFor.MISSING, DetailsFor.POSSIBLY_MISSING, missing, other.list)
+                    addLeftovers(DetailsFor.EXTRANEOUS, DetailsFor.POSSIBLY_EXTRANEOUS, extraneous, actual.list)
                 }
             )
             return skipInOrderCheck()
@@ -224,17 +222,54 @@ internal class ContainmentAsserter<A, E>(
 }
 
 /**
+ * Adds the [leftovers] of [list]: the certain ones under [label], and each choice, e.g. "1 of [ "a", "ab" ]", under
+ * [possiblyLabel].
+ */
+private fun <T> Details.addLeftovers(label: String, possiblyLabel: String, leftovers: Leftovers, list: List<T>) {
+    if (leftovers.certainIndices.isNotEmpty()) {
+        add(label to leftovers.certainIndices.map { list[it] }, FailureValueContext)
+    }
+    if (leftovers.choices.isNotEmpty()) {
+        val choices = leftovers.choices.joinToString(", ") { choice ->
+            val elements = ValueStringifier.createFor(choice.indices.map { list[it] }, FailureValueContext).render()
+            "${choice.count} of $elements"
+        }
+        add(possiblyLabel to AnyStringifier(choices))
+    }
+}
+
+/**
  * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]\
  * instead, which is guaranteed to pass.
  */
 private fun skipInOrderCheck() = OrderedAsserter {}
 
 /**
+ * The elements of one list that a closest pairing leaves out, i.e. what's really missing or extraneous.
+ *
+ * When elements can't all be paired up, there can be several equally close pairings, which leave out different
+ * elements. So only some left-out elements are certain; for the rest, which ones are left out is a free choice.
+ *
+ * @property certainIndices The left-out elements that every closest pairing leaves out too (or equal copies of them).
+ * @property choices Groups of elements from which every closest pairing leaves out the same number, but not
+ *   necessarily the same ones.
+ */
+private class Leftovers(val certainIndices: List<Int>, val choices: List<Choice>) {
+    class Choice(val count: Int, val indices: List<Int>)
+
+    fun isNotEmpty() = certainIndices.isNotEmpty() || choices.isNotEmpty()
+
+    /** The first left-out element, e.g. to center a long list on, or `null` if there's none. */
+    val firstIndex: Int? = certainIndices.firstOrNull() ?: choices.firstOrNull()?.indices?.first()
+}
+
+/**
  * Pairs up [actual] and [expected] elements that match, as many pairs as possible, using each element at most once.
- * Whatever is left unpaired is what's really missing or extraneous.
+ * Whatever is left unpaired is what's really [missing] or [extraneous].
  *
  * With [ElementComparison.Equality], pairing each expected element with the first free actual element it equals is
- * enough. Any element it equals, the others equal too, so moving them around can't make more pairs.
+ * enough. Any element it equals, the others equal too, so moving them around can't make more pairs, or change which
+ * values are left out.
  *
  * Other comparisons need a real search. For example, when matching means "contains", `actual = ["ab", "a"]` and
  * `expected = ["a", "ab"]` can be paired up, but greedily pairing expected "a" with the first actual element that
@@ -248,9 +283,88 @@ private class Matching<A, E>(
     // The expected index each actual element is paired with, or -1
     private val pairedExpected = IntArray(actual.size) { -1 }
 
-    val unmatchedExpectedIndices: List<Int> =
-        if (comparison is ElementComparison.Equality) pairGreedily() else pairBySearching()
-    val unmatchedActualIndices: List<Int> = actual.indices.filter { pairedExpected[it] == -1 }
+    val missing: Leftovers
+    val extraneous: Leftovers
+
+    init {
+        if (comparison is ElementComparison.Equality) {
+            missing = Leftovers(pairGreedily(), choices = emptyList())
+            extraneous = Leftovers(actual.indices.filter { pairedExpected[it] == -1 }, choices = emptyList())
+        } else {
+            val candidates = expected.map { e -> actual.indices.filter { comparison.matches(actual[it], e) } }
+            val unmatchedExpected = pairBySearching(candidates)
+
+            val pairedActual = IntArray(expected.size) { -1 }
+            actual.indices.filter { pairedExpected[it] != -1 }.forEach { pairedActual[pairedExpected[it]] = it }
+            val actualCandidates = List(actual.size) { mutableListOf<Int>() }
+            candidates.forEachIndexed { e, matches -> matches.forEach { actualCandidates[it].add(e) } }
+
+            missing = findLeftovers(expected, unmatchedExpected, { candidates[it] }, { pairedExpected[it] })
+            extraneous = findLeftovers(
+                actual,
+                actual.indices.filter { pairedExpected[it] == -1 },
+                { actualCandidates[it] },
+                { pairedActual[it] },
+            )
+        }
+    }
+
+    /**
+     * Sorts the [unmatched] indices of [elements] into certain ones and choices.
+     *
+     * A different closest pairing could leave out another element instead of an unmatched one: one paired with
+     * something the unmatched element matches (which would take its partner), or one paired with something *that*
+     * element matches, and so on. Unmatched elements whose alternatives overlap form one group. If everything in a
+     * group is equal, the left-out values are certain; otherwise, which ones are left out is a choice.
+     *
+     * @param matchesOf The indices in the other list that an element matches.
+     * @param partnerOf The index of the element in this list paired with an element of the other list.
+     */
+    private fun <T> findLeftovers(
+        elements: List<T>,
+        unmatched: List<Int>,
+        matchesOf: (Int) -> List<Int>,
+        partnerOf: (Int) -> Int,
+    ): Leftovers {
+        // Each element's group, tracked by pointing it at another element of the same group until reaching the group's
+        // representative, which points at itself
+        val groupParent = IntArray(elements.size) { it }
+        fun findGroup(i: Int): Int {
+            var group = i
+            while (groupParent[group] != group) group = groupParent[group]
+            return group
+        }
+
+        val reached = BooleanArray(elements.size)
+        unmatched.forEach { reached[it] = true }
+        val toVisit = ArrayDeque(unmatched)
+        while (toVisit.isNotEmpty()) {
+            val i = toVisit.removeFirst()
+            for (match in matchesOf(i)) {
+                // Every match is paired, or the two could be paired too, and the pairing wouldn't be a closest one
+                val alternative = partnerOf(match)
+                groupParent[findGroup(alternative)] = findGroup(i)
+                if (!reached[alternative]) {
+                    reached[alternative] = true
+                    toVisit.addLast(alternative)
+                }
+            }
+        }
+
+        val isUnmatched = BooleanArray(elements.size)
+        unmatched.forEach { isUnmatched[it] = true }
+        val certainIndices = mutableListOf<Int>()
+        val choices = mutableListOf<Leftovers.Choice>()
+        for (group in elements.indices.filter { reached[it] }.groupBy { findGroup(it) }.values) {
+            val leftOut = group.filter { isUnmatched[it] }
+            if (group.all { elements[it] == elements[group.first()] }) {
+                certainIndices += leftOut
+            } else {
+                choices += Leftovers.Choice(leftOut.size, group)
+            }
+        }
+        return Leftovers(certainIndices.sorted(), choices)
+    }
 
     // Returns the expected indices left unpaired
     private fun pairGreedily(): List<Int> = expected.indices.filter { e ->
@@ -259,10 +373,8 @@ private class Matching<A, E>(
         a == null
     }
 
-    // Returns the expected indices left unpaired
-    private fun pairBySearching(): List<Int> {
-        val candidates = expected.map { e -> actual.indices.filter { comparison.matches(actual[it], e) } }
-
+    // Returns the expected indices left unpaired. `candidates` lists the actual indices each expected element matches.
+    private fun pairBySearching(candidates: List<List<Int>>): List<Int> {
         // Pairs expected element `start` with an actual one. If every actual element it matches is taken, frees one up
         // by moving that element's partner to another actual element the partner matches, which may bump another pair
         // in turn, until some element in the chain lands on a free actual element. This is a standard way to solve

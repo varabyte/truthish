@@ -116,11 +116,75 @@ class CorrespondenceAsserts {
         subject.containsExactly("a", "ab")
         subject.containsAllIn("a", "ab")
 
+        // Either "ab" or "b" can be paired with actual "ab", and the other is left out
         assertThrows<AssertionError> {
             subject.containsExactly("a", "ab", "b")
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            DetailsFor.MISSING, "[ \"b\" ]",
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"ab\", \"b\" ]",
+        )
+    }
+
+    @Test
+    fun elementsThatCouldBeLeftOutInsteadOfEachOtherAreReportedTogether() {
+        val subject = assertThat(listOf("ab", "a")).comparingElementsUsing(Correspondence.contains)
+
+        // Three expected elements can't pair with two actual ones, and any of them could be the one left out
+        assertThrows<AssertionError> {
+            subject.containsExactly("a", "a", "ab")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"a\", \"a\", \"ab\" ]",
+        )
+        assertThrows<AssertionError> {
+            subject.containsExactly("ab", "a", "a")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"ab\", \"a\", \"a\" ]",
+        )
+        assertThrows<AssertionError> {
+            subject.containsAllIn("a", "a", "ab")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS,
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"a\", \"a\", \"ab\" ]",
+        )
+
+        // "zz" matches nothing, so it's certainly missing
+        assertThrows<AssertionError> {
+            subject.containsExactly("a", "a", "ab", "zz")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.MISSING, "[ \"zz\" ]",
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"a\", \"a\", \"ab\" ]",
+        )
+
+        // More than one can be left out of a group
+        assertThrows<AssertionError> {
+            assertThat(listOf("abc")).comparingElementsUsing(Correspondence.contains).containsExactly("a", "b", "c")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.POSSIBLY_MISSING, "2 of [ \"a\", \"b\", \"c\" ]",
+        )
+
+        // Groups that don't overlap are listed separately
+        assertThrows<AssertionError> {
+            assertThat(listOf("ab", "zy"))
+                .comparingElementsUsing(Correspondence.contains)
+                .containsExactly("a", "ab", "zy", "z")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.POSSIBLY_MISSING, "1 of [ \"a\", \"ab\" ], 1 of [ \"zy\", \"z\" ]",
+        )
+
+        // The same goes for extraneous elements
+        assertThrows<AssertionError> {
+            assertThat(listOf("a", "ab", "x"))
+                .comparingElementsUsing(Correspondence.contains)
+                .containsExactly("a")
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.EXTRANEOUS, "[ \"x\" ]",
+            DetailsFor.POSSIBLY_EXTRANEOUS, "1 of [ \"a\", \"ab\" ]",
         )
     }
 
