@@ -1,10 +1,10 @@
-package com.varabyte.truthish.failure
+package com.varabyte.truthish.util.truncate
 
 import com.varabyte.truthish.assertThat
-import com.varabyte.truthish.failure.Anchor.CenteredOn
-import com.varabyte.truthish.failure.Anchor.EndingAt
-import com.varabyte.truthish.failure.TruncatedPart.Hidden
-import com.varabyte.truthish.failure.TruncatedPart.Shown
+import com.varabyte.truthish.util.truncate.Anchor.CenteredOn
+import com.varabyte.truthish.util.truncate.Anchor.EndingAt
+import com.varabyte.truthish.util.truncate.TruncatedPart.Hidden
+import com.varabyte.truthish.util.truncate.TruncatedPart.Shown
 import kotlin.test.Test
 
 class TruncatorTest {

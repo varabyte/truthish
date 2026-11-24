@@ -1,4 +1,4 @@
-package com.varabyte.truthish.failure
+package com.varabyte.truthish.util.truncate
 
 /**
  * A run of consecutive elements in a truncated collection, either shown or hidden.
@@ -62,25 +62,11 @@ sealed interface Anchor {
 }
 
 /**
- * Shortens long collections (or strings, as lists of characters) so a report stays readable.
+ * Shortens long collections (or strings, as lists of characters), e.g. so a report stays readable.
  *
  * The shown elements are kept in a window at each [Anchor].
  */
 internal class Truncator(val maxElements: Int) {
-    companion object {
-        /**
-         * The truncator reports use, which shows at most 11 elements of a collection.
-         */
-        // NOTE: An odd number was intentionally chosen so that truncations that happen around an anchor can show the
-        // same number of elements before and after.
-        val forReports = Truncator(maxElements = 11)
-
-        /**
-         * The truncator reports use for strings, which shows at most 100 characters.
-         */
-        val forStrings = Truncator(maxElements = 100)
-    }
-
     /**
      * Truncates [values] to a window at [anchor].
      *

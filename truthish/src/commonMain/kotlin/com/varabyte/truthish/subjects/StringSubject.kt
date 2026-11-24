@@ -1,11 +1,11 @@
 package com.varabyte.truthish.subjects
 
-import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
-import com.varabyte.truthish.failure.Truncation
+import com.varabyte.truthish.util.truncate.Anchor
+import com.varabyte.truthish.util.truncate.Truncation
 
 class StringSubject(private val actual: String) : ComparableSubject<String>(actual) {
 

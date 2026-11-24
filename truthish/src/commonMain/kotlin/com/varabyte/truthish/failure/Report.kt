@@ -1,5 +1,9 @@
 package com.varabyte.truthish.failure
 
+import com.varabyte.truthish.util.truncate.Anchor
+import com.varabyte.truthish.util.truncate.Truncation
+import com.varabyte.truthish.util.truncate.Truncator
+
 /**
  * Create a report which consists of a single summary line and an optional list of details.
  *
@@ -245,9 +249,9 @@ object DetailsFor {
      */
     fun expectedActual(expected: Any?, actual: Any?): Details {
         val anchor = when {
-            expected is List<*> && actual is List<*> -> expected.findSharedAnchor(actual, Truncator.forReports)
+            expected is List<*> && actual is List<*> -> expected.findSharedAnchor(actual, Truncators.forCollections)
             expected is CharSequence && actual is CharSequence ->
-                expected.toList().findSharedAnchor(actual.toList(), Truncator.forStrings)
+                expected.toList().findSharedAnchor(actual.toList(), Truncators.forStrings)
             else -> null
         }
         val contexts = if (anchor != null) {

@@ -1,6 +1,8 @@
 package com.varabyte.truthish.failure
 
 import com.varabyte.truthish.assertThat
+import com.varabyte.truthish.util.truncate.Anchor
+import com.varabyte.truthish.util.truncate.Truncation
 import kotlin.test.Test
 
 class ReportTest {

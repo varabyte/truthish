@@ -1,6 +1,5 @@
 package com.varabyte.truthish.subjects
 
-import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
@@ -8,8 +7,9 @@ import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Reportable
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
-import com.varabyte.truthish.failure.Truncation
 import com.varabyte.truthish.failure.ValueStringifier
+import com.varabyte.truthish.util.truncate.Anchor
+import com.varabyte.truthish.util.truncate.Truncation
 
 /** How actual elements are compared with expected ones. */
 internal sealed interface ElementComparison<in A, in E> {

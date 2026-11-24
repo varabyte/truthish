@@ -1,13 +1,13 @@
 package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.Correspondence
-import com.varabyte.truthish.failure.Anchor
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
-import com.varabyte.truthish.failure.Truncation
+import com.varabyte.truthish.util.truncate.Anchor
+import com.varabyte.truthish.util.truncate.Truncation
 
 // Never truncate values that made an assertion fail, since they're what the user needs to see
 internal val FailureValueContext = StringifierContext(Truncation.None)
