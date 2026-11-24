@@ -70,6 +70,26 @@ assertAll {
 // The above will assert once, reporting both equality check failures
 ```
 
+If you need to compare the elements of a collection more loosely than strict equality, you can use a `Correspondence`.
+For example, to check a list of error messages without spelling each one out in full:
+
+```kotlin
+assertThat(errors)
+    .comparingElementsUsing(Correspondence.contains)
+    .containsExactly("unresolved", "cannot be reassigned")
+```
+
+You can also write your own, and the actual and expected types can differ. For example, to check strings against the
+numbers they should parse to:
+
+```kotlin
+val parsesTo = Correspondence<String, Int>("parses to") { actual, expected -> actual.toIntOrNull() == expected }
+
+assertThat(listOf("1", "2", "3"))
+    .comparingElementsUsing(parsesTo)
+    .containsExactly(1, 2, 3)
+```
+
 You can read the [Google Truth documentation](https://truth.dev/) for why they
 believe their fluent approach to assertions is both more readable and produces
 cleaner error messages, but let's break one of the tests above to see a

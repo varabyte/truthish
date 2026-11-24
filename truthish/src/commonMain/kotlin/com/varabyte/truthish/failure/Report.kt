@@ -149,6 +149,7 @@ object DetailsFor {
     const val UNEXPECTED = "Unexpected"
     const val DUPLICATES = "Duplicates"
     const val OUT_OF_ORDER = "Out of order"
+    const val TESTING_WHETHER = "Testing whether"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was
