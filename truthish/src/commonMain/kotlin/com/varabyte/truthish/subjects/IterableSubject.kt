@@ -281,13 +281,10 @@ class OrderedAsserter<T>(
     private val actual = IterableSnapshot(actual)
     private val other = IterableSnapshot(other)
 
-    /**
-     * It's possible that our lists might have duplicate values - make sure we don't ever recount the
-     * same element in order!
-     */
-    private val usedIndices = mutableSetOf<Int>()
-
     fun inOrder() {
+        // It's possible that our lists might have duplicate values - make sure we don't ever recount the same element
+        // in order!
+        val usedIndices = mutableSetOf<Int>()
         var actualIndex = 0
         var otherIndex = 0
         var lastMatchIndex: Int? = null
