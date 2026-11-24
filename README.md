@@ -107,7 +107,7 @@ fun testMapButIntentionallyBroken() {
 Output:
 
 ```text
-A collection did not contain element(s)
+A collection did not contain exactly the expected element(s)
 
 Expected exactly all elements from: [ 1, 4, 9, 15, 26 ]
 But was                           : [ 1, 4, 9, 16, 25 ]
