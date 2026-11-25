@@ -38,6 +38,9 @@ class StringAsserts {
             assertThat("Hello World").doesNotContain("Jello")
             assertThat("Hello World").doesNotContainMatch("0+")
             assertThat("Hello World").doesNotContainMatch(Regex("[0-9]"))
+
+            assertThat("banana").isIn("apple".."cherry")
+            assertThat("banana").isNotIn("cherry".."date")
         }
 
         run {
@@ -58,6 +61,10 @@ class StringAsserts {
             assertThrows<AssertionError> {
                 assertThat("Hello World").hasLength(3)
             }.assertSubstrings(Summaries.EXPECTED_LENGTH, "3", "11", "\"Hello World\"")
+
+            assertThrows<AssertionError> {
+                assertThat("banana").isIn("cherry".."date")
+            }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "\"cherry\"..\"date\"", DetailsFor.BUT_WAS, "\"banana\"")
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").startsWith("llo")

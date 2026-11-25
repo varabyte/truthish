@@ -20,6 +20,8 @@ object Summaries {
     const val EXPECTED_EXCEPTION_TYPE = "An unexpected exception type was thrown"
 
     const val EXPECTED_COMPARISON = "Two values did not compare with each other as expected"
+    const val EXPECTED_IN_RANGE = "A value was not in an expected range"
+    const val EXPECTED_NOT_IN_RANGE = "A value was in an unexpected range"
 
     const val EXPECTED_EMPTY = "A value was not empty"
     const val EXPECTED_BLANK = "A value was not blank"

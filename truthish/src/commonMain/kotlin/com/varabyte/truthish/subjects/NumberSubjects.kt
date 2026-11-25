@@ -3,10 +3,21 @@ package com.varabyte.truthish.subjects
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.derivedFrom
 import kotlin.math.absoluteValue
 
-class ByteSubject(actual: Byte) : ComparableSubject<Byte>(actual)
-class ShortSubject(actual: Short) : ComparableSubject<Short>(actual)
+class ByteSubject(private val actual: Byte) : ComparableSubject<Byte>(actual) {
+    // bytes do not have their own range type (`1.toByte()..10.toByte()` is an `IntRange`), so check as an int
+    fun isIn(range: IntRange) = IntSubject(actual.toInt()).derivedFrom(this).isIn(range)
+    fun isNotIn(range: IntRange) = IntSubject(actual.toInt()).derivedFrom(this).isNotIn(range)
+}
+
+class ShortSubject(private val actual: Short) : ComparableSubject<Short>(actual) {
+    // shorts do not have their own range type (`1.toShort()..10.toShort()` is an `IntRange`), so check as an int
+    fun isIn(range: IntRange) = IntSubject(actual.toInt()).derivedFrom(this).isIn(range)
+    fun isNotIn(range: IntRange) = IntSubject(actual.toInt()).derivedFrom(this).isNotIn(range)
+}
+
 class IntSubject(actual: Int) : ComparableSubject<Int>(actual)
 class LongSubject(actual: Long) : ComparableSubject<Long>(actual)
 

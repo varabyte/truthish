@@ -1,5 +1,6 @@
 package com.varabyte.truthish
 
+import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
 import kotlin.test.Test
@@ -17,6 +18,12 @@ class NumberAssets {
             assertThat(5).isLessThanEqual(5)
             assertThat(5).isLessThanEqual(6)
             assertThat(5).isLessThan(6)
+
+            assertThat(5).isIn(1..10)
+            assertThat(5).isIn(5..5)
+            assertThat(5).isNotIn(6..10)
+            @Suppress("EmptyRange") // An empty range contains nothing
+            assertThat(5).isNotIn(10..1)
         }
 
         run {
@@ -33,6 +40,14 @@ class NumberAssets {
             assertThrows<AssertionError> {
                 assertThat(5).isLessThan(3)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "3", "5")
+
+            // Ranges show their bounds, not every element in them
+            assertThrows<AssertionError> {
+                assertThat(5).isIn(6..10)
+            }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "Expected in", "6..10", DetailsFor.BUT_WAS, "5")
+            assertThrows<AssertionError> {
+                assertThat(5).isNotIn(1..10)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_IN_RANGE, "Expected not in", "1..10", DetailsFor.BUT_WAS, "5")
         }
     }
 
@@ -46,6 +61,15 @@ class NumberAssets {
         assertThat(5.toByte()).isLessThanEqual(5.toByte())
         assertThat(5.toByte()).isLessThanEqual(6.toByte())
         assertThat(5.toByte()).isLessThan(6.toByte())
+        assertThat(5.toByte()).isIn(1..10)
+        assertThat(5.toByte()).isNotIn(6..10)
+
+        assertThrows<AssertionError> {
+            assertThat(5.toByte()).isIn(6..10)
+        }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "6..10", DetailsFor.BUT_WAS, "5")
+        assertThrows<AssertionError> {
+            assertWithMessage(TEST_MESSAGE).that(5.toByte()).isNotIn(1..10)
+        }.assertSubstrings(Summaries.EXPECTED_NOT_IN_RANGE, DetailsFor.MESSAGE, TEST_MESSAGE, "1..10")
     }
 
     @Test
@@ -58,6 +82,15 @@ class NumberAssets {
         assertThat(5.toShort()).isLessThanEqual(5.toShort())
         assertThat(5.toShort()).isLessThanEqual(6.toShort())
         assertThat(5.toShort()).isLessThan(6.toShort())
+        assertThat(5.toShort()).isIn(1..10)
+        assertThat(5.toShort()).isNotIn(6..10)
+
+        assertThrows<AssertionError> {
+            assertThat(5.toShort()).isIn(6..10)
+        }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "6..10", DetailsFor.BUT_WAS, "5")
+        assertThrows<AssertionError> {
+            assertWithMessage(TEST_MESSAGE).that(5.toShort()).isNotIn(1..10)
+        }.assertSubstrings(Summaries.EXPECTED_NOT_IN_RANGE, DetailsFor.MESSAGE, TEST_MESSAGE, "1..10")
     }
 
 
@@ -71,6 +104,7 @@ class NumberAssets {
         assertThat(5.toLong()).isLessThanEqual(5.toLong())
         assertThat(5.toLong()).isLessThanEqual(6.toLong())
         assertThat(5.toLong()).isLessThan(6.toLong())
+        assertThat(5.toLong()).isIn(4.toLong()..6.toLong())
     }
 
     @Test
@@ -88,6 +122,10 @@ class NumberAssets {
 
             assertThat(5.3f).isWithin(0.5f).of(5.5f)
             assertThat(5.3f).isNotWithin(0.1f).of(5.5f)
+
+            assertThat(5.3f).isIn(5.25f..5.5f)
+            // NaN is in no range
+            assertThat(Float.NaN).isNotIn(5.25f..5.5f)
         }
 
         run {
@@ -142,6 +180,10 @@ class NumberAssets {
 
             assertThat(5.3).isWithin(0.5).of(5.5)
             assertThat(5.3).isNotWithin(0.1).of(5.5)
+
+            assertThat(5.3).isIn(5.25..5.5)
+            // NaN is in no range
+            assertThat(Double.NaN).isNotIn(5.25..5.5)
         }
 
         run {
@@ -166,6 +208,9 @@ class NumberAssets {
             assertThrows<AssertionError> {
                 assertThat(5.3).isNotWithin(0.1).of(Double.NaN)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
+            assertThrows<AssertionError> {
+                assertThat(Double.NaN).isIn(5.25..5.5)
+            }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "5.25..5.5", "NaN")
         }
 
         run {
