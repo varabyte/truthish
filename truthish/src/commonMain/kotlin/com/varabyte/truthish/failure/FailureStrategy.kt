@@ -1,5 +1,7 @@
 package com.varabyte.truthish.failure
 
+import com.varabyte.truthish.assertAll
+
 /**
  * A strategy for how an assertion failure should be handled.
  *
@@ -78,4 +80,17 @@ class DeferredStrategy(private val summary: String? = null) : FailureStrategy {
             throw MultipleReportsError(reports, summary)
         }
     }
+}
+
+/**
+ * A strategy that ignores every failure.
+ *
+ * This is useful for a subject that is already considered invalid after an earlier failure (e.g. one returned for a
+ * derived value that turned out to be missing), at which point later assertions would just be noise.
+ *
+ * This is especially important in an [assertAll] block, where failures aren't simply thrown on the first error but
+ * are instead collected in their entirety.
+ */
+object SkipStrategy : FailureStrategy {
+    override fun handle(report: Report) = Unit
 }

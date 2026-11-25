@@ -168,6 +168,7 @@ fun Details.find(key: String): Any? {
 object DetailsFor {
     const val MESSAGE = "Message"
     const val NAME = "Name"
+    const val VALUE_OF = "Value of"
     const val VALUE = "Value"
     const val EXPECTED = "Expected"
     const val BUT_WAS = "But was"

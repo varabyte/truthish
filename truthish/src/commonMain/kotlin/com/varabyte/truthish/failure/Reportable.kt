@@ -20,13 +20,15 @@ abstract class Reportable {
     var strategy: FailureStrategy = AssertionStrategy()
     var message: String? = null
     var name: String? = null
+    /** Context about where this value comes from. */
+    var valueOf: String? = null
 
     /**
      * Handle a [Report] using this current reportable instance's strategy and other values.
      */
     fun report(report: Report) {
-        // Note: The following lines are in reverse order, since each add to the 0th element. In
-        // practice, it's rare that both will even be set at the same time.
+        // Note: The following lines are in reverse order, since each add to the 0th element
+        valueOf?.let { report.details.add(0, DetailsFor.VALUE_OF to AnyStringifier(it)) }
         name?.let { report.details.add(0, DetailsFor.NAME to AnyStringifier(it)) }
         message?.let { report.details.addMessage(it) }
 
@@ -76,5 +78,25 @@ inline fun <reified R : Reportable> R.withMessage(message: String): R {
  */
 inline fun <reified R : Reportable> R.withStrategy(strategy: FailureStrategy): R {
     this.strategy = strategy
+    return this
+}
+
+/**
+ * Copies [other]'s message, name and failure strategy, so this subject reports failures like it would.
+ *
+ * This also requires the caller to specify where the value was derived from, as a way to differentiate the derived
+ * subject from its source.
+ *
+ * This pattern is useful if you are exposing a child subject from a parent subject. For example, imagine you created a
+ * custom `UserSubject` and wanted to return a child `StringSubject` representing the user's name. You could write:
+ * ```
+ * fun hasNameThat() = StringSubject(user.name).derivedFrom(this, valueOf = "User.name")
+ * ```
+ */
+fun <R : Reportable> R.derivedFrom(other: Reportable, valueOf: String): R {
+    this.valueOf = valueOf
+    name = other.name
+    message = other.message
+    strategy = other.strategy
     return this
 }
