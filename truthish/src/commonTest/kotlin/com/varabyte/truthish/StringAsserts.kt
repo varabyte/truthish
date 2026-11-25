@@ -200,4 +200,128 @@ class StringAsserts {
             DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
         )
     }
+
+    @Test
+    fun multiLineStringsAreShownAsADiff() {
+        assertThrows<AssertionError> {
+            assertThat("a\nb\nc").isEqualTo("a\nB\nc")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                  - B
+                  + b
+                    c
+            """.trimIndent(),
+        )
+
+        // Only one side needs to span multiple lines to result in a diff
+        run {
+            assertThrows<AssertionError> {
+                assertThat("a").isEqualTo("a\nb\nc")
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                """
+                Diff:   a
+                      - b
+                      - c
+                """.trimIndent(),
+            )
+            assertThrows<AssertionError> {
+                assertThat("a\nb\nc").isEqualTo("a")
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                """
+                Diff:   a
+                      + b
+                      + c
+                """.trimIndent(),
+            )
+        }
+    }
+
+    @Test
+    fun multiLineStringDiffIgnoresLineEndingsButNotesThem() {
+        assertThrows<AssertionError> {
+            assertThat("a\r\nb\r\nc").isEqualTo("a\nB\nc")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                  - B
+                  + b
+                    c
+                  (line endings also differ)
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun multiLineStringDiffNotesAMissingFinalNewline() {
+        assertThrows<AssertionError> {
+            assertThat("a\nb").isEqualTo("a\nB\n")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                  - B
+                  + b
+                  (expected ends with a newline but actual doesn't)
+            """.trimIndent(),
+        )
+
+        assertThrows<AssertionError> {
+            assertThat("a\nb\n").isEqualTo("a\nB")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                  - B
+                  + b
+                  (actual ends with a newline but expected doesn't)
+            """.trimIndent(),
+        )
+
+        // The final newline can be the only difference
+        assertThrows<AssertionError> {
+            assertThat("a\nb").isEqualTo("a\nb\n")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                    b
+                  (expected ends with a newline but actual doesn't)
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun multiLineStringDiffCanHaveSeveralNotes() {
+        assertThrows<AssertionError> {
+            assertThat("a\r\nb").isEqualTo("a\nB\n")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                  - B
+                  + b
+                  (line endings also differ; expected ends with a newline but actual doesn't)
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun multiLineStringsThatOnlyDifferInLineEndingsAreNotDiffed() {
+        assertThrows<AssertionError> {
+            assertThat("a\r\nb").isEqualTo("a\nb")
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "\"a\\nb\"",
+            DetailsFor.BUT_WAS, "\"a\\r\\nb\"",
+        )
+        // Note that we intentionally don't show a note about different line endings here, because they are easy to
+        // see at a glance from the report:
+        // Expected: "a\nb"
+        // But was : "a\r\nb"
+    }
 }

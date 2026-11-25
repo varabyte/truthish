@@ -58,7 +58,30 @@ class AssertionFailedErrorTest {
     }
 
     @Test
-    fun multilineStringsAreDiffedAsIs() {
+    fun multilineStringsAreReportedAsALineDiff() {
+        val e = assertThrows<AssertionFailedError> {
+            assertThat("a\nb\nc").isEqualTo("a\nB\nc")
+        }
+
+        assertThat(e.expected.value).isEqualTo("a\nB\nc")
+        assertThat(e.actual.value).isEqualTo("a\nb\nc")
+        assertThat(e.message!!).isEqualTo(
+            """
+            Two objects were not equal
+
+            Diff:   a
+                  - B
+                  + b
+                    c
+
+            """.trimIndent()
+        )
+    }
+
+    // The IDE's diff viewer handles line endings and control characters itself (e.g. it notes differing line
+    // separators), so they should reach it unchanged, even though the report's own diff ignores line endings
+    @Test
+    fun multilineStringsAreReportedWithControlCharactersPassedThroughUnchanged() {
         val e = assertThrows<AssertionFailedError> {
             assertThat("val s = \"a\"\r\n\tprint(s)\u001B[0m\n").isEqualTo("val s = \"b\"\r\n\tprint(s)\n")
         }

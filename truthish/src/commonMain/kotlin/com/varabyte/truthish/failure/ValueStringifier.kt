@@ -1,9 +1,11 @@
 package com.varabyte.truthish.failure
 
+import com.varabyte.truthish.util.diff.LineDiff
 import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.TruncatedPart
 import com.varabyte.truthish.util.truncate.Truncation
 import com.varabyte.truthish.util.truncate.Truncator
+import kotlin.math.abs
 import kotlin.reflect.KClass
 
 /**
@@ -60,6 +62,7 @@ sealed class ValueStringifier(private val value: Any?) {
                 is ValueStringifier -> value // In case caller already wrapped `value` in a stringifier themselves
                 is Char -> CharStringifier(value)
                 is CharSequence -> StringStringifier(value, truncation)
+                is LineDiff -> LineDiffStringifier(value)
                 is Map<*, *> -> MapStringifier(value, truncation)
                 is Map.Entry<*, *> -> PairStringifier(value, truncation)
                 is Pair<*, *> -> PairStringifier(value, truncation)
@@ -113,8 +116,24 @@ private fun Char.toEscapedString(quote: Quote): String {
     }
 }
 
+/**
+ * Shows this character in plain text without backslash escapes, so a backslash in the text is never mistaken for one.
+ *
+ * A tab is drawn as an arrow, as editors do, and other control characters as their symbols from Unicode's Control
+ * Pictures block, e.g. `␛` for an escape. C1 control characters have no such symbol, so they're shown as their code.
+ */
+private fun Char.toVisibleString(): String {
+    return when {
+        this == '\t' -> "→"
+        code < 0x20 -> Char(0x2400 + code).toString()
+        code == 0x7F -> "␡"
+        isISOControl() -> "<U+" + code.toString(16).uppercase().padStart(4, '0') + ">"
+        else -> toString()
+    }
+}
+
 internal class CharStringifier(private val value: Char) : ValueStringifier(value) {
-    override fun render() = "'${value.toEscapedString(Quote.SINGLE)}'"
+    override fun render() = Quote.SINGLE.let { quote -> quote.char + value.toEscapedString(quote) + quote.char }
 }
 
 /**
@@ -127,11 +146,62 @@ internal class StringStringifier(
     // Characters are cut before they're escaped, so an escape like `\n` is never split
     override fun render() = Truncators.forStrings.truncate(value.toList(), truncation).joinToString(" ") { part ->
         when (part) {
-            is TruncatedPart.Shown -> part.values.joinToString("", prefix = "\"", postfix = "\"") {
-                it.toEscapedString(Quote.DOUBLE)
+            is TruncatedPart.Shown -> {
+                val quote = Quote.DOUBLE
+                part.values.joinToString("", prefix = quote.char.toString(), postfix = quote.char.toString()) {
+                    it.toEscapedString(quote)
+                }
             }
             is TruncatedPart.Hidden -> "… (${part.count} more ${if (part.count == 1) "char" else "chars"})"
         }
+    }
+}
+
+/**
+ * Renders a [LineDiff] as one line per diff line, each starting with `- ` (expected only), `+ ` (actual only) or two
+ * spaces (both).
+ *
+ * Unchanged lines more than a few lines away from a change are collapsed, e.g. `… (40 unchanged lines)`. Invisible
+ * characters are drawn as symbols, e.g. a tab as `→`.
+ */
+internal class LineDiffStringifier(private val diff: LineDiff) : ValueStringifier(diff) {
+    private companion object {
+        /** How many unchanged lines to show around each change. */
+        const val CONTEXT_SIZE = 3
+    }
+
+    override fun render(): String {
+        val lines = diff.lines
+        val changedIndices = lines.indices.filter { lines[it] !is LineDiff.Line.Kept }
+            // If every line matches, the strings differ in their final newline, so treat the end as the change
+            .ifEmpty { listOf(lines.size) }
+        val isShown = BooleanArray(lines.size) { index ->
+            changedIndices.any { changedIndex -> abs(index - changedIndex) <= CONTEXT_SIZE }
+        }
+
+        return buildList {
+            var index = 0
+            while (index < lines.size) {
+                val hiddenCount = (index until lines.size).takeWhile { !isShown[it] }.count()
+                // Collapsing a single line would save nothing, since the marker takes a line too
+                if (hiddenCount > 1) {
+                    add("  … ($hiddenCount unchanged lines)")
+                    index += hiddenCount
+                    continue
+                }
+
+                val line = lines[index]
+                val marker = when (line) {
+                    is LineDiff.Line.Kept -> "  "
+                    is LineDiff.Line.Removed -> "- "
+                    is LineDiff.Line.Added -> "+ "
+                }
+                val text = line.text.toList().joinToString("") { it.toVisibleString() }
+                // An empty line gets no trailing space after its marker
+                add(if (text.isEmpty()) marker.trimEnd() else marker + text)
+                index++
+            }
+        }.joinToString("\n")
     }
 }
 
