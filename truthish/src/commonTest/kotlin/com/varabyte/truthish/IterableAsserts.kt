@@ -159,35 +159,46 @@ class IterableAsserts {
     }
 
     @Test
-    fun valuesThatCauseFailuresAreNeverTruncated() {
+    fun elementsThatCauseFailuresAreCutShortAtTheEnd() {
         assertThrows<AssertionError> {
             assertThat((1..5).toList()).containsAllIn((1..20).toList())
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.MISSING, "[ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.MISSING, "[ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, … (4 more) ]",
         )
 
         assertThrows<AssertionError> {
             assertThat((1..20).toList()).containsExactly(1)
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            DetailsFor.EXTRANEOUS, "[ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.EXTRANEOUS, "[ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, … (8 more) ]",
         )
 
         assertThrows<AssertionError> {
             assertThat((1..20).toList()).containsNoneIn((1..20).toList())
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            DetailsFor.UNEXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.UNEXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
         )
 
         assertThrows<AssertionError> {
             assertThat((1..20).toList() + (1..20).toList()).hasNoDuplicates()
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
-            DetailsFor.DUPLICATES, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.DUPLICATES, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
         )
 
+        assertThrows<AssertionError> {
+            assertThat((1..20).toList()).isEqualTo((21..40).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.MISSING, "[ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, … (9 more) ]",
+            DetailsFor.EXTRANEOUS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
+        )
+    }
+
+    @Test
+    fun valuesThatCauseFailuresAreNeverTruncated() {
         // Single elements that are long lists themselves
         assertThrows<AssertionError> {
             assertThat(listOf(listOf(1))).contains((1..20).toList())

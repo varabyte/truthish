@@ -67,7 +67,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to start with",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = StartContext,
                     )
                 )
@@ -84,7 +84,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to start with",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = StartContext,
                     )
                 )
@@ -101,7 +101,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to end with",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = actual.toEndContext(),
                     )
                 )
@@ -118,7 +118,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to end with",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = actual.toEndContext(),
                     )
                 )
@@ -135,7 +135,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -155,7 +155,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -175,7 +175,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to contain",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -191,7 +191,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to contain match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -212,7 +212,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to contain",
                         expected,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = (foundIndex until foundIndex + expected.length).toCenteredContext(),
                     )
                 )
@@ -230,7 +230,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to contain match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureValueContext,
+                        expectedContext = FailureContext,
                         actualContext = match.range.toCenteredContext(),
                     )
                 )

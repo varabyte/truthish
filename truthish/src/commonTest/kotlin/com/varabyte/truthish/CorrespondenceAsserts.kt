@@ -187,6 +187,17 @@ class CorrespondenceAsserts {
             DetailsFor.EXTRANEOUS, "[ \"x\" ]",
             DetailsFor.POSSIBLY_EXTRANEOUS, "1 of [ \"a\", \"ab\" ]",
         )
+
+        // A long group is cut short at the end
+        assertThrows<AssertionError> {
+            assertThat(listOf("abcdefghijklmnopqrst"))
+                .comparingElementsUsing(Correspondence.contains)
+                .containsExactly(('a'..'t').map { it.toString() })
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+            DetailsFor.POSSIBLY_MISSING,
+            "19 of [ \"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", … (9 more) ]",
+        )
     }
 
     @Test

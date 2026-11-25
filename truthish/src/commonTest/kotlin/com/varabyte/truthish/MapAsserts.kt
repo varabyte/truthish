@@ -147,5 +147,18 @@ class MapAsserts {
             DetailsFor.MISSING, "{ 16 to 160 }",
             DetailsFor.EXTRANEOUS, "{ 16 to 0 }",
         )
+
+        // Long lists of missing and extraneous entries are cut short at the end
+        assertThrows<AssertionError> {
+            assertThat(tens).isEqualTo(tens.mapValues { it.value + 1 })
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.MISSING,
+            "{ 1 to 11, 2 to 21, 3 to 31, 4 to 41, 5 to 51, 6 to 61, ",
+            "7 to 71, 8 to 81, 9 to 91, 10 to 101, 11 to 111, … (19 more) }",
+            DetailsFor.EXTRANEOUS,
+            "{ 1 to 10, 2 to 20, 3 to 30, 4 to 40, 5 to 50, 6 to 60, ",
+            "7 to 70, 8 to 80, 9 to 90, 10 to 100, 11 to 110, … (19 more) }",
+        )
     }
 }
