@@ -82,19 +82,26 @@ inline fun <reified R : Reportable> R.withStrategy(strategy: FailureStrategy): R
 }
 
 /**
- * Copies [other]'s message, name and failure strategy, so this subject reports failures like it would.
+ * Adds context about where a value comes from, e.g. `ParseException.message` for an exception's message.
  *
- * This also requires the caller to specify where the value was derived from, as a way to differentiate the derived
- * subject from its source.
+ * This is especially useful to tell a derived subject apart from its source, and we expect it to commonly follow a
+ * call to [derivedFrom].
+ */
+fun <R : Reportable> R.valueOf(valueOf: String): R {
+    this.valueOf = valueOf
+    return this
+}
+
+/**
+ * Copies [other]'s message, name and failure strategy, so this subject reports failures like it would.
  *
  * This pattern is useful if you are exposing a child subject from a parent subject. For example, imagine you created a
  * custom `UserSubject` and wanted to return a child `StringSubject` representing the user's name. You could write:
  * ```
- * fun hasNameThat() = StringSubject(user.name).derivedFrom(this, valueOf = "User.name")
+ * fun hasNameThat() = StringSubject(user.name).derivedFrom(this).valueOf("User.name")
  * ```
  */
-fun <R : Reportable> R.derivedFrom(other: Reportable, valueOf: String): R {
-    this.valueOf = valueOf
+fun <R : Reportable> R.derivedFrom(other: Reportable): R {
     name = other.name
     message = other.message
     strategy = other.strategy

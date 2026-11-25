@@ -2,6 +2,7 @@ package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.failure.SkipStrategy
 import com.varabyte.truthish.failure.derivedFrom
+import com.varabyte.truthish.failure.valueOf
 import com.varabyte.truthish.failure.withStrategy
 
 /**
@@ -21,13 +22,13 @@ class ThrowableSubject(private val actual: Throwable) : NotNullSubject<Throwable
      * To check that a throwable has no message, use `assertThat(e.message).isNull()`.
      */
     fun hasMessageThat(): StringSubject {
-        val valueOf = "${findPath()}.message"
+        val path = "${findPath()}.message"
         val message = actual.message
         if (message == null) {
-            NullableSubject(message).derivedFrom(this, valueOf).isNotNull()
+            NullableSubject(message).derivedFrom(this).valueOf(path).isNotNull()
             return StringSubject("").withStrategy(SkipStrategy)
         }
-        return StringSubject(message).derivedFrom(this, valueOf)
+        return StringSubject(message).derivedFrom(this).valueOf(path)
     }
 
     /**
@@ -36,13 +37,13 @@ class ThrowableSubject(private val actual: Throwable) : NotNullSubject<Throwable
      * To check that a throwable has no cause, use `assertThat(e.cause).isNull()`.
      */
     fun hasCauseThat(): ThrowableSubject {
-        val valueOf = "${findPath()}.cause"
+        val path = "${findPath()}.cause"
         val cause = actual.cause
         if (cause == null) {
-            NullableSubject(cause).derivedFrom(this, valueOf).isNotNull()
+            NullableSubject(cause).derivedFrom(this).valueOf(path).isNotNull()
             return ThrowableSubject(actual).withStrategy(SkipStrategy)
         }
-        return ThrowableSubject(cause).derivedFrom(this, valueOf)
+        return ThrowableSubject(cause).derivedFrom(this).valueOf(path)
     }
 
     /** The start of the [valueOf] paths for this throwable's message and cause, e.g. `ParseException.cause`. */
