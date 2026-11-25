@@ -159,97 +159,182 @@ class IterableAsserts {
     }
 
     @Test
-    fun elementsThatCauseFailuresAreCutShortAtTheEnd() {
-        assertThrows<AssertionError> {
-            assertThat((1..5).toList()).containsAllIn((1..20).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.MISSING, "[ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, … (4 more) ]",
-        )
+    fun longListsAreTruncated() {
+        run {
+            // Around the first difference
 
-        assertThrows<AssertionError> {
-            assertThat((1..20).toList()).containsExactly(1)
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            DetailsFor.EXTRANEOUS, "[ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, … (8 more) ]",
-        )
+            // One element replaced
+            assertThrows<AssertionError> {
+                assertThat((1..30).map { if (it == 16) 99 else it }).isEqualTo((1..30).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+                DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 99, 17, 18, 19, 20, 21, … (9 more) ]",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat((1..20).toList()).containsNoneIn((1..20).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            DetailsFor.UNEXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
-        )
+            // The lists differ only in length
+            assertThrows<AssertionError> {
+                assertThat((1..20).toList()).isEqualTo((1..30).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+                DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat((1..20).toList() + (1..20).toList()).hasNoDuplicates()
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
-            DetailsFor.DUPLICATES, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
-        )
+            // A list short enough to show whole
+            assertThrows<AssertionError> {
+                assertThat((1..30).toList()).isEqualTo((1..5).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5 ]",
+                DetailsFor.BUT_WAS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+            )
+        }
 
-        assertThrows<AssertionError> {
-            assertThat((1..20).toList()).isEqualTo((21..40).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.MISSING, "[ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, … (9 more) ]",
-            DetailsFor.EXTRANEOUS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
-        )
-    }
+        run {
+            // Around the element the check found
 
-    @Test
-    fun longArgumentsAreTruncatedLikeAnyOtherValue() {
-        // Single elements that are long lists themselves
-        assertThrows<AssertionError> {
-            assertThat(listOf(listOf(1))).contains((1..20).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS,
-            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
-        )
+            assertThrows<AssertionError> {
+                assertThat((1..30).toList()).doesNotContain(16)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+                DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(listOf((1..20).toList())).doesNotContain((1..20).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
-        )
+            // Both copies of the first duplicate (3), even though there are more (7)
+            assertThrows<AssertionError> {
+                assertThat((1..30).map { if (it == 16) 3 else if (it == 25) 7 else it }).hasNoDuplicates()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
+                DetailsFor.VALUE, "[ 1, 2, 3, 4, 5, 6, … (7 more), 14, 15, 3, 17, 18, … (12 more) ]",
+                DetailsFor.DUPLICATES, "[ 3, 7 ]",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(listOf((1..20).toList(), listOf(1))).containsExactly(listOf(1), (1..20).toList()).inOrder()
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_ORDERED,
-            DetailsFor.OUT_OF_ORDER, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
-        )
-    }
+            // Both lists are centered on their copy of the first shared element (16)
+            assertThrows<AssertionError> {
+                assertThat((1..30).toList()).containsNoneIn((40..69).map { if (it == 55) 16 else it })
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+                "[ … (10 more), 50, 51, 52, 53, 54, 16, 56, 57, 58, 59, 60, … (9 more) ]",
+                DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
+                DetailsFor.UNEXPECTED, "[ 16 ]",
+            )
+        }
 
-    @Test
-    fun longListsAreTruncatedAroundTheFirstDifference() {
-        // One element replaced
-        assertThrows<AssertionError> {
-            assertThat((1..30).map { if (it == 16) 99 else it }).isEqualTo((1..30).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
-            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 99, 17, 18, 19, 20, 21, … (9 more) ]",
-        )
+        run {
+            // Around what's out of place
 
-        // The lists differ only in length
-        assertThrows<AssertionError> {
-            assertThat((1..20).toList()).isEqualTo((1..30).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
-            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
-        )
+            // Expected is centered on its first missing element (5), and But was on its first extraneous one (99)
+            assertThrows<AssertionError> {
+                assertThat((1..30).filter { it != 5 } + 99).containsExactly((1..30).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+                DetailsFor.BUT_WAS, "[ … (19 more), 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 99 ]",
+                DetailsFor.MISSING, "[ 5 ]",
+                DetailsFor.EXTRANEOUS, "[ 99 ]",
+            )
 
-        // A list short enough to show whole
-        assertThrows<AssertionError> {
-            assertThat((1..30).toList()).isEqualTo((1..5).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5 ]",
-            DetailsFor.BUT_WAS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
-        )
+            // Expected is centered on its first missing element (20)
+            assertThrows<AssertionError> {
+                assertThat((1..30).filter { it != 20 }).containsAllIn((1..30).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                "[ … (14 more), 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, … (5 more) ]",
+                DetailsFor.MISSING, "[ 20 ]",
+            )
+
+            // The extraneous element (27) has two copies, and either could be the extra one, so both are shown
+            assertThrows<AssertionError> {
+                assertThat((1..30).map { if (it == 16) 27 else it }).containsExactly((1..30).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                DetailsFor.BUT_WAS,
+                "[ … (13 more), 14, 15, 27, 17, 18, 19, … (5 more), 25, 26, 27, 28, 29, … (1 more) ]",
+                DetailsFor.MISSING, "[ 16 ]",
+                DetailsFor.EXTRANEOUS, "[ 27 ]",
+            )
+
+            // Expected is centered on the out-of-order element (11). But was shows where it is in the actual list, and
+            // where the element expected before it (20) was found.
+            assertThrows<AssertionError> {
+                assertThat((1..30).toList())
+                    .containsExactly((1..30).map { if (it == 10) 20 else if (it == 20) 10 else it })
+                    .inOrder()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                "[ … (5 more), 6, 7, 8, 9, 20, 11, 12, 13, 14, 15, 16, … (14 more) ]",
+                DetailsFor.BUT_WAS,
+                "[ … (7 more), 8, 9, 10, 11, 12, 13, … (4 more), 18, 19, 20, 21, 22, … (8 more) ]",
+                DetailsFor.OUT_OF_ORDER, "11",
+            )
+        }
+
+        run {
+            // Lists of elements that made the check fail keep their start
+
+            assertThrows<AssertionError> {
+                assertThat((1..5).toList()).containsAllIn((1..20).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                DetailsFor.MISSING, "[ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, … (4 more) ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat((1..20).toList()).containsExactly(1)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
+                DetailsFor.EXTRANEOUS, "[ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, … (8 more) ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat((1..20).toList()).containsNoneIn((1..20).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+                DetailsFor.UNEXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat((1..20).toList() + (1..20).toList()).hasNoDuplicates()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
+                DetailsFor.DUPLICATES, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat((1..20).toList()).isEqualTo((21..40).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.MISSING, "[ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, … (9 more) ]",
+                DetailsFor.EXTRANEOUS, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (9 more) ]",
+            )
+        }
+
+        run {
+            // Both ends, when no spot matters
+
+            // Single elements that are long lists themselves
+            assertThrows<AssertionError> {
+                assertThat(listOf(listOf(1))).contains((1..20).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat(listOf((1..20).toList())).doesNotContain((1..20).toList())
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
+                DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat(listOf((1..20).toList(), listOf(1))).containsExactly(listOf(1), (1..20).toList()).inOrder()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.OUT_OF_ORDER, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
+            )
+        }
     }
 
     @Test
@@ -323,84 +408,7 @@ class IterableAsserts {
     }
 
     @Test
-    fun longListsAreTruncatedAroundTheElementThatCausedTheFailure() {
-        assertThrows<AssertionError> {
-            assertThat((1..30).toList()).doesNotContain(16)
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
-        )
-
-        // Both copies of the first duplicate (3), even though there are more (7)
-        assertThrows<AssertionError> {
-            assertThat((1..30).map { if (it == 16) 3 else if (it == 25) 7 else it }).hasNoDuplicates()
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
-            DetailsFor.VALUE, "[ 1, 2, 3, 4, 5, 6, … (7 more), 14, 15, 3, 17, 18, … (12 more) ]",
-            DetailsFor.DUPLICATES, "[ 3, 7 ]",
-        )
-
-        // Both lists are centered on their copy of the first shared element (16)
-        assertThrows<AssertionError> {
-            assertThat((1..30).toList()).containsNoneIn((40..69).map { if (it == 55) 16 else it })
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            "[ … (10 more), 50, 51, 52, 53, 54, 16, 56, 57, 58, 59, 60, … (9 more) ]",
-            DetailsFor.BUT_WAS, "[ … (10 more), 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, … (9 more) ]",
-            DetailsFor.UNEXPECTED, "[ 16 ]",
-        )
-    }
-
-    @Test
-    fun longListsAreTruncatedAroundWhatIsOutOfPlace() {
-        // Expected is centered on its first missing element (5), and But was on its first extraneous one (99)
-        assertThrows<AssertionError> {
-            assertThat((1..30).filter { it != 5 } + 99).containsExactly((1..30).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
-            DetailsFor.BUT_WAS, "[ … (19 more), 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 99 ]",
-            DetailsFor.MISSING, "[ 5 ]",
-            DetailsFor.EXTRANEOUS, "[ 99 ]",
-        )
-
-        // Expected is centered on its first missing element (20)
-        assertThrows<AssertionError> {
-            assertThat((1..30).filter { it != 20 }).containsAllIn((1..30).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS,
-            "[ … (14 more), 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, … (5 more) ]",
-            DetailsFor.MISSING, "[ 20 ]",
-        )
-
-        // The extraneous element (27) has two copies, and either could be the extra one, so both are shown
-        assertThrows<AssertionError> {
-            assertThat((1..30).map { if (it == 16) 27 else it }).containsExactly((1..30).toList())
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY,
-            DetailsFor.BUT_WAS,
-            "[ … (13 more), 14, 15, 27, 17, 18, 19, … (5 more), 25, 26, 27, 28, 29, … (1 more) ]",
-            DetailsFor.MISSING, "[ 16 ]",
-            DetailsFor.EXTRANEOUS, "[ 27 ]",
-        )
-
-        // Expected is centered on the out-of-order element (11). But was shows where it is in the actual list, and
-        // where the element expected before it (20) was found.
-        assertThrows<AssertionError> {
-            assertThat((1..30).toList())
-                .containsExactly((1..30).map { if (it == 10) 20 else if (it == 20) 10 else it })
-                .inOrder()
-        }.assertSubstrings(
-            Summaries.EXPECTED_COLLECTION_ORDERED,
-            "[ … (5 more), 6, 7, 8, 9, 20, 11, 12, 13, 14, 15, 16, … (14 more) ]",
-            DetailsFor.BUT_WAS,
-            "[ … (7 more), 8, 9, 10, 11, 12, 13, … (4 more), 18, 19, 20, 21, 22, … (8 more) ]",
-            DetailsFor.OUT_OF_ORDER, "11",
-        )
-    }
-
-    @Test
-    fun longSetsAreTruncatedAtBothEnds() {
+    fun longSetsAreTruncated() {
         // Sets aren't ordered, so they have no first difference to truncate around
         assertThrows<AssertionError> {
             assertThat((1..30).toSet()).isEqualTo((1..31).toSet())

@@ -109,129 +109,129 @@ class StringAsserts {
     }
 
     @Test
-    fun longArgumentsAreTruncatedLikeAnyOtherValue() {
+    fun longStringsAreTruncated() {
         val numbers = (1..100).joinToString(",")
 
-        // Nothing in particular to show, so both ends are kept
-        assertThrows<AssertionError> {
-            assertThat("Hello World").contains(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_CONTAINS,
-            "Expected to contain", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
-        )
+        run {
+            // Around the first difference
 
-        assertThrows<AssertionError> {
-            assertThat("Hello World").matches(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_MATCH,
-            "Expected to match", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
-        )
+            // One character replaced (the "5" of "50")
+            assertThrows<AssertionError> {
+                assertThat(numbers.replace(",50,", ",X0,")).isEqualTo(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+                DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,X0,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+            )
 
-        // A prefix or suffix keeps the end that's compared, like the value it's compared with
-        assertThrows<AssertionError> {
-            assertThat("1,2,3,x").startsWith(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_STARTS_WITH,
-            "Expected to start with", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
-        )
+            // The strings differ only in length
+            assertThrows<AssertionError> {
+                assertThat((1..60).joinToString(",")).isEqualTo(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,\" … (120 more chars)",
+                DetailsFor.BUT_WAS, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60\"",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat("x,99,100").endsWith(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_ENDS_WITH,
-            "Expected to end with", "… (191 more chars) \",68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
-        )
-    }
+            // A string short enough to show whole
+            assertThrows<AssertionError> {
+                assertThat(numbers).isEqualTo("1,2,3")
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "\"1,2,3\"",
+                DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+            )
 
-    @Test
-    fun longStringsAreTruncatedAroundWhatTheAssertionChecked() {
-        val numbers = (1..100).joinToString(",")
+            // A long prefix or suffix can differ anywhere, not just near the end that's compared
+            assertThrows<AssertionError> {
+                assertThat(numbers).startsWith(numbers.replace(",60,", ",X0,"))
+            }.assertSubstrings(
+                Summaries.EXPECTED_STARTS_WITH,
+                "Expected to start with", "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,X0,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
+                DetailsFor.BUT_WAS, "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(numbers).startsWith("x")
-        }.assertSubstrings(
-            Summaries.EXPECTED_STARTS_WITH,
-            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
-        )
+            assertThrows<AssertionError> {
+                assertThat(numbers).endsWith(numbers.replace(",30,", ",X0,"))
+            }.assertSubstrings(
+                Summaries.EXPECTED_ENDS_WITH,
+                "Expected to end with", "… (28 more chars) \"3,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,X0,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46\" … (163 more chars)",
+                DetailsFor.BUT_WAS, "… (28 more chars) \"3,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46\" … (163 more chars)",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(numbers).endsWith("x")
-        }.assertSubstrings(
-            Summaries.EXPECTED_ENDS_WITH,
-            DetailsFor.BUT_WAS, "… (191 more chars) \",68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
-        )
+            assertThrows<AssertionError> {
+                assertThat(numbers).startsWith("x")
+            }.assertSubstrings(
+                Summaries.EXPECTED_STARTS_WITH,
+                DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(numbers).doesNotContain(",50,")
-        }.assertSubstrings(
-            Summaries.EXPECTED_NOT_CONTAINS,
-            DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
-        )
+            assertThrows<AssertionError> {
+                assertThat(numbers).endsWith("x")
+            }.assertSubstrings(
+                Summaries.EXPECTED_ENDS_WITH,
+                DetailsFor.BUT_WAS, "… (191 more chars) \",68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+            )
 
-        // The window is centered on the middle of the match (",50,…,70"), around "60", not on its start
-        assertThrows<AssertionError> {
-            assertThat(numbers).doesNotContainMatch(Regex(",50,.+,70"))
-        }.assertSubstrings(
-            Summaries.EXPECTED_NOT_CONTAINS,
-            DetailsFor.BUT_WAS, "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
-        )
+            // A prefix or suffix longer than the value it's compared with
+            assertThrows<AssertionError> {
+                assertThat("1,2,3,x").startsWith(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_STARTS_WITH,
+                "Expected to start with", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+            )
 
-        // Nothing in particular to show, so both ends are kept
-        assertThrows<AssertionError> {
-            assertThat(numbers).contains("x")
-        }.assertSubstrings(
-            Summaries.EXPECTED_CONTAINS,
-            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
-        )
-    }
+            assertThrows<AssertionError> {
+                assertThat("x,99,100").endsWith(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_ENDS_WITH,
+                "Expected to end with", "… (191 more chars) \",68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+            )
+        }
 
-    @Test
-    fun longStringsAreTruncatedAroundTheFirstDifference() {
-        val numbers = (1..100).joinToString(",")
+        run {
+            // Around what the check found
 
-        // One character replaced (the "5" of "50")
-        assertThrows<AssertionError> {
-            assertThat(numbers.replace(",50,", ",X0,")).isEqualTo(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
-            DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,X0,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
-        )
+            assertThrows<AssertionError> {
+                assertThat(numbers).doesNotContain(",50,")
+            }.assertSubstrings(
+                Summaries.EXPECTED_NOT_CONTAINS,
+                DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+            )
 
-        // The strings differ only in length
-        assertThrows<AssertionError> {
-            assertThat((1..60).joinToString(",")).isEqualTo(numbers)
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,\" … (120 more chars)",
-            DetailsFor.BUT_WAS, "… (71 more chars) \",28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60\"",
-        )
+            // The window is centered on the middle of the match (",50,…,70"), around "60", not on its start
+            assertThrows<AssertionError> {
+                assertThat(numbers).doesNotContainMatch(Regex(",50,.+,70"))
+            }.assertSubstrings(
+                Summaries.EXPECTED_NOT_CONTAINS,
+                DetailsFor.BUT_WAS, "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
+            )
+        }
 
-        // A string short enough to show whole
-        assertThrows<AssertionError> {
-            assertThat(numbers).isEqualTo("1,2,3")
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "\"1,2,3\"",
-            DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
-        )
+        run {
+            // Both ends, when no spot matters
 
-        // A long prefix or suffix can differ anywhere, not just near the end that's compared
-        assertThrows<AssertionError> {
-            assertThat(numbers).startsWith(numbers.replace(",60,", ",X0,"))
-        }.assertSubstrings(
-            Summaries.EXPECTED_STARTS_WITH,
-            "Expected to start with", "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,X0,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
-            DetailsFor.BUT_WAS, "… (119 more chars) \",44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,\" … (72 more chars)",
-        )
+            assertThrows<AssertionError> {
+                assertThat(numbers).contains("x")
+            }.assertSubstrings(
+                Summaries.EXPECTED_CONTAINS,
+                DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+            )
 
-        assertThrows<AssertionError> {
-            assertThat(numbers).endsWith(numbers.replace(",30,", ",X0,"))
-        }.assertSubstrings(
-            Summaries.EXPECTED_ENDS_WITH,
-            "Expected to end with", "… (28 more chars) \"3,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,X0,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46\" … (163 more chars)",
-            DetailsFor.BUT_WAS, "… (28 more chars) \"3,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46\" … (163 more chars)",
-        )
+            assertThrows<AssertionError> {
+                assertThat("Hello World").contains(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_CONTAINS,
+                "Expected to contain", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat("Hello World").matches(numbers)
+            }.assertSubstrings(
+                Summaries.EXPECTED_MATCH,
+                "Expected to match", "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\" … (191 more chars) \"4,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100\"",
+            )
+        }
     }
 
     @Test

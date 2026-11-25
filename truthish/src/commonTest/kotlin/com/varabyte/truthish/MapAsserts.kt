@@ -121,7 +121,7 @@ class MapAsserts {
     }
 
     @Test
-    fun longMapsAreTruncatedAroundTheElementThatCausedTheFailure() {
+    fun longMapsAreTruncated() {
         val tens = (1..30).associateWith { it * 10 }
 
         assertThrows<AssertionError> {
