@@ -1,4 +1,5 @@
 plugins {
+    base
     kotlin("multiplatform") version "2.1.0" apply false
     kotlin("jvm") version "2.1.0" apply false
     id("org.jetbrains.dokka") version "2.1.0" apply false
@@ -10,3 +11,6 @@ plugins {
 repositories {
     mavenCentral()
 }
+
+// The architecture tests live in their own build (see architecture-tests/build.gradle.kts), so hook them in here
+tasks.check { dependsOn(gradle.includedBuild("architecture-tests").task(":test")) }
