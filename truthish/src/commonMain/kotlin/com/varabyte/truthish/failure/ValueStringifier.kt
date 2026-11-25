@@ -163,11 +163,20 @@ internal class StringStringifier(
  *
  * Unchanged lines more than a few lines away from a change are collapsed, e.g. `… (40 unchanged lines)`. Invisible
  * characters are drawn as symbols, e.g. a tab as `→`.
+ *
+ * Since a terminal has limited vertical space, a long diff is cut off, e.g. `… (120 more changed lines)`.
  */
 internal class LineDiffStringifier(private val diff: LineDiff) : ValueStringifier(diff) {
     private companion object {
         /** How many unchanged lines to show around each change. */
         const val CONTEXT_SIZE = 3
+
+        /**
+         * How many lines a rendered diff may take, including its last line saying how much was cut off.
+         *
+         * A longer diff would flood the terminal, and the IDE's diff viewer, where available, shows the whole thing.
+         */
+        const val MAX_LINES = 30
     }
 
     override fun render(): String {
@@ -182,6 +191,15 @@ internal class LineDiffStringifier(private val diff: LineDiff) : ValueStringifie
         return buildList {
             var index = 0
             while (index < lines.size) {
+                if (this.size == MAX_LINES - 1) {
+                    val remainingChangedCount = (index until lines.size).count { lines[it] !is LineDiff.Line.Kept }
+                    // With no changes left, only a few lines of context remain, so let them finish
+                    if (remainingChangedCount > 0) {
+                        add("  … ($remainingChangedCount more changed lines)")
+                        break
+                    }
+                }
+
                 val hiddenCount = (index until lines.size).takeWhile { !isShown[it] }.count()
                 // Collapsing a single line would save nothing, since the marker takes a line too
                 if (hiddenCount > 1) {

@@ -311,6 +311,27 @@ class StringAsserts {
     }
 
     @Test
+    fun multiLineStringsTooBigToDiffAreShownAsTruncatedValues() {
+        // Changing lines 1000 and 2000 leaves 1001 x 1001 lines to compare, which is too many
+        val expected = (1..3000).joinToString("\n")
+        val actual = buildList {
+            (1..999).mapTo(this) { "$it" }
+            add("one-thousand")
+            (1001..1999).mapTo(this) { "$it" }
+            add("two-thousand")
+            (2001..3000).mapTo(this) { "$it" }
+        }.joinToString("\n")
+
+        assertThrows<AssertionError> {
+            assertThat(actual).isEqualTo(expected)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "… (3838 more chars)", "\\n998\\n999\\n1000\\n1001\\n1002",
+            DetailsFor.BUT_WAS, "… (3838 more chars)", "\\n998\\n999\\none-thousand\\n1001\\n1002",
+        )
+    }
+
+    @Test
     fun multiLineStringsThatOnlyDifferInLineEndingsAreNotDiffed() {
         assertThrows<AssertionError> {
             assertThat("a\r\nb").isEqualTo("a\nb")

@@ -1,6 +1,7 @@
 package com.varabyte.truthish.util.diff
 
 import com.varabyte.truthish.assertThat
+import com.varabyte.truthish.assertThrows
 import com.varabyte.truthish.util.diff.LineDiff.Line.Added
 import com.varabyte.truthish.util.diff.LineDiff.Line.Kept
 import com.varabyte.truthish.util.diff.LineDiff.Line.Removed
@@ -83,6 +84,20 @@ class LineDiffTest {
         assertThat(LineDiff("a\na", "a\na\na").lines)
             .containsExactly(Kept("a"), Kept("a"), Added("a"))
             .inOrder()
+    }
+
+    @Test
+    fun hugeChangedRegionIsNotDiffed() {
+        // Changing the first and last lines leaves 1001 x 1001 lines to compare, which is over the table size limit
+        val expected = (1..1001).joinToString("\n")
+        val actual = buildList {
+            add("first")
+            (2..1000).mapTo(this) { "$it" }
+            add("last")
+        }.joinToString("\n")
+
+        assertThat(LineDiff.tryCreate(expected, actual)).isNull()
+        assertThrows<IllegalArgumentException> { LineDiff(expected, actual) }
     }
 
     @Test

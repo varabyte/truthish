@@ -47,6 +47,45 @@ class LineDiffStringifierTest {
 
     // There's no point is showing "… (1 unchanged lines)" when we could just show the line instead
     @Test
+    fun longDiffIsCutOff() {
+        val diff = LineDiff((1..40).joinToString("\n"), (1..40).joinToString("\n") { "line $it" })
+        assertThat(LineDiffStringifier(diff).render()).isEqualTo(
+            """
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+            - 12
+            - 13
+            - 14
+            - 15
+            - 16
+            - 17
+            - 18
+            - 19
+            - 20
+            - 21
+            - 22
+            - 23
+            - 24
+            - 25
+            - 26
+            - 27
+            - 28
+            - 29
+              … (51 more changed lines)
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun loneLineIsShownInsteadOfCollapsed() {
         val expected = (1..9).joinToString("\n") { "line $it" }
         val actual = expected.replace("line 5", "line five")

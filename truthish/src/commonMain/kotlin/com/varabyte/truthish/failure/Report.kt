@@ -258,7 +258,15 @@ object DetailsFor {
         if (expected is CharSequence && actual is CharSequence && (expected.contains('\n') || actual.contains('\n'))) {
             val expectedText = expected.toString()
             val actualText = actual.toString()
-            if (expectedText.replace("\r\n", "\n") != actualText.replace("\r\n", "\n")) {
+            // If only line endings differ, a diff would look empty. Instead, fall through and show the values as
+            // single-line reports, whose escaped `\r`s make the difference easier to see. For example:
+            // Expected: "a\nb\nc"
+            // But was : "a\r\nb\r\nc"
+            val onlyLineEndingsDiffer = expectedText.replace("\r\n", "\n") == actualText.replace("\r\n", "\n")
+            // Strings too big to diff also fall through, showing truncated values and leaving the full comparison to
+            // the IDE's diff viewer, where available
+            val diff = LineDiff.tryCreate(expectedText, actualText)
+            if (!onlyLineEndingsDiffer && diff != null) {
                 // The diff ignores line endings, which would otherwise mark every line as changed, so call them out
                 // separately
                 val notes = buildList {
@@ -275,12 +283,8 @@ object DetailsFor {
                     }
                 }
                 val extras = if (notes.isNotEmpty()) mapOf(DIFF to notes.joinToString("; ")) else emptyMap()
-                return Details(listOf(DIFF to LineDiff(expectedText, actualText)), extras)
+                return Details(listOf(DIFF to diff), extras)
             }
-            // If here, only line endings differ, making a diff look empty. Instead, fall through and show the values as
-            // single-line reports, whose escaped `\r`s make the difference easier to see. For example:
-            // Expected: "a\nb\nc"
-            // But was : "a\r\nb\r\nc"
         }
 
         val anchor = when {
