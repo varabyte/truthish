@@ -44,4 +44,6 @@ object Summaries {
     const val EXPECTED_COLLECTION_CONTAINS_EXACTLY = "A collection did not contain exactly the expected element(s)"
     const val EXPECTED_COLLECTION_NO_DUPLICATES = "A collection had duplicates"
     const val EXPECTED_COLLECTION_ORDERED = "A collection did not contain element(s) in an expected order"
+    const val EXPECTED_COLLECTION_SORTED = "A collection was not in order"
+    const val EXPECTED_COLLECTION_STRICTLY_SORTED = "A collection was not in strict order"
 }

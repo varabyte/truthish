@@ -119,6 +119,32 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     fun containsExactly(vararg elements: T) = containsExactly(elements.asIterable())
 
     /**
+     * Checks that each element is less than or equal to the next one, according to [comparator].
+     *
+     * For elements that are [Comparable], see also the overload that takes no comparator.
+     *
+     * @param strict If true, each element must be strictly less than the next one, so equal neighbors fail. In other
+     *   words, a strictly ordered collection has no duplicates.
+     */
+    fun isInOrder(comparator: Comparator<in T>, strict: Boolean = false) {
+        val list = actual.list
+        val index = list.indices.drop(1).firstOrNull { i ->
+            val comparison = comparator.compare(list[i - 1], list[i])
+            if (strict) comparison >= 0 else comparison > 0
+        } ?: return
+
+        report(
+            Report(
+                if (strict) Summaries.EXPECTED_COLLECTION_STRICTLY_SORTED else Summaries.EXPECTED_COLLECTION_SORTED,
+                Details().apply {
+                    add(DetailsFor.VALUE to actual.snapshot, (index - 1).toCenteredOnContext())
+                    add(DetailsFor.OUT_OF_ORDER to listOf(list[index - 1], list[index]))
+                }
+            )
+        )
+    }
+
+    /**
      * Register a [correspondence] which allows transforming this collection's elements before comparing them.
      *
      * For example:
@@ -230,6 +256,14 @@ fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other
 fun <T> IterableSubject<T>.containsAllIn(other: Array<T>) = containsAllIn(*other)
 fun <T> IterableSubject<T>.containsNoneIn(other: Array<T>) = containsNoneIn(*other)
 fun <T> IterableSubject<T>.containsExactly(other: Array<T>) = containsExactly(*other)
+
+/**
+ * Checks that each element is less than or equal to the next one.
+ *
+ * @param strict If true, each element must be strictly less than the next one, so equal neighbors fail. In other
+ *   words, a strictly ordered collection has no duplicates.
+ */
+fun <T : Comparable<T>> IterableSubject<T>.isInOrder(strict: Boolean = false) = isInOrder(naturalOrder(), strict)
 
 /**
  * Like [IterableSubject.comparingElementsUsing], for a one-off correspondence written inline.

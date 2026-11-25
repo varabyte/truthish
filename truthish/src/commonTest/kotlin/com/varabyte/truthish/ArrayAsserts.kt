@@ -6,6 +6,7 @@ import com.varabyte.truthish.failure.assertSubstrings
 import com.varabyte.truthish.subjects.containsAllIn
 import com.varabyte.truthish.subjects.containsAnyIn
 import com.varabyte.truthish.subjects.containsExactly
+import com.varabyte.truthish.subjects.isInOrder
 import kotlin.test.Test
 
 class ArrayAsserts {
@@ -62,6 +63,8 @@ class ArrayAsserts {
             assertThat(arrayOf("a", "b", "c")).containsExactly("a", "b", "c").inOrder()
             assertThat(emptyStrs).containsExactly(emptyStrs)
             assertThat(emptyStrs).containsExactly(emptyStrs).inOrder()
+
+            assertThat(arrayOf("a", "b", "c")).isInOrder()
         }
 
         run {
@@ -178,6 +181,8 @@ class ArrayAsserts {
             assertThat(booleanArrayOf(true, false, true)).containsExactly(true, false, true).inOrder()
             assertThat(emptyBools).containsExactly(emptyBools)
             assertThat(emptyBools).containsExactly(emptyBools).inOrder()
+
+            assertThat(booleanArrayOf(false, true, true)).isInOrder()
         }
 
         run {
@@ -273,6 +278,8 @@ class ArrayAsserts {
             assertThat(byteArrayOf(1, 2, 3)).containsExactly(1, 2, 3).inOrder()
             assertThat(emptyBytes).containsExactly(emptyBytes)
             assertThat(emptyBytes).containsExactly(emptyBytes).inOrder()
+
+            assertThat(byteArrayOf(1, 2, 3)).isInOrder()
         }
 
         run {
@@ -380,6 +387,8 @@ class ArrayAsserts {
             assertThat(charArrayOf('a', 'b', 'c')).containsExactly('a', 'b', 'c').inOrder()
             assertThat(emptyChars).containsExactly(emptyChars)
             assertThat(emptyChars).containsExactly(emptyChars).inOrder()
+
+            assertThat(charArrayOf('a', 'b', 'c')).isInOrder()
         }
 
         run {
@@ -486,6 +495,8 @@ class ArrayAsserts {
             assertThat(shortArrayOf(1, 2, 3)).containsExactly(1, 2, 3).inOrder()
             assertThat(emptyShorts).containsExactly(emptyShorts)
             assertThat(emptyShorts).containsExactly(emptyShorts).inOrder()
+
+            assertThat(shortArrayOf(1, 2, 3)).isInOrder()
         }
 
         run {
@@ -592,6 +603,8 @@ class ArrayAsserts {
             assertThat(intArrayOf(1, 2, 3)).containsExactly(1, 2, 3).inOrder()
             assertThat(emptyInts).containsExactly(emptyInts)
             assertThat(emptyInts).containsExactly(emptyInts).inOrder()
+
+            assertThat(intArrayOf(1, 2, 3)).isInOrder()
         }
 
         run {
@@ -698,6 +711,8 @@ class ArrayAsserts {
             assertThat(longArrayOf(1, 2, 3)).containsExactly(1, 2, 3).inOrder()
             assertThat(emptyLongs).containsExactly(emptyLongs)
             assertThat(emptyLongs).containsExactly(emptyLongs).inOrder()
+
+            assertThat(longArrayOf(1, 2, 3)).isInOrder()
         }
 
         run {
@@ -804,6 +819,8 @@ class ArrayAsserts {
             assertThat(floatArrayOf(1f, 2f, 3f)).containsExactly(1f, 2f, 3f).inOrder()
             assertThat(emptyFloats).containsExactly(emptyFloats)
             assertThat(emptyFloats).containsExactly(emptyFloats).inOrder()
+
+            assertThat(floatArrayOf(1f, 2f, 3f)).isInOrder()
         }
 
         run {
@@ -910,6 +927,8 @@ class ArrayAsserts {
             assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsExactly(1.0, 2.0, 3.0).inOrder()
             assertThat(emptyDoubles).containsExactly(emptyDoubles)
             assertThat(emptyDoubles).containsExactly(emptyDoubles).inOrder()
+
+            assertThat(doubleArrayOf(1.0, 2.0, 3.0)).isInOrder()
         }
 
         run {

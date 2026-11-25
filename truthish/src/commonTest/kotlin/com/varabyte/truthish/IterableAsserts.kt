@@ -3,6 +3,7 @@ package com.varabyte.truthish
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Summaries
 import com.varabyte.truthish.failure.assertSubstrings
+import com.varabyte.truthish.subjects.isInOrder
 import kotlin.test.Test
 
 class IterableAsserts {
@@ -44,6 +45,13 @@ class IterableAsserts {
             assertThat(listOf("a", "b", "c")).containsExactly("a", "b", "c").inOrder()
             assertThat(emptyStrs).containsExactly(emptyStrs)
             assertThat(emptyStrs).containsExactly(emptyStrs).inOrder()
+
+            assertThat(listOf("a", "b", "c")).isInOrder()
+            assertThat(listOf("a", "b", "b", "c")).isInOrder()
+            assertThat(listOf("a", "b", "c")).isInOrder(strict = true)
+            assertThat(emptyStrs).isInOrder(strict = true)
+            assertThat(listOf("c", "b", "a")).isInOrder(reverseOrder())
+            assertThat(listOf("ccc", "bb", "a")).isInOrder(compareByDescending { it.length }, strict = true)
         }
 
         run {
@@ -135,6 +143,25 @@ class IterableAsserts {
             }.assertSubstrings(
                 Summaries.EXPECTED_COLLECTION_CONTAINS_EXACTLY, DetailsFor.EXTRANEOUS, "[ \"a\", \"b\" ]"
             )
+
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "d", "c", "e")).isInOrder()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_SORTED,
+                DetailsFor.VALUE, "[ \"a\", \"b\", \"d\", \"c\", \"e\" ]",
+                DetailsFor.OUT_OF_ORDER, "[ \"d\", \"c\" ]",
+            )
+            // Equal neighbors are fine in order, but not in strict order
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "b", "c")).isInOrder(strict = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_STRICTLY_SORTED,
+                DetailsFor.VALUE, "[ \"a\", \"b\", \"b\", \"c\" ]",
+                DetailsFor.OUT_OF_ORDER, "[ \"b\", \"b\" ]",
+            )
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "c")).isInOrder(reverseOrder())
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_SORTED, DetailsFor.OUT_OF_ORDER, "[ \"a\", \"b\" ]")
         }
     }
 
@@ -267,6 +294,15 @@ class IterableAsserts {
                 DetailsFor.BUT_WAS,
                 "[ … (7 more), 8, 9, 10, 11, 12, 13, … (4 more), 18, 19, 20, 21, 22, … (8 more) ]",
                 DetailsFor.OUT_OF_ORDER, "11",
+            )
+
+            // The value is centered on the first element that's out of order (21)
+            assertThrows<AssertionError> {
+                assertThat((1..30).map { if (it == 20) 21 else if (it == 21) 20 else it }).isInOrder()
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_SORTED,
+                DetailsFor.VALUE, "[ … (14 more), 15, 16, 17, 18, 19, 21, 20, 22, 23, 24, 25, … (5 more) ]",
+                DetailsFor.OUT_OF_ORDER, "[ 21, 20 ]",
             )
         }
 
@@ -486,6 +522,7 @@ class IterableAsserts {
         assertThat(('a' .. 'z').asSequence()).hasSize(26)
         // Some sequences can only be iterated once
         assertThat(sequenceOf(1, 2, 3).constrainOnce()).containsExactly(1, 2, 3).inOrder()
+        assertThat(sequenceOf(1, 2, 3).constrainOnce()).isInOrder()
         assertThrows<AssertionError> {
             assertThat(sequenceOf(1, 2).constrainOnce()).isEqualTo(listOf(1, 3))
         }.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.BUT_WAS, "[ 1, 2 ]")
