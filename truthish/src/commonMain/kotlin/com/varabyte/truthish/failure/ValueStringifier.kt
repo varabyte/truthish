@@ -162,7 +162,7 @@ internal class StringStringifier(
  * spaces (both).
  *
  * Unchanged lines more than a few lines away from a change are collapsed, e.g. `… (40 unchanged lines)`. Invisible
- * characters are drawn as symbols, e.g. a tab as `→`.
+ * characters are drawn as symbols, e.g. a tab as `→`, and so are trailing spaces on changed lines, as `·`.
  *
  * Since a terminal has limited vertical space, a long diff is cut off, e.g. `… (120 more changed lines)`.
  */
@@ -214,7 +214,15 @@ internal class LineDiffStringifier(private val diff: LineDiff) : ValueStringifie
                     is LineDiff.Line.Removed -> "- "
                     is LineDiff.Line.Added -> "+ "
                 }
-                val text = line.text.toList().joinToString("") { it.toVisibleString() }
+                // Trailing spaces are otherwise invisible, so a line that only differs by them would look unchanged.
+                // Unchanged lines skip this, since their trailing spaces can't be the difference.
+                val trailingStart = when (line) {
+                    is LineDiff.Line.Kept -> line.text.length
+                    else -> line.text.trimEnd(' ', '\t').length
+                }
+                val text = line.text.withIndex().joinToString("") { (i, c) ->
+                    if (i >= trailingStart && c == ' ') "·" else c.toVisibleString()
+                }
                 // An empty line gets no trailing space after its marker
                 add(if (text.isEmpty()) marker.trimEnd() else marker + text)
                 index++

@@ -174,6 +174,32 @@ class LineDiffStringifierTest {
     }
 
     @Test
+    fun trailingSpacesOnChangedLinesAreMarked() {
+        val diff = LineDiff("x = 1  \nx = 2 \t \nx = 3", "x = 1\nx = 2\nx = 3")
+        assertThat(LineDiffStringifier(diff).render()).isEqualTo(
+            """
+            - x = 1··
+            - x = 2·→·
+            + x = 1
+            + x = 2
+              x = 3
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun trailingSpacesOnUnchangedLinesAreNotMarked() {
+        run {
+            val diff = LineDiff("a \nb", "a \nc")
+            assertThat(LineDiffStringifier(diff).render()).isEqualTo("  a \n- b\n+ c")
+        }
+        run {
+            val diff = LineDiff("a\nc  ", "b\nc  ")
+            assertThat(LineDiffStringifier(diff).render()).isEqualTo("- a\n+ b\n  c  ")
+        }
+    }
+
+    @Test
     fun emptyLinesHaveNoTrailingSpaces() {
         val diff = LineDiff("a\n\nb\n\n", "a\n\nc")
         assertThat(LineDiffStringifier(diff).render()).isEqualTo(
