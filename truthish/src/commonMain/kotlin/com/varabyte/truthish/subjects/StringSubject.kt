@@ -1,5 +1,6 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -279,8 +280,11 @@ private fun createLineDiffDetails(expectedText: String, actualText: String): Det
             add("actual ends with a newline but expected doesn't")
         }
     }
-    val extras = if (notes.isNotEmpty()) mapOf(DetailsFor.DIFF to notes.joinToString("; ")) else emptyMap()
-    return Details(listOf(DetailsFor.DIFF to diff), extras)
+    return Details(listOf(DetailsFor.DIFF to diff)).apply {
+        if (notes.isNotEmpty()) {
+            add(DetailsFor.NOTE to AnyStringifier(notes.joinToString("; ").replaceFirstChar { it.uppercase() }))
+        }
+    }
 }
 
 /** The distinct line endings (`\n` and `\r\n`) used in this string. */

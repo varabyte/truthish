@@ -134,8 +134,8 @@ class LineDiffStringifierTest {
         )
     }
 
-    // In a real report, the final line would be followed by a note like:
-    // (expected ends with a newline but actual doesn't)
+    // In a real report, a row after the diff would say:
+    // Note: Expected ends with a newline but actual doesn't
     @Test
     fun withoutChangedLinesTheEndIsShown() {
         val diff = LineDiff("1\n2\n3\n4\n5\n6", "1\n2\n3\n4\n5\n6\n")

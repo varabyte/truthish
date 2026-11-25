@@ -251,7 +251,7 @@ class StringAsserts {
                   - B
                   + b
                     c
-                  (line endings also differ)
+            Note: Line endings also differ
             """.trimIndent(),
         )
     }
@@ -266,7 +266,7 @@ class StringAsserts {
             Diff:   a
                   - B
                   + b
-                  (expected ends with a newline but actual doesn't)
+            Note: Expected ends with a newline but actual doesn't
             """.trimIndent(),
         )
 
@@ -278,7 +278,7 @@ class StringAsserts {
             Diff:   a
                   - B
                   + b
-                  (actual ends with a newline but expected doesn't)
+            Note: Actual ends with a newline but expected doesn't
             """.trimIndent(),
         )
 
@@ -290,7 +290,7 @@ class StringAsserts {
             """
             Diff:   a
                     b
-                  (expected ends with a newline but actual doesn't)
+            Note: Expected ends with a newline but actual doesn't
             """.trimIndent(),
         )
     }
@@ -305,7 +305,7 @@ class StringAsserts {
             Diff:   a
                   - B
                   + b
-                  (line endings also differ; expected ends with a newline but actual doesn't)
+            Note: Line endings also differ; expected ends with a newline but actual doesn't
             """.trimIndent(),
         )
     }
