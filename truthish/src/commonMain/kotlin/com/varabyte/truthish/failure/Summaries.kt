@@ -23,6 +23,14 @@ object Summaries {
     const val EXPECTED_IN_RANGE = "A value was not in an expected range"
     const val EXPECTED_NOT_IN_RANGE = "A value was in an unexpected range"
 
+    const val EXPECTED_NAN = "A value was not NaN"
+    const val EXPECTED_NOT_NAN = "A value was NaN"
+    const val EXPECTED_FINITE = "A value was not finite"
+    const val EXPECTED_POSITIVE_INFINITY = "A value was not positive infinity"
+    const val EXPECTED_NEGATIVE_INFINITY = "A value was not negative infinity"
+    const val EXPECTED_ZERO = "A value was not zero"
+    const val EXPECTED_NON_ZERO = "A value was zero"
+
     const val EXPECTED_EMPTY = "A value was not empty"
     const val EXPECTED_BLANK = "A value was not blank"
     const val EXPECTED_NOT_EMPTY = "A value was empty"

@@ -126,6 +126,16 @@ class NumberAssets {
             assertThat(5.3f).isIn(5.25f..5.5f)
             // NaN is in no range
             assertThat(Float.NaN).isNotIn(5.25f..5.5f)
+
+            assertThat(Float.NaN).isNaN()
+            assertThat(5.5f).isNotNaN()
+            assertThat(5.5f).isFinite()
+            assertThat(Float.POSITIVE_INFINITY).isPositiveInfinity()
+            assertThat(Float.NEGATIVE_INFINITY).isNegativeInfinity()
+            assertThat(0f).isZero()
+            assertThat(-0f).isZero()
+            assertThat(5.5f).isNonZero()
+            assertThat(Float.NaN).isNonZero()
         }
 
         run {
@@ -152,6 +162,35 @@ class NumberAssets {
             assertThrows<AssertionError> {
                 assertThat(5.3f).isNotWithin(0.1f).of(Float.NaN)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "NaN")
+
+            assertThrows<AssertionError> {
+                assertThat(5.5f).isNaN()
+            }.assertSubstrings(Summaries.EXPECTED_NAN, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(Float.NaN).isNotNaN()
+            }.assertSubstrings(Summaries.EXPECTED_NOT_NAN)
+            assertThrows<AssertionError> {
+                assertThat(Float.NaN).isFinite()
+            }.assertSubstrings(Summaries.EXPECTED_FINITE, DetailsFor.VALUE, "NaN")
+            assertThrows<AssertionError> {
+                assertThat(Float.NEGATIVE_INFINITY).isFinite()
+            }.assertSubstrings(Summaries.EXPECTED_FINITE, DetailsFor.VALUE, "Infinity")
+            assertThrows<AssertionError> {
+                assertThat(Float.NEGATIVE_INFINITY).isPositiveInfinity()
+            }.assertSubstrings(Summaries.EXPECTED_POSITIVE_INFINITY, DetailsFor.VALUE, "Infinity")
+            assertThrows<AssertionError> {
+                assertThat(5.5f).isNegativeInfinity()
+            }.assertSubstrings(Summaries.EXPECTED_NEGATIVE_INFINITY, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(5.5f).isZero()
+            }.assertSubstrings(Summaries.EXPECTED_ZERO, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(-0f).isNonZero()
+            }.assertSubstrings(Summaries.EXPECTED_NON_ZERO)
+            // Unlike isZero, isEqualTo tells zero and negative zero apart
+            assertThrows<AssertionError> {
+                assertThat(-0f).isEqualTo(0f)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
         }
 
         run {
@@ -184,6 +223,16 @@ class NumberAssets {
             assertThat(5.3).isIn(5.25..5.5)
             // NaN is in no range
             assertThat(Double.NaN).isNotIn(5.25..5.5)
+
+            assertThat(Double.NaN).isNaN()
+            assertThat(5.5).isNotNaN()
+            assertThat(5.5).isFinite()
+            assertThat(Double.POSITIVE_INFINITY).isPositiveInfinity()
+            assertThat(Double.NEGATIVE_INFINITY).isNegativeInfinity()
+            assertThat(0.0).isZero()
+            assertThat(-0.0).isZero()
+            assertThat(5.5).isNonZero()
+            assertThat(Double.NaN).isNonZero()
         }
 
         run {
@@ -211,6 +260,35 @@ class NumberAssets {
             assertThrows<AssertionError> {
                 assertThat(Double.NaN).isIn(5.25..5.5)
             }.assertSubstrings(Summaries.EXPECTED_IN_RANGE, "5.25..5.5", "NaN")
+
+            assertThrows<AssertionError> {
+                assertThat(5.5).isNaN()
+            }.assertSubstrings(Summaries.EXPECTED_NAN, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(Double.NaN).isNotNaN()
+            }.assertSubstrings(Summaries.EXPECTED_NOT_NAN)
+            assertThrows<AssertionError> {
+                assertThat(Double.NaN).isFinite()
+            }.assertSubstrings(Summaries.EXPECTED_FINITE, DetailsFor.VALUE, "NaN")
+            assertThrows<AssertionError> {
+                assertThat(Double.NEGATIVE_INFINITY).isFinite()
+            }.assertSubstrings(Summaries.EXPECTED_FINITE, DetailsFor.VALUE, "Infinity")
+            assertThrows<AssertionError> {
+                assertThat(Double.NEGATIVE_INFINITY).isPositiveInfinity()
+            }.assertSubstrings(Summaries.EXPECTED_POSITIVE_INFINITY, DetailsFor.VALUE, "Infinity")
+            assertThrows<AssertionError> {
+                assertThat(5.5).isNegativeInfinity()
+            }.assertSubstrings(Summaries.EXPECTED_NEGATIVE_INFINITY, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(5.5).isZero()
+            }.assertSubstrings(Summaries.EXPECTED_ZERO, DetailsFor.VALUE, "5.5")
+            assertThrows<AssertionError> {
+                assertThat(-0.0).isNonZero()
+            }.assertSubstrings(Summaries.EXPECTED_NON_ZERO)
+            // Unlike isZero, isEqualTo tells zero and negative zero apart
+            assertThrows<AssertionError> {
+                assertThat(-0.0).isEqualTo(0.0)
+            }.assertSubstrings(Summaries.EXPECTED_EQUAL)
         }
 
         run {
