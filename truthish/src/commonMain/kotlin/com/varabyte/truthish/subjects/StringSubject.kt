@@ -1,13 +1,22 @@
 package com.varabyte.truthish.subjects
 
+import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.util.diff.LineDiff
 import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
 
 class StringSubject(private val actual: String) : ComparableSubject<String>(actual) {
+    /** Like [AnySubject.isEqualTo], except two strings that span multiple lines are shown as a line-by-line diff. */
+    fun isEqualTo(expected: CharSequence?) {
+        if (actual == expected) return
+        val details = expected?.let { createLineDiffDetails(it.toString(), actual) }
+            ?: DetailsFor.expectedActual(expected, actual)
+        report(Report(Summaries.EXPECTED_EQUAL, details))
+    }
 
     fun isEmpty() {
         if (!actual.isEmpty()) {
@@ -230,6 +239,44 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         doesNotContainMatch(Regex(regex))
     }
 }
+
+/**
+ * Details showing how two strings differ line by line, or `null` if a line diff wouldn't help, e.g. because neither
+ * string spans multiple lines.
+ */
+private fun createLineDiffDetails(expectedText: String, actualText: String): Details? {
+    if (!expectedText.contains('\n') && !actualText.contains('\n')) return null
+
+    // If only line endings differ, a diff would look empty. Instead, show the values as single-line reports, whose
+    // escaped `\r`s make the difference easier to see. For example:
+    // Expected: "a\nb\nc"
+    // But was : "a\r\nb\r\nc"
+    if (expectedText.replace("\r\n", "\n") == actualText.replace("\r\n", "\n")) return null
+
+    // Strings too big to diff also show the single-line reports, truncated, leaving the full comparison to the IDE's
+    // diff viewer, where available
+    val diff = LineDiff.tryCreate(expectedText, actualText) ?: return null
+
+    // The diff ignores line endings, which would otherwise mark every line as changed, so call them out separately
+    val notes = buildList {
+        val expectedEndings = expectedText.findLineEndings()
+        val actualEndings = actualText.findLineEndings()
+        if (expectedEndings.isNotEmpty() && actualEndings.isNotEmpty() && expectedEndings != actualEndings) {
+            add("line endings also differ")
+        }
+        if (expectedText.endsWith('\n') && !actualText.endsWith('\n')) {
+            add("expected ends with a newline but actual doesn't")
+        }
+        if (!expectedText.endsWith('\n') && actualText.endsWith('\n')) {
+            add("actual ends with a newline but expected doesn't")
+        }
+    }
+    val extras = if (notes.isNotEmpty()) mapOf(DetailsFor.DIFF to notes.joinToString("; ")) else emptyMap()
+    return Details(listOf(DetailsFor.DIFF to diff), extras)
+}
+
+/** The distinct line endings (`\n` and `\r\n`) used in this string. */
+private fun String.findLineEndings(): Set<String> = Regex("\r?\n").findAll(this).map { it.value }.toSet()
 
 // Only the start matters to `startsWith` and its opposite, so a long string gives it the whole window
 private val StartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))

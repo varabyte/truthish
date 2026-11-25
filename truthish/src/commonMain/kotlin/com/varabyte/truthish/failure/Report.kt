@@ -249,8 +249,6 @@ object DetailsFor {
     /**
      * A detail list useful when asserting about an expected value vs. an actual one.
      *
-     * Two strings that span multiple lines are shown as a line-by-line diff instead.
-     *
      * On platforms where the test runner supports it (e.g. IntelliJ on the JVM), failures with these details can be
      * shown as a diff between the two values.
      *
@@ -264,38 +262,6 @@ object DetailsFor {
         expectedContext: StringifierContext? = null,
         actualContext: StringifierContext? = null,
     ): Details {
-        if (expected is CharSequence && actual is CharSequence && (expected.contains('\n') || actual.contains('\n'))) {
-            val expectedText = expected.toString()
-            val actualText = actual.toString()
-            // If only line endings differ, a diff would look empty. Instead, fall through and show the values as
-            // single-line reports, whose escaped `\r`s make the difference easier to see. For example:
-            // Expected: "a\nb\nc"
-            // But was : "a\r\nb\r\nc"
-            val onlyLineEndingsDiffer = expectedText.replace("\r\n", "\n") == actualText.replace("\r\n", "\n")
-            // Strings too big to diff also fall through, showing truncated values and leaving the full comparison to
-            // the IDE's diff viewer, where available
-            val diff = LineDiff.tryCreate(expectedText, actualText)
-            if (!onlyLineEndingsDiffer && diff != null) {
-                // The diff ignores line endings, which would otherwise mark every line as changed, so call them out
-                // separately
-                val notes = buildList {
-                    val expectedEndings = expectedText.findLineEndings()
-                    val actualEndings = actualText.findLineEndings()
-                    if (expectedEndings.isNotEmpty() && actualEndings.isNotEmpty() && expectedEndings != actualEndings) {
-                        add("line endings also differ")
-                    }
-                    if (expectedText.endsWith('\n') && !actualText.endsWith('\n')) {
-                        add("expected ends with a newline but actual doesn't")
-                    }
-                    if (!expectedText.endsWith('\n') && actualText.endsWith('\n')) {
-                        add("actual ends with a newline but expected doesn't")
-                    }
-                }
-                val extras = if (notes.isNotEmpty()) mapOf(DIFF to notes.joinToString("; ")) else emptyMap()
-                return Details(listOf(DIFF to diff), extras)
-            }
-        }
-
         val anchor = when {
             expected is List<*> && actual is List<*> -> expected.findSharedAnchor(actual, Truncators.forCollections)
             expected is CharSequence && actual is CharSequence ->
@@ -332,9 +298,6 @@ object DetailsFor {
         return createExpectedActualDetails(expectedLabel, expected, actual, contexts)
     }
 }
-
-/** The distinct line endings (`\n` and `\r\n`) used in this string. */
-private fun String.findLineEndings(): Set<String> = Regex("\r?\n").findAll(this).map { it.value }.toSet()
 
 /**
  * Finds where [truncator] should cut this list and [other], two lists (for strings, character lists) being compared, so
