@@ -12,15 +12,7 @@ import com.varabyte.truthish.util.truncate.Truncator
 import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
 
-// Never truncate a single value that made an assertion fail, e.g. the element `contains` looked for, since it's what
-// the user needs to see. Values whose size grows with the inputs, e.g. a list of missing elements, should use
-// `TruncatedFailureContext` instead.
-internal val FailureContext = StringifierContext(Truncation.None)
-
-// For the elements that made an assertion fail, e.g. the ones that were missing. Their number grows with how different
-// the values are, so like any long collection, they're cut short, keeping the first few, which line up with where the
-// values first differ.
-internal val TruncatedFailureContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
+internal val KeepStartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
 
 @Suppress("NAME_SHADOWING")
 open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>(actual) {
@@ -102,7 +94,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
                     Summaries.EXPECTED_COLLECTION_NO_DUPLICATES,
                     Details().apply {
                         add(DetailsFor.VALUE to actual.snapshot, firstDuplicateContext)
-                        add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList(), TruncatedFailureContext)
+                        add(DetailsFor.DUPLICATES to duplicates.map { it.key }.toList(), KeepStartContext)
                     }
                 )
             )
@@ -229,8 +221,8 @@ private fun Details.addElementDifferences(expected: Iterable<*>, actual: Iterabl
         add(DetailsFor.NOTE to AnyStringifier("Same elements, in a different order"))
         return
     }
-    if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing, TruncatedFailureContext)
-    if (extraneous.isNotEmpty()) add(DetailsFor.EXTRANEOUS to extraneous, TruncatedFailureContext)
+    if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing, KeepStartContext)
+    if (extraneous.isNotEmpty()) add(DetailsFor.EXTRANEOUS to extraneous, KeepStartContext)
 }
 
 fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other)

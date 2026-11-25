@@ -60,6 +60,8 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
 
     fun startsWith(expected: CharSequence) {
         if (!actual.startsWith(expected)) {
+            // The strings can differ anywhere in a long prefix, so show both around where they do
+            val context = expected.toList().createSharedContext(actual.toList(), Truncators.forStrings)
             report(
                 Report(
                     Summaries.EXPECTED_STARTS_WITH,
@@ -67,8 +69,8 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to start with",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
-                        actualContext = KeepStartContext,
+                        expectedContext = context,
+                        actualContext = context,
                     )
                 )
             )
@@ -84,7 +86,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to start with",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
+                        expectedContext = KeepStartContext,
                         actualContext = KeepStartContext,
                     )
                 )
@@ -94,6 +96,11 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
 
     fun endsWith(expected: CharSequence) {
         if (!actual.endsWith(expected)) {
+            // The strings can differ anywhere in a long suffix, so show both around where they do: the last character
+            // before the end they share. All of `actual` may be shared (e.g. "c" doesn't end with "abc"), so clamp it.
+            val sharedEndLength = actual.commonSuffixWith(expected).length
+            val expectedDiffIndex = expected.length - 1 - sharedEndLength
+            val actualDiffIndex = (actual.length - 1 - sharedEndLength).coerceAtLeast(0)
             report(
                 Report(
                     Summaries.EXPECTED_ENDS_WITH,
@@ -101,8 +108,8 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to end with",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
-                        actualContext = actual.toKeepEndContext(),
+                        expectedContext = expectedDiffIndex.toCenteredOnContext(),
+                        actualContext = actualDiffIndex.toCenteredOnContext(),
                     )
                 )
             )
@@ -118,7 +125,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to end with",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
+                        expectedContext = expected.toKeepEndContext(),
                         actualContext = actual.toKeepEndContext(),
                     )
                 )
@@ -135,7 +142,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -155,7 +161,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -175,7 +180,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to contain",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -191,7 +195,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to contain match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -212,7 +215,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to contain",
                         expected,
                         actual,
-                        expectedContext = FailureContext,
                         actualContext = (foundIndex until foundIndex + expected.length).toCenteredOnContext(),
                     )
                 )
@@ -230,7 +232,6 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "not to contain match",
                         regex.pattern,
                         actual,
-                        expectedContext = FailureContext,
                         actualContext = match.range.toCenteredOnContext(),
                     )
                 )
@@ -290,11 +291,7 @@ private fun createLineDiffDetails(expectedText: String, actualText: String): Det
 /** The distinct line endings (`\n` and `\r\n`) used in this string. */
 private fun String.findLineEndings(): Set<String> = Regex("\r?\n").findAll(this).map { it.value }.toSet()
 
-// Only the start matters to `startsWith` and its opposite, so a long string gives it the whole window
-private val KeepStartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
-
-// Only the end matters to `endsWith` and its opposite, so a long string gives it the whole window
-private fun String.toKeepEndContext() = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(lastIndex)))
+private fun CharSequence.toKeepEndContext() = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(lastIndex)))
 
 // Centers a long string on the middle of this range, e.g. a match, so a long match isn't cut off at one end
 private fun IntRange.toCenteredOnContext() =

@@ -52,9 +52,9 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                     ).apply {
                         // Truncation can still hide later differences, so list them all too. A key in both maps with
                         // different values shows up in both rows.
-                        if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing.toMap(), TruncatedFailureContext)
+                        if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing.toMap(), KeepStartContext)
                         if (extraneous.isNotEmpty()) {
-                            add(DetailsFor.EXTRANEOUS to extraneous.toMap(), TruncatedFailureContext)
+                            add(DetailsFor.EXTRANEOUS to extraneous.toMap(), KeepStartContext)
                         }
                     }
                 )
@@ -73,7 +73,7 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
             report(
                 Report(
                     Summaries.EXPECTED_COLLECTION_CONTAINS,
-                    DetailsFor.expectedActual("to contain key", key, actual.keys, expectedContext = FailureContext)
+                    DetailsFor.expectedActual("to contain key", key, actual.keys)
                 )
             )
         }
@@ -88,7 +88,6 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                         "to contain value",
                         value,
                         actual.values,
-                        expectedContext = FailureContext,
                     )
                 )
             )
@@ -105,7 +104,6 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                         "not to contain key",
                         key,
                         actual.keys,
-                        expectedContext = FailureContext,
                         actualContext = foundAtContext,
                     )
                 )
@@ -125,7 +123,6 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                         "not to contain value",
                         value,
                         actual.values,
-                        expectedContext = FailureContext,
                         actualContext = foundAtContext,
                     )
                 )

@@ -47,7 +47,6 @@ internal class ContainmentAsserter<A, E>(
                     "to contain",
                     expected,
                     actual.snapshot,
-                    expectedContext = FailureContext,
                 )
             )
         }
@@ -62,7 +61,6 @@ internal class ContainmentAsserter<A, E>(
                     "not to contain",
                     expected,
                     actual.snapshot,
-                    expectedContext = FailureContext,
                     actualContext = foundIndex.toCenteredOnContext(),
                 )
             )
@@ -127,7 +125,7 @@ internal class ContainmentAsserter<A, E>(
                 ).apply {
                     // Each unexpected element is listed once, however many copies there are, like `IterableSubject`
                     val unexpected = unexpectedIndices.map { actual.list[it] }.distinct()
-                    add(DetailsFor.UNEXPECTED to unexpected, TruncatedFailureContext)
+                    add(DetailsFor.UNEXPECTED to unexpected, KeepStartContext)
                 }
             )
         }
@@ -204,7 +202,7 @@ internal class ContainmentAsserter<A, E>(
                         expectedContext = expectedIndex.toCenteredOnContext(),
                         actualContext = actualContext,
                     ).apply {
-                        add(DetailsFor.OUT_OF_ORDER to lookingFor, FailureContext)
+                        add(DetailsFor.OUT_OF_ORDER to lookingFor)
                     }
                 )
                 break
@@ -228,12 +226,12 @@ internal class ContainmentAsserter<A, E>(
  */
 private fun <T> Details.addLeftovers(label: String, possiblyLabel: String, leftovers: Leftovers, list: List<T>) {
     if (leftovers.certainIndices.isNotEmpty()) {
-        add(label to leftovers.certainIndices.map { list[it] }, TruncatedFailureContext)
+        add(label to leftovers.certainIndices.map { list[it] }, KeepStartContext)
     }
     if (leftovers.choices.isNotEmpty()) {
         val choices = leftovers.choices.joinToString(", ") { choice ->
             val elements = choice.indices.map { list[it] }
-            "${choice.count} of ${ValueStringifier.createFor(elements, TruncatedFailureContext).render()}"
+            "${choice.count} of ${ValueStringifier.createFor(elements, KeepStartContext).render()}"
         }
         add(possiblyLabel to AnyStringifier(choices))
     }

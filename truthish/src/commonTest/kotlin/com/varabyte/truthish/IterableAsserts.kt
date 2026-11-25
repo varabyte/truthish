@@ -198,27 +198,27 @@ class IterableAsserts {
     }
 
     @Test
-    fun valuesThatCauseFailuresAreNeverTruncated() {
+    fun longArgumentsAreTruncatedLikeAnyOtherValue() {
         // Single elements that are long lists themselves
         assertThrows<AssertionError> {
             assertThat(listOf(listOf(1))).contains((1..20).toList())
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_CONTAINS,
-            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
         )
 
         assertThrows<AssertionError> {
             assertThat(listOf((1..20).toList())).doesNotContain((1..20).toList())
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
-            "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
         )
 
         assertThrows<AssertionError> {
             assertThat(listOf((1..20).toList(), listOf(1))).containsExactly(listOf(1), (1..20).toList()).inOrder()
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_ORDERED,
-            DetailsFor.OUT_OF_ORDER, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]",
+            DetailsFor.OUT_OF_ORDER, "[ 1, 2, 3, 4, 5, 6, … (9 more), 16, 17, 18, 19, 20 ]",
         )
     }
 
