@@ -10,7 +10,7 @@ open class ArraySubject<T>(private val actualArray: Array<T>) : IterableSubject<
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -32,7 +32,7 @@ open class BooleanArraySubject(private val actualArray: BooleanArray) :
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -58,7 +58,7 @@ open class ByteArraySubject(private val actualArray: ByteArray) : ArraySubject<B
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -84,7 +84,7 @@ open class CharArraySubject(private val actualArray: CharArray) : ArraySubject<C
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -110,7 +110,7 @@ open class ShortArraySubject(private val actualArray: ShortArray) : ArraySubject
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -136,7 +136,7 @@ open class IntArraySubject(private val actualArray: IntArray) : ArraySubject<Int
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -162,7 +162,7 @@ open class LongArraySubject(private val actualArray: LongArray) : ArraySubject<L
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -188,7 +188,7 @@ open class FloatArraySubject(private val actualArray: FloatArray) : ArraySubject
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }
@@ -214,7 +214,7 @@ open class DoubleArraySubject(private val actualArray: DoubleArray) : ArraySubje
             report(
                 Report(
                     Summaries.EXPECTED_EQUAL,
-                    DetailsFor.expectedActual(expected.toList(), actualArray.toList())
+                    DetailsFor.expectedActualLists(expected.toList(), actualArray.toList())
                 )
             )
         }

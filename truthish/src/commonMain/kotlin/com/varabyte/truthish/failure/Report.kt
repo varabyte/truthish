@@ -1,9 +1,7 @@
 package com.varabyte.truthish.failure
 
 import com.varabyte.truthish.util.diff.LineDiff
-import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
-import com.varabyte.truthish.util.truncate.Truncator
 
 /**
  * Create a report which consists of a single summary line and an optional list of details.
@@ -142,7 +140,7 @@ class Details internal constructor(
     internal val contexts: Map<String, StringifierContext> = _contexts
 
     /**
-     * @param context How to render the value, e.g. `StringifierContext(Truncation.None)` to never truncate it.
+     * @param context Optional [StringifierContext] associated with the value.
      */
     fun add(index: Int, element: Pair<String, Any?>, context: StringifierContext = StringifierContext.Default) {
         _items.add(index, element)
@@ -150,7 +148,7 @@ class Details internal constructor(
     }
 
     /**
-     * @param context How to render the value, e.g. `StringifierContext(Truncation.None)` to never truncate it.
+     * @param context Optional [StringifierContext] associated with the value.
      */
     fun add(element: Pair<String, Any?>, context: StringifierContext = StringifierContext.Default) {
         _items.add(element)
@@ -200,12 +198,20 @@ object DetailsFor {
         return Details(listOf(EXPECTED to expected))
     }
 
+    /**
+     * The shared implementation of both [expectedActual] methods.
+     *
+     * @param expectedSuffix Extra text for the "Expected" label, e.g. "greater than", or `null` for none.
+     */
     private fun createExpectedActualDetails(
-        expectedLabel: String,
+        expectedSuffix: String?,
         expected: Any?,
         actual: Any?,
-        contexts: Map<String, StringifierContext> = emptyMap(),
+        expectedContext: StringifierContext,
+        actualContext: StringifierContext,
     ): Details {
+        val expectedLabel = if (expectedSuffix != null) "$EXPECTED $expectedSuffix" else EXPECTED
+        val contexts = mapOf(expectedLabel to expectedContext, BUT_WAS to actualContext)
         val extras = buildMap<String, String> {
             if (expected != null && actual != null) {
                 // Compare full renderings, since otherwise different values might look the same after relevant elements
@@ -252,28 +258,16 @@ object DetailsFor {
      * On platforms where the test runner supports it (e.g. IntelliJ on the JVM), failures with these details can be
      * shown as a diff between the two values.
      *
-     * @param expectedContext How to render [expected]. If null, a list or string is truncated around its first
-     *   difference.
-     * @param actualContext How to render [actual]. If null, chosen the same way.
+     * @param expectedContext Optional [StringifierContext] associated with [expected].
+     * @param actualContext Optional [StringifierContext] associated with [actual].
      */
     fun expectedActual(
         expected: Any?,
         actual: Any?,
-        expectedContext: StringifierContext? = null,
-        actualContext: StringifierContext? = null,
+        expectedContext: StringifierContext = StringifierContext.Default,
+        actualContext: StringifierContext = StringifierContext.Default,
     ): Details {
-        val anchor = when {
-            expected is List<*> && actual is List<*> -> expected.findSharedAnchor(actual, Truncators.forCollections)
-            expected is CharSequence && actual is CharSequence ->
-                expected.toList().findSharedAnchor(actual.toList(), Truncators.forStrings)
-            else -> null
-        }
-        val anchoredContext = anchor?.let { StringifierContext(Truncation.Anchored(it)) }
-        val contexts = buildMap {
-            (expectedContext ?: anchoredContext)?.let { put(EXPECTED, it) }
-            (actualContext ?: anchoredContext)?.let { put(BUT_WAS, it) }
-        }
-        return createExpectedActualDetails(EXPECTED, expected, actual, contexts)
+        return createExpectedActualDetails(expectedSuffix = null, expected, actual, expectedContext, actualContext)
     }
 
     /**
@@ -283,8 +277,8 @@ object DetailsFor {
      * For consistency / readability, [expectedSuffix] should be lower-case. A space will automatically be inserted
      *   between the "expected" label and the extra information.
      *
-     * @param expectedContext How to render [expected], e.g. `StringifierContext(Truncation.None)` to never truncate it.
-     * @param actualContext How to render [actual].
+     * @param expectedContext Optional [StringifierContext] associated with [expected].
+     * @param actualContext Optional [StringifierContext] associated with [actual].
      */
     fun expectedActual(
         expectedSuffix: String,
@@ -293,27 +287,6 @@ object DetailsFor {
         expectedContext: StringifierContext = StringifierContext.Default,
         actualContext: StringifierContext = StringifierContext.Default,
     ): Details {
-        val expectedLabel = "$EXPECTED $expectedSuffix"
-        val contexts = mapOf(expectedLabel to expectedContext, BUT_WAS to actualContext)
-        return createExpectedActualDetails(expectedLabel, expected, actual, contexts)
-    }
-}
-
-/**
- * Finds where [truncator] should cut this list and [other], two lists (for strings, character lists) being compared, so
- * both show where they first differ and their shown elements line up. Returns `null` if the lists are equal.
- */
-private fun List<*>.findSharedAnchor(other: List<*>, truncator: Truncator): Anchor? {
-    val shorterSize = minOf(size, other.size)
-    val firstDifference = (0 until shorterSize).firstOrNull { this[it] != other[it] }
-        ?: shorterSize.takeIf { size != other.size }
-        ?: return null
-
-    return when {
-        // A list that fits is never truncated, so the other list starts where it does, to line up
-        shorterSize <= truncator.maxElements -> Anchor.CenteredOn(0)
-        // One list starts with the other, so show where the shorter one ends
-        firstDifference == shorterSize -> Anchor.EndingAt(firstDifference)
-        else -> Anchor.CenteredOn(firstDifference, listSizeOverride = maxOf(size, other.size))
+        return createExpectedActualDetails(expectedSuffix, expected, actual, expectedContext, actualContext)
     }
 }

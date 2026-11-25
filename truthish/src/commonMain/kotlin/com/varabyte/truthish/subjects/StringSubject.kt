@@ -5,6 +5,7 @@ import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.Truncators
 import com.varabyte.truthish.util.diff.LineDiff
 import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
@@ -13,8 +14,9 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     /** Like [AnySubject.isEqualTo], except two strings that span multiple lines are shown as a line-by-line diff. */
     fun isEqualTo(expected: CharSequence?) {
         if (actual == expected) return
-        val details = expected?.let { createLineDiffDetails(it.toString(), actual) }
-            ?: DetailsFor.expectedActual(expected, actual)
+        val details = expected
+            ?.let { createLineDiffDetails(it.toString(), actual) ?: createStringEqualityDetails(it, actual) }
+            ?: DetailsFor.expectedActual(null, actual)
         report(Report(Summaries.EXPECTED_EQUAL, details))
     }
 
@@ -238,6 +240,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
     fun doesNotContainMatch(regex: String) {
         doesNotContainMatch(Regex(regex))
     }
+}
+
+/** Details for two unequal strings, both truncated around where they first differ. */
+private fun createStringEqualityDetails(expected: CharSequence, actual: String): Details {
+    val context = expected.toList().createSharedContext(actual.toList(), Truncators.forStrings)
+    return DetailsFor.expectedActual(expected, actual, expectedContext = context, actualContext = context)
 }
 
 /**

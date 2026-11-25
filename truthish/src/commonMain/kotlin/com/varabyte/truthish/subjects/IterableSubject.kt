@@ -6,6 +6,8 @@ import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
 import com.varabyte.truthish.failure.StringifierContext
 import com.varabyte.truthish.failure.Summaries
+import com.varabyte.truthish.failure.Truncators
+import com.varabyte.truthish.util.truncate.Truncator
 import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
 
@@ -17,6 +19,23 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
     private val actual = IterableSnapshot(actual)
 
     private val asserter = ContainmentAsserter<T, T>(this, this.actual, ElementComparison.Equality)
+
+    /** Details for two unequal lists, both truncated around where they first differ. */
+    protected fun DetailsFor.expectedActualLists(expected: List<*>, actual: List<*>): Details {
+        val context = expected.createSharedContext(actual, Truncators.forCollections)
+        return expectedActual(expected, actual, expectedContext = context, actualContext = context)
+    }
+
+    /** Like [AnySubject.isEqualTo], except two long lists are truncated around where they first differ. */
+    fun isEqualTo(expected: Iterable<*>?) {
+        if (actual.original == expected) return
+        val details = if (expected is List<*> && actual.original is List<*>) {
+            DetailsFor.expectedActualLists(expected, actual.list)
+        } else {
+            DetailsFor.expectedActual(expected, actual.snapshot)
+        }
+        report(Report(Summaries.EXPECTED_EQUAL, details))
+    }
 
     fun isEmpty() {
         if (actual.list.isNotEmpty()) {
@@ -119,6 +138,13 @@ internal fun <T> List<T>.anchorOnCopiesOf(index: Int?): StringifierContext {
  * The copy also guards against the original changing before a deferred report renders it.
  */
 internal class IterableSnapshot<T>(iterable: Iterable<T>) {
+    /**
+     * The original iterable itself, kept around for equality checks.
+     *
+     * For example, a range equals another range with the same bounds, but not a list with the same elements.
+     */
+    val original = iterable
+
     /** The copy to show in reports. A set stays a set, so it renders as `{ … }`. */
     val snapshot: Iterable<T>
 
@@ -134,6 +160,26 @@ internal class IterableSnapshot<T>(iterable: Iterable<T>) {
             snapshot = list
         }
     }
+}
+
+/**
+ * A context for this list and [other], two lists (or, for strings, character lists) being compared, that truncates both
+ * around where they first differ, with their shown elements lined up.
+ */
+internal fun List<*>.createSharedContext(other: List<*>, truncator: Truncator): StringifierContext {
+    val shorterSize = minOf(size, other.size)
+    val firstDifference = (0 until shorterSize).firstOrNull { this[it] != other[it] }
+        ?: shorterSize.takeIf { size != other.size }
+        ?: return StringifierContext.Default
+
+    val anchor = when {
+        // A list that fits is never truncated, so the other list starts where it does, to line up
+        shorterSize <= truncator.maxElements -> Anchor.CenteredOn(0)
+        // One list starts with the other, so show where the shorter one ends
+        firstDifference == shorterSize -> Anchor.EndingAt(firstDifference)
+        else -> Anchor.CenteredOn(firstDifference, listSizeOverride = maxOf(size, other.size))
+    }
+    return StringifierContext(Truncation.Anchored(anchor))
 }
 
 // Centers a long list on this int value (which should be an index), or keeps both ends if there's nothing to center on
