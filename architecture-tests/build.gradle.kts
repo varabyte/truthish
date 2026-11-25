@@ -1,11 +1,11 @@
 // A separate build, so it can use a newer Kotlin than Truthish itself, which Konsist needs. Konsist reads Truthish's
 // sources from disk, so this build doesn't depend on Truthish at all.
 plugins {
-    kotlin("jvm") version "2.4.21"
+    alias(libs.plugins.kotlin.jvm.architecture)
 }
 
 dependencies {
-    testImplementation("com.lemonappdev:konsist:0.18.1")
+    testImplementation(libs.konsist)
     testImplementation(kotlin("test"))
 }
 

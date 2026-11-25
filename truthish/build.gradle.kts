@@ -119,7 +119,7 @@ kotlin {
     sourceSets {
         // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
         // We also use "buildMap" from 1.6
-        val targetKotlinVersion = "1.6.21"
+        val targetKotlinVersion = libs.versions.kotlin.target.common.get()
 
         all {
             languageSettings {
@@ -134,7 +134,7 @@ kotlin {
         wasmJsMain {
             // Wasm needs to use 1.9+ or else compilation dies.
             // This exception is not a big deal since Wasm didn't really exist until the end of 1.8 anyway
-            val wasmKotlinVersion = "1.9.25"
+            val wasmKotlinVersion = libs.versions.kotlin.target.wasm.get()
             languageSettings {
                 setToVersion(wasmKotlinVersion)
             }
@@ -146,8 +146,8 @@ kotlin {
         jvmMain.dependencies {
             // Test tools (IntelliJ, Gradle) offer a diff view for these exception types. We throw them when they're
             // available at runtime but don't force either dependency on users.
-            compileOnly("junit:junit:4.13.2")
-            compileOnly("org.opentest4j:opentest4j:1.3.0")
+            compileOnly(libs.junit4)
+            compileOnly(libs.opentest4j)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
