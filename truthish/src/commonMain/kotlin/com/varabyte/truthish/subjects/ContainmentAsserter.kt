@@ -63,7 +63,7 @@ internal class ContainmentAsserter<A, E>(
                     expected,
                     actual.snapshot,
                     expectedContext = FailureContext,
-                    actualContext = foundIndex.toCenteredContext(),
+                    actualContext = foundIndex.toCenteredOnContext(),
                 )
             )
         }
@@ -120,9 +120,10 @@ internal class ContainmentAsserter<A, E>(
                     "no elements from",
                     other.snapshot,
                     actual.snapshot,
-                    expectedContext = other.list.indexOfFirst { comparison.matches(firstUnexpected, it) }
-                        .toCenteredContext(),
-                    actualContext = firstUnexpectedIndex.toCenteredContext(),
+                    expectedContext = other.list
+                        .indexOfFirst { comparison.matches(firstUnexpected, it) }
+                        .toCenteredOnContext(),
+                    actualContext = firstUnexpectedIndex.toCenteredOnContext(),
                 ).apply {
                     // Each unexpected element is listed once, however many copies there are, like `IterableSubject`
                     val unexpected = unexpectedIndices.map { actual.list[it] }.distinct()
@@ -192,7 +193,7 @@ internal class ContainmentAsserter<A, E>(
                         Truncation.Anchored(Anchor.CenteredOn(foundIndex), Anchor.CenteredOn(lastMatchIndex))
                     )
                 } else {
-                    foundIndex.toCenteredContext()
+                    foundIndex.toCenteredOnContext()
                 }
                 report(
                     Summaries.EXPECTED_COLLECTION_ORDERED,
@@ -200,7 +201,7 @@ internal class ContainmentAsserter<A, E>(
                         "in order",
                         expected.snapshot,
                         actual.snapshot,
-                        expectedContext = expectedIndex.toCenteredContext(),
+                        expectedContext = expectedIndex.toCenteredOnContext(),
                         actualContext = actualContext,
                     ).apply {
                         add(DetailsFor.OUT_OF_ORDER to lookingFor, FailureContext)

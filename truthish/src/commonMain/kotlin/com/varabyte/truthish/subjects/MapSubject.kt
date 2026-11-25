@@ -47,8 +47,8 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
                     DetailsFor.expectedActual(
                         expected,
                         actual,
-                        expectedContext = firstMissingIndex.toCenteredContext(),
-                        actualContext = firstExtraneousIndex.toCenteredContext(),
+                        expectedContext = firstMissingIndex.toCenteredOnContext(),
+                        actualContext = firstExtraneousIndex.toCenteredOnContext(),
                     ).apply {
                         // Truncation can still hide later differences, so list them all too. A key in both maps with
                         // different values shows up in both rows.

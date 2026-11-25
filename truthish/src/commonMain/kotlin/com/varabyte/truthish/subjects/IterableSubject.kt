@@ -148,7 +148,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 internal fun <T> List<T>.anchorOnCopiesOf(index: Int?): StringifierContext {
     if (index == null) return StringifierContext.Default
     val copyIndices = indices.filter { this[it] == this[index] }
-    if (copyIndices.size < 2) return index.toCenteredContext()
+    if (copyIndices.size < 2) return index.toCenteredOnContext()
     return StringifierContext(Truncation.Anchored(Anchor.CenteredOn(copyIndices[0]), Anchor.CenteredOn(copyIndices[1])))
 }
 
@@ -203,7 +203,7 @@ internal fun List<*>.createSharedContext(other: List<*>, truncator: Truncator): 
 }
 
 // Centers a long list on this int value (which should be an index), or keeps both ends if there's nothing to center on
-internal fun Int?.toCenteredContext(): StringifierContext {
+internal fun Int?.toCenteredOnContext(): StringifierContext {
     val index = this ?: return StringifierContext.Default
     return StringifierContext(Truncation.Anchored(Anchor.CenteredOn(index)))
 }

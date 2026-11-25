@@ -68,7 +68,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = StartContext,
+                        actualContext = KeepStartContext,
                     )
                 )
             )
@@ -85,7 +85,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = StartContext,
+                        actualContext = KeepStartContext,
                     )
                 )
             )
@@ -102,7 +102,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = actual.toEndContext(),
+                        actualContext = actual.toKeepEndContext(),
                     )
                 )
             )
@@ -119,7 +119,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = actual.toEndContext(),
+                        actualContext = actual.toKeepEndContext(),
                     )
                 )
             )
@@ -213,7 +213,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = (foundIndex until foundIndex + expected.length).toCenteredContext(),
+                        actualContext = (foundIndex until foundIndex + expected.length).toCenteredOnContext(),
                     )
                 )
             )
@@ -231,7 +231,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         regex.pattern,
                         actual,
                         expectedContext = FailureContext,
-                        actualContext = match.range.toCenteredContext(),
+                        actualContext = match.range.toCenteredOnContext(),
                     )
                 )
             )
@@ -291,11 +291,11 @@ private fun createLineDiffDetails(expectedText: String, actualText: String): Det
 private fun String.findLineEndings(): Set<String> = Regex("\r?\n").findAll(this).map { it.value }.toSet()
 
 // Only the start matters to `startsWith` and its opposite, so a long string gives it the whole window
-private val StartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
+private val KeepStartContext = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(0)))
 
 // Only the end matters to `endsWith` and its opposite, so a long string gives it the whole window
-private fun String.toEndContext() = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(lastIndex)))
+private fun String.toKeepEndContext() = StringifierContext(Truncation.Anchored(Anchor.CenteredOn(lastIndex)))
 
 // Centers a long string on the middle of this range, e.g. a match, so a long match isn't cut off at one end
-private fun IntRange.toCenteredContext() =
+private fun IntRange.toCenteredOnContext() =
     StringifierContext(Truncation.Anchored(Anchor.CenteredOn(first + (last - first) / 2)))
