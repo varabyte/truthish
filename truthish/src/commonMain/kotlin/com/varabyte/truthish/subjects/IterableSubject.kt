@@ -39,10 +39,11 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
      * lists are truncated around where they first differ.
      */
     fun isEqualTo(expected: Iterable<*>?) {
-        if (actual.original == expected) return
+        val original = actual.original
+        if (original == expected) return
         val details = when {
-            expected is List<*> && actual.original is List<*> -> DetailsFor.expectedActualLists(expected, actual.original)
-            expected is Set<*> && actual.original is Set<*> -> DetailsFor.expectedActualSets(expected, actual.original)
+            expected is List<*> && original is List<*> -> DetailsFor.expectedActualLists(expected, original)
+            expected is Set<*> && original is Set<*> -> DetailsFor.expectedActualSets(expected, original)
             // Use `snapshot` here, as in the else branch we could possibly be dealing with a one-shot sequence.
             else -> DetailsFor.expectedActual(expected, actual.snapshot)
         }
