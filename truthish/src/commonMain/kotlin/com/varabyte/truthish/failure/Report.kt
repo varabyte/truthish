@@ -181,6 +181,7 @@ object DetailsFor {
     const val POSSIBLY_MISSING = "Possibly missing"
     const val POSSIBLY_EXTRANEOUS = "Possibly extraneous"
     const val DIFF = "Diff"
+    const val NOTE = "Note"
 
     /**
      * A detail list useful when asserting about the state of a single value, e.g. it was

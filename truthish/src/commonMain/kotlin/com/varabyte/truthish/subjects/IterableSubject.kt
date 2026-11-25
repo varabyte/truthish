@@ -1,6 +1,7 @@
 package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.Correspondence
+import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -20,19 +21,31 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
     private val asserter = ContainmentAsserter<T, T>(this, this.actual, ElementComparison.Equality)
 
-    /** Details for two unequal lists, both truncated around where they first differ. */
+    /**
+     * Details for two unequal lists, both truncated around where they first differ, plus the elements each one lacks.
+     */
     protected fun DetailsFor.expectedActualLists(expected: List<*>, actual: List<*>): Details {
         val context = expected.createSharedContext(actual, Truncators.forCollections)
         return expectedActual(expected, actual, expectedContext = context, actualContext = context)
+            .apply { addElementDifferences(expected, actual) }
     }
 
-    /** Like [AnySubject.isEqualTo], except two long lists are truncated around where they first differ. */
+    /** Details for two unequal sets, plus the elements each one lacks. */
+    protected fun DetailsFor.expectedActualSets(expected: Set<*>, actual: Set<*>): Details {
+        return expectedActual(expected, actual).apply { addElementDifferences(expected, actual) }
+    }
+
+    /**
+     * Like [AnySubject.isEqualTo], except two lists or two sets also list the elements each one lacks, and two long
+     * lists are truncated around where they first differ.
+     */
     fun isEqualTo(expected: Iterable<*>?) {
         if (actual.original == expected) return
-        val details = if (expected is List<*> && actual.original is List<*>) {
-            DetailsFor.expectedActualLists(expected, actual.list)
-        } else {
-            DetailsFor.expectedActual(expected, actual.snapshot)
+        val details = when {
+            expected is List<*> && actual.original is List<*> -> DetailsFor.expectedActualLists(expected, actual.original)
+            expected is Set<*> && actual.original is Set<*> -> DetailsFor.expectedActualSets(expected, actual.original)
+            // Use `snapshot` here, as in the else branch we could possibly be dealing with a one-shot sequence.
+            else -> DetailsFor.expectedActual(expected, actual.snapshot)
         }
         report(Report(Summaries.EXPECTED_EQUAL, details))
     }
@@ -186,6 +199,31 @@ internal fun List<*>.createSharedContext(other: List<*>, truncator: Truncator): 
 internal fun Int?.toCenteredContext(): StringifierContext {
     val index = this ?: return StringifierContext.Default
     return StringifierContext(Truncation.Anchored(Anchor.CenteredOn(index)))
+}
+
+/** The elements of this iterable that [other] lacks, considering duplicates, so `[a, a, b]` minus `[a]` is `[a, b]`. */
+private fun Iterable<*>.minusEach(other: Iterable<*>): List<*> {
+    val counts = other.groupingBy { it }.eachCount().toMutableMap()
+    return filter { element ->
+        val count = counts[element] ?: 0
+        if (count > 0) counts[element] = count - 1
+        count == 0
+    }
+}
+
+/**
+ * Adds the elements [expected] has that [actual] lacks and vice versa, since truncating the two values can hide every
+ * difference but the first. If neither lacks anything, they must differ in order, so a note says so instead.
+ */
+private fun Details.addElementDifferences(expected: Iterable<*>, actual: Iterable<*>) {
+    val missing = expected.minusEach(actual)
+    val extraneous = actual.minusEach(expected)
+    if (missing.isEmpty() && extraneous.isEmpty()) {
+        add(DetailsFor.NOTE to AnyStringifier("Same elements, in a different order"))
+        return
+    }
+    if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing, FailureValueContext)
+    if (extraneous.isNotEmpty()) add(DetailsFor.EXTRANEOUS to extraneous, FailureValueContext)
 }
 
 fun <T> IterableSubject<T>.containsAnyIn(other: Array<T>) = containsAnyIn(*other)

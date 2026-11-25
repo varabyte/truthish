@@ -401,6 +401,64 @@ class IterableAsserts {
     }
 
     @Test
+    fun unequalCollectionsListWhatEachSideLacks() {
+        assertThrows<AssertionError> {
+            assertThat(listOf(1, 2, 3, 4)).isEqualTo(listOf(1, 2, 5, 4))
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.MISSING, "[ 5 ]",
+            DetailsFor.EXTRANEOUS, "[ 3 ]",
+        )
+
+        // Differences hidden by truncation are still listed
+        assertThrows<AssertionError> {
+            assertThat((1..30).map { if (it == 3) 98 else if (it == 28) 99 else it }).isEqualTo((1..30).toList())
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+            DetailsFor.BUT_WAS, "[ 1, 2, 98, 4, 5, 6, 7, 8, 9, 10, 11, … (19 more) ]",
+            DetailsFor.MISSING, "[ 3, 28 ]",
+            DetailsFor.EXTRANEOUS, "[ 98, 99 ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(listOf("a", "b", "b")).isEqualTo(listOf("a", "a", "b"))
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.MISSING, "[ \"a\" ]",
+            DetailsFor.EXTRANEOUS, "[ \"b\" ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat((1..30).toList()).isEqualTo((1..30).map { if (it == 5) 25 else if (it == 25) 5 else it })
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.NOTE, "Same elements, in a different order",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(setOf(1, 2, 3)).isEqualTo(setOf(1, 2, 4))
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.MISSING, "[ 4 ]",
+            DetailsFor.EXTRANEOUS, "[ 3 ]",
+        )
+
+        // A set never equals a list, so there's nothing to list
+        val e = assertThrows<AssertionError> {
+            assertThat(setOf(1, 2, 3)).isEqualTo(listOf(1, 2, 3))
+        }
+        e.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "[ 1, 2, 3 ]",
+            DetailsFor.BUT_WAS, "{ 1, 2, 3 }",
+        )
+        assertThat(e.message!!).doesNotContain(DetailsFor.MISSING)
+        assertThat(e.message!!).doesNotContain(DetailsFor.EXTRANEOUS)
+        assertThat(e.message!!).doesNotContain(DetailsFor.NOTE)
+    }
+
+    @Test
     fun sequenceChecks() {
         // Sequences are treated as iterables, so just do a few quick sanity checks
         assertThat(sequenceOf("a", "b", "c")).containsExactly("a", "b", "c")
@@ -409,5 +467,8 @@ class IterableAsserts {
         assertThat(('a' .. 'z').asSequence()).hasSize(26)
         // Some sequences can only be iterated once
         assertThat(sequenceOf(1, 2, 3).constrainOnce()).containsExactly(1, 2, 3).inOrder()
+        assertThrows<AssertionError> {
+            assertThat(sequenceOf(1, 2).constrainOnce()).isEqualTo(listOf(1, 3))
+        }.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.BUT_WAS, "[ 1, 2 ]")
     }
 }

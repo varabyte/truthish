@@ -69,7 +69,13 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isEqualTo(arrayOf("a", "b", "d"))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ \"a\", \"b\", \"d\" ]", "[ \"a\", \"b\", \"c\" ]")
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                "[ \"a\", \"b\", \"d\" ]",
+                "[ \"a\", \"b\", \"c\" ]",
+                DetailsFor.MISSING, "[ \"d\" ]",
+                DetailsFor.EXTRANEOUS, "[ \"c\" ]",
+            )
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).isNotEqualTo(arrayOf("a", "b", "c"))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ \"a\", \"b\", \"c\" ]")
@@ -178,7 +184,12 @@ class ArrayAsserts {
             // Test false statements
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isEqualTo(booleanArrayOf(true, true, false))
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, "[ true, true, false ]", "[ true, false, true ]")
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                "[ true, true, false ]",
+                "[ true, false, true ]",
+                DetailsFor.NOTE, "Same elements, in a different order",
+            )
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, false, true)).isNotEqualTo(booleanArrayOf(true, false, true))
             }.assertSubstrings(Summaries.EXPECTED_NOT_EQUAL, DetailsFor.VALUE, "[ true, false, true ]")
