@@ -38,8 +38,21 @@ class MapAsserts {
         run {
             // Test false statements
             assertThrows<AssertionError> {
+                assertThat(asciiMap).isEqualTo(asciiMap - 'z' + ('a' to 0) + ('?' to 63))
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.BUT_WAS, "{ 'a' to 97, 'b' to 98",
+                // A key with a different value shows up in both rows
+                DetailsFor.MISSING, "{ 'a' to 0, '?' to 63 }",
+                DetailsFor.EXTRANEOUS, "{ 'a' to 97, 'z' to 122 }",
+            )
+
+            // Rows without entries are left out
+            val e = assertThrows<AssertionError> {
                 assertThat(asciiMap).isEqualTo(emptyMap())
-            }.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.BUT_WAS, "{ 'a' to 97, 'b' to 98")
+            }
+            e.assertSubstrings(Summaries.EXPECTED_EQUAL, DetailsFor.EXTRANEOUS, "{ 'a' to 97, 'b' to 98")
+            assertThat(e.message!!).doesNotContain(DetailsFor.MISSING)
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).isNotEqualTo(asciiMap)
@@ -123,6 +136,16 @@ class MapAsserts {
         }.assertSubstrings(
             Summaries.EXPECTED_COLLECTION_NOT_CONTAINS,
             DetailsFor.BUT_WAS, "[ … (10 more), 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, … (9 more) ]",
+        )
+
+        assertThrows<AssertionError> {
+            assertThat(tens + (16 to 0)).isEqualTo(tens)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "{ … (10 more), 11 to 110", "16 to 160", "21 to 210, … (9 more) }",
+            DetailsFor.BUT_WAS, "{ … (10 more), 11 to 110", "16 to 0", "21 to 210, … (9 more) }",
+            DetailsFor.MISSING, "{ 16 to 160 }",
+            DetailsFor.EXTRANEOUS, "{ 16 to 0 }",
         )
     }
 }

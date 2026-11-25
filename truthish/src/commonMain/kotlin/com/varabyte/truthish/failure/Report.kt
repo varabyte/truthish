@@ -253,8 +253,17 @@ object DetailsFor {
      *
      * On platforms where the test runner supports it (e.g. IntelliJ on the JVM), failures with these details can be
      * shown as a diff between the two values.
+     *
+     * @param expectedContext How to render [expected]. If null, a list or string is truncated around its first
+     *   difference.
+     * @param actualContext How to render [actual]. If null, chosen the same way.
      */
-    fun expectedActual(expected: Any?, actual: Any?): Details {
+    fun expectedActual(
+        expected: Any?,
+        actual: Any?,
+        expectedContext: StringifierContext? = null,
+        actualContext: StringifierContext? = null,
+    ): Details {
         if (expected is CharSequence && actual is CharSequence && (expected.contains('\n') || actual.contains('\n'))) {
             val expectedText = expected.toString()
             val actualText = actual.toString()
@@ -293,11 +302,10 @@ object DetailsFor {
                 expected.toList().findSharedAnchor(actual.toList(), Truncators.forStrings)
             else -> null
         }
-        val contexts = if (anchor != null) {
-            val context = StringifierContext(Truncation.Anchored(anchor))
-            mapOf(EXPECTED to context, BUT_WAS to context)
-        } else {
-            emptyMap()
+        val anchoredContext = anchor?.let { StringifierContext(Truncation.Anchored(it)) }
+        val contexts = buildMap {
+            (expectedContext ?: anchoredContext)?.let { put(EXPECTED, it) }
+            (actualContext ?: anchoredContext)?.let { put(BUT_WAS, it) }
         }
         return createExpectedActualDetails(EXPECTED, expected, actual, contexts)
     }

@@ -34,7 +34,31 @@ private fun <K, V> Map<K, V>.toIterable(): Iterable<Pair<K, V>> = entries.map { 
 class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, V>>(actual.toIterable()) {
     fun isEqualTo(expected: Map<K, V>) {
         if (actual != expected) {
-            report(Report(Summaries.EXPECTED_EQUAL, DetailsFor.expectedActual(expected, actual)))
+            val expectedEntries = expected.toList()
+            val actualEntries = actual.toList()
+            val missing = expectedEntries - actualEntries.toSet()
+            val extraneous = actualEntries - expectedEntries.toSet()
+            // Like `containsExactly`, each side centers on its own first entry that the other side lacks
+            val firstMissingIndex = missing.firstOrNull()?.let { expectedEntries.indexOf(it) }
+            val firstExtraneousIndex = extraneous.firstOrNull()?.let { actualEntries.indexOf(it) }
+            report(
+                Report(
+                    Summaries.EXPECTED_EQUAL,
+                    DetailsFor.expectedActual(
+                        expected,
+                        actual,
+                        expectedContext = firstMissingIndex.toCenteredContext(),
+                        actualContext = firstExtraneousIndex.toCenteredContext(),
+                    ).apply {
+                        // Truncation can still hide later differences, so list them all too. A key in both maps with
+                        // different values shows up in both rows.
+                        if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing.toMap(), FailureValueContext)
+                        if (extraneous.isNotEmpty()) {
+                            add(DetailsFor.EXTRANEOUS to extraneous.toMap(), FailureValueContext)
+                        }
+                    }
+                )
+            )
         }
     }
 
