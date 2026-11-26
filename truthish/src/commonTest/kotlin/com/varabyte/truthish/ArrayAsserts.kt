@@ -49,8 +49,6 @@ class ArrayAsserts {
             assertThat(emptyStrs).hasNoDuplicates()
 
             assertThat(arrayOf("a", "b", "c")).containsAnyIn("c", "d", "e")
-            assertThat(arrayOf("a", "b", "c")).containsAnyIn(emptyStrs)
-            assertThat(emptyStrs).containsAnyIn(emptyStrs)
 
             assertThat(arrayOf("a", "b", "c")).containsAllIn("c", "b")
             assertThat(arrayOf("a", "b", "c")).containsAllIn("b", "c").inOrder()
@@ -107,6 +105,12 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(arrayOf("a", "b", "c")).containsAnyIn("d", "e", "f")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(arrayOf("a", "b", "c")).containsAnyIn(emptyStrs)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(emptyStrs).containsAnyIn(emptyStrs)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -167,7 +171,6 @@ class ArrayAsserts {
             assertThat(booleanArrayOf(true, false)).hasNoDuplicates()
 
             assertThat(booleanArrayOf(true)).containsAnyIn(true, false)
-            assertThat(booleanArrayOf(true)).containsAnyIn(emptyBools)
 
             assertThat(booleanArrayOf(true, false)).containsAllIn(true, false)
             assertThat(booleanArrayOf(true, false)).containsAllIn(true, false).inOrder()
@@ -223,6 +226,9 @@ class ArrayAsserts {
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).containsAnyIn(false)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(booleanArrayOf(true)).containsAnyIn(emptyBools)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
                 assertThat(booleanArrayOf(true, true)).containsAllIn(true, false)
@@ -264,7 +270,6 @@ class ArrayAsserts {
             assertThat(byteArrayOf(1, 2, 3)).hasNoDuplicates()
 
             assertThat(byteArrayOf(1, 2, 3)).containsAnyIn(3, 4, 5)
-            assertThat(byteArrayOf(1, 2, 3)).containsAnyIn(emptyBytes)
 
             assertThat(byteArrayOf(1, 2, 3)).containsAllIn(3, 2)
             assertThat(byteArrayOf(1, 2, 3)).containsAllIn(2, 3).inOrder()
@@ -315,6 +320,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(byteArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(byteArrayOf(1, 2, 3)).containsAnyIn(emptyBytes)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -373,7 +381,6 @@ class ArrayAsserts {
             assertThat(charArrayOf('a', 'b', 'c')).hasNoDuplicates()
 
             assertThat(charArrayOf('a', 'b', 'c')).containsAnyIn('c', 'd', 'e')
-            assertThat(charArrayOf('a', 'b', 'c')).containsAnyIn(emptyChars)
 
             assertThat(charArrayOf('a', 'b', 'c')).containsAllIn('c', 'b')
             assertThat(charArrayOf('a', 'b', 'c')).containsAllIn('b', 'c').inOrder()
@@ -423,6 +430,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(charArrayOf('a', 'b', 'c')).containsAnyIn('d', 'e', 'f')
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(charArrayOf('a', 'b', 'c')).containsAnyIn(emptyChars)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -481,7 +491,6 @@ class ArrayAsserts {
             assertThat(shortArrayOf(1, 2, 3)).hasNoDuplicates()
 
             assertThat(shortArrayOf(1, 2, 3)).containsAnyIn(3, 4, 5)
-            assertThat(shortArrayOf(1, 2, 3)).containsAnyIn(emptyShorts)
 
             assertThat(shortArrayOf(1, 2, 3)).containsAllIn(3, 2)
             assertThat(shortArrayOf(1, 2, 3)).containsAllIn(2, 3).inOrder()
@@ -531,6 +540,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(shortArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(shortArrayOf(1, 2, 3)).containsAnyIn(emptyShorts)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -589,7 +601,6 @@ class ArrayAsserts {
             assertThat(intArrayOf(1, 2, 3)).hasNoDuplicates()
 
             assertThat(intArrayOf(1, 2, 3)).containsAnyIn(3, 4, 5)
-            assertThat(intArrayOf(1, 2, 3)).containsAnyIn(emptyInts)
 
             assertThat(intArrayOf(1, 2, 3)).containsAllIn(3, 2)
             assertThat(intArrayOf(1, 2, 3)).containsAllIn(2, 3).inOrder()
@@ -639,6 +650,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(intArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(intArrayOf(1, 2, 3)).containsAnyIn(emptyInts)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -697,7 +711,6 @@ class ArrayAsserts {
             assertThat(longArrayOf(1, 2, 3)).hasNoDuplicates()
 
             assertThat(longArrayOf(1, 2, 3)).containsAnyIn(3, 4, 5)
-            assertThat(longArrayOf(1, 2, 3)).containsAnyIn(emptyLongs)
 
             assertThat(longArrayOf(1, 2, 3)).containsAllIn(3, 2)
             assertThat(longArrayOf(1, 2, 3)).containsAllIn(2, 3).inOrder()
@@ -747,6 +760,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(longArrayOf(1, 2, 3)).containsAnyIn(4, 5, 6)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(longArrayOf(1, 2, 3)).containsAnyIn(emptyLongs)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -805,7 +821,6 @@ class ArrayAsserts {
             assertThat(floatArrayOf(1f, 2f, 3f)).hasNoDuplicates()
 
             assertThat(floatArrayOf(1f, 2f, 3f)).containsAnyIn(3f, 4f, 5f)
-            assertThat(floatArrayOf(1f, 2f, 3f)).containsAnyIn(emptyFloats)
 
             assertThat(floatArrayOf(1f, 2f, 3f)).containsAllIn(3f, 2f)
             assertThat(floatArrayOf(1f, 2f, 3f)).containsAllIn(2f, 3f).inOrder()
@@ -855,6 +870,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(floatArrayOf(1f, 2f, 3f)).containsAnyIn(4f, 5f, 6f)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(floatArrayOf(1f, 2f, 3f)).containsAnyIn(emptyFloats)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {
@@ -913,7 +931,6 @@ class ArrayAsserts {
             assertThat(doubleArrayOf(1.0, 2.0, 3.0)).hasNoDuplicates()
 
             assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAnyIn(3.0, 4.0, 5.0)
-            assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAnyIn(emptyDoubles)
 
             assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAllIn(3.0, 2.0)
             assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAllIn(2.0, 3.0).inOrder()
@@ -963,6 +980,9 @@ class ArrayAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAnyIn(4.0, 5.0, 6.0)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(doubleArrayOf(1.0, 2.0, 3.0)).containsAnyIn(emptyDoubles)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {

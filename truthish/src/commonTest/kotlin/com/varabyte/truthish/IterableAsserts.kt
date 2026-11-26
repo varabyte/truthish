@@ -31,8 +31,6 @@ class IterableAsserts {
             assertThat(emptyStrs).hasNoDuplicates()
 
             assertThat(listOf("a", "b", "c")).containsAnyIn("c", "d", "e")
-            assertThat(listOf("a", "b", "c")).containsAnyIn(emptyStrs)
-            assertThat(emptyStrs).containsAnyIn(emptyStrs)
 
             assertThat(listOf("a", "b", "c")).containsAllIn("c", "b")
             assertThat(listOf("a", "b", "c")).containsAllIn("b", "c").inOrder()
@@ -83,6 +81,12 @@ class IterableAsserts {
 
             assertThrows<AssertionError> {
                 assertThat(listOf("a", "b", "c")).containsAnyIn("d", "e", "f")
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "c")).containsAnyIn(emptyStrs)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
+            assertThrows<AssertionError> {
+                assertThat(emptyStrs).containsAnyIn(emptyStrs)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS)
 
             assertThrows<AssertionError> {

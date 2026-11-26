@@ -69,10 +69,6 @@ internal class ContainmentAsserter<A, E>(
 
     fun containsAnyIn(other: Iterable<E>) {
         val other = IterableSnapshot(other)
-        if (other.list.isEmpty()) {
-            return
-        }
-
         if (actual.list.none { a -> other.list.any { e -> comparison.matches(a, e) } }) {
             report(
                 Summaries.EXPECTED_COLLECTION_CONTAINS,
