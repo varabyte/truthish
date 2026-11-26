@@ -80,10 +80,12 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         }
     }
 
-    fun startsWith(expected: CharSequence) {
-        if (!actual.startsWith(expected)) {
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun startsWith(expected: CharSequence, ignoreCase: Boolean = false) {
+        if (!actual.startsWith(expected, ignoreCase)) {
             // The strings can differ anywhere in a long prefix, so show both around where they do
-            val context = expected.toList().createSharedContext(actual.toList(), Truncators.forStrings)
+            val context = expected.toComparableChars(ignoreCase)
+                .createSharedContext(actual.toComparableChars(ignoreCase), Truncators.forStrings)
             report(
                 Report(
                     Summaries.EXPECTED_STARTS_WITH,
@@ -93,14 +95,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         actual,
                         expectedContext = context,
                         actualContext = context,
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }
     }
 
-    fun doesNotStartWith(expected: CharSequence) {
-        if (actual.startsWith(expected)) {
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun doesNotStartWith(expected: CharSequence, ignoreCase: Boolean = false) {
+        if (actual.startsWith(expected, ignoreCase)) {
             report(
                 Report(
                     Summaries.EXPECTED_NOT_STARTS_WITH,
@@ -110,17 +113,18 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         actual,
                         expectedContext = KeepStartContext,
                         actualContext = KeepStartContext,
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }
     }
 
-    fun endsWith(expected: CharSequence) {
-        if (!actual.endsWith(expected)) {
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun endsWith(expected: CharSequence, ignoreCase: Boolean = false) {
+        if (!actual.endsWith(expected, ignoreCase)) {
             // The strings can differ anywhere in a long suffix, so show both around where they do: the last character
             // before the end they share. All of `actual` may be shared (e.g. "c" doesn't end with "abc"), so clamp it.
-            val sharedEndLength = actual.commonSuffixWith(expected).length
+            val sharedEndLength = actual.commonSuffixWith(expected, ignoreCase).length
             val expectedDiffIndex = expected.length - 1 - sharedEndLength
             val actualDiffIndex = (actual.length - 1 - sharedEndLength).coerceAtLeast(0)
             report(
@@ -132,14 +136,15 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         actual,
                         expectedContext = expectedDiffIndex.toCenteredOnContext(),
                         actualContext = actualDiffIndex.toCenteredOnContext(),
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }
     }
 
-    fun doesNotEndWith(expected: CharSequence) {
-        if (actual.endsWith(expected)) {
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun doesNotEndWith(expected: CharSequence, ignoreCase: Boolean = false) {
+        if (actual.endsWith(expected, ignoreCase)) {
             report(
                 Report(
                     Summaries.EXPECTED_NOT_ENDS_WITH,
@@ -149,7 +154,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         actual,
                         expectedContext = expected.toKeepEndContext(),
                         actualContext = actual.toKeepEndContext(),
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }
@@ -193,8 +198,9 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         doesNotMatch(Regex(regex))
     }
 
-    fun contains(expected: CharSequence) {
-        if (!actual.contains(expected)) {
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun contains(expected: CharSequence, ignoreCase: Boolean = false) {
+        if (!actual.contains(expected, ignoreCase)) {
             report(
                 Report(
                     Summaries.EXPECTED_CONTAINS,
@@ -202,7 +208,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         "to contain",
                         expected,
                         actual,
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }
@@ -227,8 +233,9 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
         containsMatch(Regex(regex))
     }
 
-    fun doesNotContain(expected: CharSequence) {
-        val foundIndex = actual.indexOf(expected.toString())
+    /** @param ignoreCase If true, characters that differ only in case are considered equal. */
+    fun doesNotContain(expected: CharSequence, ignoreCase: Boolean = false) {
+        val foundIndex = actual.indexOf(expected.toString(), ignoreCase = ignoreCase)
         if (foundIndex >= 0) {
             report(
                 Report(
@@ -238,7 +245,7 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
                         expected,
                         actual,
                         actualContext = (foundIndex until foundIndex + expected.length).toCenteredOnContext(),
-                    )
+                    ).apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
                 )
             )
         }

@@ -24,6 +24,10 @@ class StringAsserts {
             assertThat("Hello World").endsWith("orld")
             assertThat("Hello World").doesNotStartWith("orld")
             assertThat("Hello World").doesNotEndWith("Hell")
+            assertThat("Hello World").startsWith("hell", ignoreCase = true)
+            assertThat("Hello World").endsWith("ORLD", ignoreCase = true)
+            assertThat("Hello World").doesNotStartWith("orld", ignoreCase = true)
+            assertThat("Hello World").doesNotEndWith("HELL", ignoreCase = true)
 
             assertThat("Hello World").matches("He.+ ...ld")
             assertThat("Hello World").matches(Regex(".+"))
@@ -32,10 +36,13 @@ class StringAsserts {
             assertThat("Hello World").doesNotMatch(Regex("A"))
 
             assertThat("Hello World").contains("ello")
+            assertThat("Hello World").contains("ELLO", ignoreCase = true)
             assertThat("Hello World").containsMatch("elll?o")
             assertThat("Hello World").containsMatch(Regex("l.+ W"))
 
             assertThat("Hello World").doesNotContain("Jello")
+            assertThat("Hello World").doesNotContain("ELLO")
+            assertThat("Hello World").doesNotContain("JELLO", ignoreCase = true)
             assertThat("Hello World").doesNotContainMatch("0+")
             assertThat("Hello World").doesNotContainMatch(Regex("[0-9]"))
 
@@ -78,6 +85,18 @@ class StringAsserts {
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotEndWith("ld")
             }.assertSubstrings(Summaries.EXPECTED_NOT_ENDS_WITH)
+            assertThrows<AssertionError> {
+                assertThat("Hello World").startsWith("LLO", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_STARTS_WITH, DetailsFor.NOTE, "Case was ignored")
+            assertThrows<AssertionError> {
+                assertThat("Hello World").endsWith("LLO", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_ENDS_WITH, DetailsFor.NOTE, "Case was ignored")
+            assertThrows<AssertionError> {
+                assertThat("Hello World").doesNotStartWith("HE", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_STARTS_WITH, DetailsFor.NOTE, "Case was ignored")
+            assertThrows<AssertionError> {
+                assertThat("Hello World").doesNotEndWith("LD", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_ENDS_WITH, DetailsFor.NOTE, "Case was ignored")
 
             assertThrows<AssertionError> {
                 assertThat("Hello World").matches("ASDF")
@@ -97,6 +116,9 @@ class StringAsserts {
                 assertThat("Hello World").contains("Wello")
             }.assertSubstrings(Summaries.EXPECTED_CONTAINS)
             assertThrows<AssertionError> {
+                assertThat("Hello World").contains("WELLO", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_CONTAINS, DetailsFor.NOTE, "Case was ignored")
+            assertThrows<AssertionError> {
                 assertThat("Hello World").containsMatch("AAA?A")
             }.assertSubstrings(Summaries.EXPECTED_CONTAINS)
             assertThrows<AssertionError> {
@@ -106,6 +128,9 @@ class StringAsserts {
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContain("o Wo")
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS, "Expected not to contain")
+            assertThrows<AssertionError> {
+                assertThat("Hello World").doesNotContain("O WO", ignoreCase = true)
+            }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS, DetailsFor.NOTE, "Case was ignored")
             assertThrows<AssertionError> {
                 assertThat("Hello World").doesNotContainMatch("l+")
             }.assertSubstrings(Summaries.EXPECTED_NOT_CONTAINS, "Expected not to contain match")
@@ -118,6 +143,7 @@ class StringAsserts {
     @Test
     fun longStringsAreTruncated() {
         val numbers = (1..100).joinToString(",")
+        val items = (1..100).joinToString(",") { "item$it" }
 
         run {
             // Around the first difference
@@ -166,6 +192,15 @@ class StringAsserts {
                 DetailsFor.BUT_WAS, "… (28 more chars) \"3,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46\" … (163 more chars)",
             )
 
+            // Without ignoring case, the strings differ from the start; but ignoring it, only "50" vs "5X" matters
+            assertThrows<AssertionError> {
+                assertThat(items.uppercase()).startsWith(items.replace("item50,", "item5X,"), ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_STARTS_WITH,
+                "Expected to start with", "item49,item5X,item51",
+                DetailsFor.BUT_WAS, "ITEM49,ITEM50,ITEM51",
+            )
+
             assertThrows<AssertionError> {
                 assertThat(numbers).startsWith("x")
             }.assertSubstrings(
@@ -204,6 +239,14 @@ class StringAsserts {
             }.assertSubstrings(
                 Summaries.EXPECTED_NOT_CONTAINS,
                 DetailsFor.BUT_WAS, "… (88 more chars) \"3,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66\" … (103 more chars)",
+            )
+
+            // A match found while ignoring case
+            assertThrows<AssertionError> {
+                assertThat(items).doesNotContain("ITEM50,", ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_NOT_CONTAINS,
+                DetailsFor.BUT_WAS, "item49,item50,item51",
             )
 
             // The window is centered on the middle of the match (",50,…,70"), around "60", not on its start
