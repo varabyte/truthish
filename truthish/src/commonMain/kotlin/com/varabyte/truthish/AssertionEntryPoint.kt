@@ -27,7 +27,7 @@ import com.varabyte.truthish.subjects.*
  * assertThat(alice).hasName("Alice")
  * assertAll {
  *     that(bob).hasName("Bob")
- *     that(bob.age).isGreaterThanOrEqualTo(18)
+ *     that(bob.age).isAtLeast(18)
  * }
  * assertWithMessage("This user was renamed").that(charles).hasName("Charlie")
  * ```

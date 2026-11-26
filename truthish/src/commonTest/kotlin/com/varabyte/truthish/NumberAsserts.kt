@@ -12,11 +12,11 @@ class NumberAssets {
             // Test true statements
             assertThat(5).isEqualTo(5)
             assertThat(5).isNotEqualTo(6)
-            assertThat(5).isGreaterThanEqual(5)
-            assertThat(5).isGreaterThanEqual(4)
+            assertThat(5).isAtLeast(5)
+            assertThat(5).isAtLeast(4)
             assertThat(5).isGreaterThan(4)
-            assertThat(5).isLessThanEqual(5)
-            assertThat(5).isLessThanEqual(6)
+            assertThat(5).isAtMost(5)
+            assertThat(5).isAtMost(6)
             assertThat(5).isLessThan(6)
 
             assertThat(5).isIn(1..10)
@@ -29,13 +29,13 @@ class NumberAssets {
         run {
             // Test false statements
             assertThrows<AssertionError> {
-                assertThat(5).isGreaterThanEqual(6)
+                assertThat(5).isAtLeast(6)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "6", "5")
             assertThrows<AssertionError> {
                 assertThat(5).isGreaterThan(5)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "5")
             assertThrows<AssertionError> {
-                assertThat(5).isLessThanEqual(4)
+                assertThat(5).isAtMost(4)
             }.assertSubstrings(Summaries.EXPECTED_COMPARISON, "4", "5")
             assertThrows<AssertionError> {
                 assertThat(5).isLessThan(3)
@@ -55,11 +55,11 @@ class NumberAssets {
     fun byteChecks() {
         assertThat(5.toByte()).isEqualTo(5.toByte())
         assertThat(5.toByte()).isNotEqualTo(6.toByte())
-        assertThat(5.toByte()).isGreaterThanEqual(5.toByte())
-        assertThat(5.toByte()).isGreaterThanEqual(4.toByte())
+        assertThat(5.toByte()).isAtLeast(5.toByte())
+        assertThat(5.toByte()).isAtLeast(4.toByte())
         assertThat(5.toByte()).isGreaterThan(4.toByte())
-        assertThat(5.toByte()).isLessThanEqual(5.toByte())
-        assertThat(5.toByte()).isLessThanEqual(6.toByte())
+        assertThat(5.toByte()).isAtMost(5.toByte())
+        assertThat(5.toByte()).isAtMost(6.toByte())
         assertThat(5.toByte()).isLessThan(6.toByte())
         assertThat(5.toByte()).isIn(1..10)
         assertThat(5.toByte()).isNotIn(6..10)
@@ -76,11 +76,11 @@ class NumberAssets {
     fun shortChecks() {
         assertThat(5.toShort()).isEqualTo(5.toShort())
         assertThat(5.toShort()).isNotEqualTo(6.toShort())
-        assertThat(5.toShort()).isGreaterThanEqual(5.toShort())
-        assertThat(5.toShort()).isGreaterThanEqual(4.toShort())
+        assertThat(5.toShort()).isAtLeast(5.toShort())
+        assertThat(5.toShort()).isAtLeast(4.toShort())
         assertThat(5.toShort()).isGreaterThan(4.toShort())
-        assertThat(5.toShort()).isLessThanEqual(5.toShort())
-        assertThat(5.toShort()).isLessThanEqual(6.toShort())
+        assertThat(5.toShort()).isAtMost(5.toShort())
+        assertThat(5.toShort()).isAtMost(6.toShort())
         assertThat(5.toShort()).isLessThan(6.toShort())
         assertThat(5.toShort()).isIn(1..10)
         assertThat(5.toShort()).isNotIn(6..10)
@@ -98,11 +98,11 @@ class NumberAssets {
     fun longChecks() {
         assertThat(5.toLong()).isEqualTo(5.toLong())
         assertThat(5.toLong()).isNotEqualTo(6.toLong())
-        assertThat(5.toLong()).isGreaterThanEqual(5.toLong())
-        assertThat(5.toLong()).isGreaterThanEqual(4.toLong())
+        assertThat(5.toLong()).isAtLeast(5.toLong())
+        assertThat(5.toLong()).isAtLeast(4.toLong())
         assertThat(5.toLong()).isGreaterThan(4.toLong())
-        assertThat(5.toLong()).isLessThanEqual(5.toLong())
-        assertThat(5.toLong()).isLessThanEqual(6.toLong())
+        assertThat(5.toLong()).isAtMost(5.toLong())
+        assertThat(5.toLong()).isAtMost(6.toLong())
         assertThat(5.toLong()).isLessThan(6.toLong())
         assertThat(5.toLong()).isIn(4.toLong()..6.toLong())
     }
@@ -113,11 +113,11 @@ class NumberAssets {
             // Test true statements
             assertThat(5f).isEqualTo(5f)
             assertThat(5f).isNotEqualTo(6f)
-            assertThat(5f).isGreaterThanEqual(5f)
-            assertThat(5f).isGreaterThanEqual(4f)
+            assertThat(5f).isAtLeast(5f)
+            assertThat(5f).isAtLeast(4f)
             assertThat(5f).isGreaterThan(4f)
-            assertThat(5f).isLessThanEqual(5f)
-            assertThat(5f).isLessThanEqual(6f)
+            assertThat(5f).isAtMost(5f)
+            assertThat(5f).isAtMost(6f)
             assertThat(5f).isLessThan(6f)
 
             assertThat(5.3f).isWithin(0.5f).of(5.5f)
@@ -210,11 +210,11 @@ class NumberAssets {
             // Test true statements
             assertThat(5.0).isEqualTo(5.0)
             assertThat(5.0).isNotEqualTo(6.0)
-            assertThat(5.0).isGreaterThanEqual(5.0)
-            assertThat(5.0).isGreaterThanEqual(4.0)
+            assertThat(5.0).isAtLeast(5.0)
+            assertThat(5.0).isAtLeast(4.0)
             assertThat(5.0).isGreaterThan(4.0)
-            assertThat(5.0).isLessThanEqual(5.0)
-            assertThat(5.0).isLessThanEqual(6.0)
+            assertThat(5.0).isAtMost(5.0)
+            assertThat(5.0).isAtMost(6.0)
             assertThat(5.0).isLessThan(6.0)
 
             assertThat(5.3).isWithin(0.5).of(5.5)

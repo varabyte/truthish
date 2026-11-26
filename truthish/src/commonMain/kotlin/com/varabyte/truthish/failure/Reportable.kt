@@ -44,7 +44,7 @@ abstract class Reportable {
  * ```
  * val voters = personDb.queryVoters()
  * for (voter in voters) {
- *    assertThat(voter.age).named("Age of ${voter.name}").isGreaterThanOrEqualTo(18)
+ *    assertThat(voter.age).named("Age of ${voter.name}").isAtLeast(18)
  * }
  * ```
  *

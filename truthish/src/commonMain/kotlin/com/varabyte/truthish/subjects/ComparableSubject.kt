@@ -16,17 +16,23 @@ open class ComparableSubject<T: Comparable<T>>(private val actual: T): NotNullSu
         }
     }
 
-    fun isGreaterThanEqual(target: T) {
+    fun isAtLeast(target: T) {
         if (actual < target) {
-            report(Report(Summaries.EXPECTED_COMPARISON, DetailsFor.expectedActual("greater than or equal to", target, actual)))
+            report(Report(Summaries.EXPECTED_COMPARISON, DetailsFor.expectedActual("at least", target, actual)))
         }
     }
 
-    fun isLessThanEqual(target: T) {
+    fun isAtMost(target: T) {
         if (actual > target) {
-            report(Report(Summaries.EXPECTED_COMPARISON, DetailsFor.expectedActual("less than or equal to", target, actual)))
+            report(Report(Summaries.EXPECTED_COMPARISON, DetailsFor.expectedActual("at most", target, actual)))
         }
     }
+
+    @Deprecated("Renamed to isAtLeast", ReplaceWith("isAtLeast(target)"))
+    fun isGreaterThanEqual(target: T) = isAtLeast(target)
+
+    @Deprecated("Renamed to isAtMost", ReplaceWith("isAtMost(target)"))
+    fun isLessThanEqual(target: T) = isAtMost(target)
 
     fun isLessThan(target: T) {
         if (actual >= target) {

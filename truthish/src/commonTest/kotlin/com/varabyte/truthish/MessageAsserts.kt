@@ -37,27 +37,27 @@ class MessageAsserts {
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10).isGreaterThanEqual(100)
+            assertWithMessage(TEST_MESSAGE).that(10).isAtLeast(100)
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10.toByte()).isGreaterThanEqual(100.toByte())
+            assertWithMessage(TEST_MESSAGE).that(10.toByte()).isAtLeast(100.toByte())
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10.toShort()).isGreaterThanEqual(100.toShort())
+            assertWithMessage(TEST_MESSAGE).that(10.toShort()).isAtLeast(100.toShort())
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10.toLong()).isGreaterThanEqual(100.toLong())
+            assertWithMessage(TEST_MESSAGE).that(10.toLong()).isAtLeast(100.toLong())
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10f).isGreaterThanEqual(100f)
+            assertWithMessage(TEST_MESSAGE).that(10f).isAtLeast(100f)
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
-            assertWithMessage(TEST_MESSAGE).that(10.0).isGreaterThanEqual(100.0)
+            assertWithMessage(TEST_MESSAGE).that(10.0).isAtLeast(100.0)
         }.assertSubstrings(TEST_MESSAGE)
 
         assertThrows<AssertionError> {
