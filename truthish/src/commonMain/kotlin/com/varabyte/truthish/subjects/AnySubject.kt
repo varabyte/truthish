@@ -37,20 +37,40 @@ abstract class AnySubject<T: Any>(private val actual: T?) : Reportable() {
         }
     }
 
-    fun isAnyOf(vararg expected: Any?) {
+    /**
+     * Checks that the value equals at least one of the given values.
+     *
+     * At least two values are required, since one value is just [isEqualTo]. This also stops a collection from being
+     * passed in by mistake, which would be compared as a single value.
+     *
+     * To check against values in a collection, make the collection the subject instead,
+     * e.g. `assertThat(collection).contains(item)`.
+     */
+    fun isAnyOf(first: Any?, second: Any?, vararg rest: Any?) {
+        val expected = listOf(first, second) + rest
         if (actual !in expected) {
-            report(Report(Summaries.EXPECTED_ANY_OF, DetailsFor.expectedActual("any of", expected.toList(), actual)))
+            report(Report(Summaries.EXPECTED_ANY_OF, DetailsFor.expectedActual("any of", expected, actual)))
         }
     }
 
-    fun isNoneOf(vararg unexpected: Any?) {
+    /**
+     * Checks that the value equals none of the given values.
+     *
+     * At least two values are required, since one value is just [isNotEqualTo]. This also stops a collection from being
+     * passed in by mistake, which would be compared as a single value (and so would always pass).
+     *
+     * To check against values in a collection, make the collection the subject instead,
+     * e.g. `assertThat(collection).doesNotContain(item)`.
+     */
+    fun isNoneOf(first: Any?, second: Any?, vararg rest: Any?) {
+        val unexpected = listOf(first, second) + rest
         val index = unexpected.indexOf(actual).takeIf { it >= 0 } ?: return
         report(
             Report(
                 Summaries.EXPECTED_NONE_OF,
                 DetailsFor.expectedActual(
                     "none of",
-                    unexpected.toList(),
+                    unexpected,
                     actual,
                     expectedContext = index.toCenteredOnContext(),
                 ),

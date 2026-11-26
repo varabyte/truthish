@@ -126,6 +126,8 @@ class BasicAsserts {
             assertThat(State.RUNNING).isAnyOf(State.IDLE, State.RUNNING)
             assertThat(State.DONE).isNoneOf(State.IDLE, State.RUNNING)
             assertThat(null as State?).isAnyOf(State.IDLE, null)
+            assertThat(State.DONE).isAnyOf(State.IDLE, State.RUNNING, State.DONE)
+            assertThat(State.DONE).isNoneOf(State.IDLE, State.RUNNING, null)
         }
 
         run {
