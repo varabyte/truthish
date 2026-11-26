@@ -134,10 +134,29 @@ class Details internal constructor(
     constructor(items: List<Pair<String, Any?>> = emptyList()) : this(items, emptyMap())
 
     private val _items = items.toMutableList()
-    val items: List<Pair<String, Any?>> = _items
+    private val notes = mutableListOf<String>()
+
+    /** All rows, ending with a single Note row that joins every note added via [addNote], if any. */
+    val items: List<Pair<String, Any?>>
+        get() {
+            if (notes.isEmpty()) return _items
+            val noteText = notes.joinToString("; ").replaceFirstChar { it.uppercase() }
+            return _items + (DetailsFor.NOTE to AnyStringifier(noteText))
+        }
 
     private val _contexts = contexts.toMutableMap()
     internal val contexts: Map<String, StringifierContext> = _contexts
+
+    /**
+     * Adds a note, which reports show in a single Note row at the end, e.g. "Line endings also differ; expected ends
+     * with a newline but actual doesn't".
+     *
+     * Write [note] in lowercase; the row capitalizes its first letter. Use this rather than adding a [DetailsFor.NOTE]
+     * row directly.
+     */
+    fun addNote(note: String) {
+        notes.add(note)
+    }
 
     /**
      * @param context Optional [StringifierContext] associated with the value.

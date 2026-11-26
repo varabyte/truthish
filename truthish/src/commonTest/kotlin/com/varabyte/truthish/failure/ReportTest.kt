@@ -242,6 +242,25 @@ class ReportTest {
     }
 
     @Test
+    fun notesShareOneRowAtTheEnd() {
+        val details = Details(listOf("A" to 1))
+        details.addNote("first note")
+        details.add("B" to 2)
+        details.addNote("second note")
+
+        assertThat(Report("Summary", details).toString()).isEqualTo(
+            """
+            Summary
+
+            A   : 1
+            B   : 2
+            Note: First note; second note
+
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun findReturnsRawValues() {
         val details = Details(listOf("Number" to 1, "List" to listOf("a")))
 

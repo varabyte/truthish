@@ -1,7 +1,6 @@
 package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.Correspondence
-import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -245,7 +244,7 @@ private fun Details.addElementDifferences(expected: Iterable<*>, actual: Iterabl
     val missing = expected.minusEach(actual)
     val extraneous = actual.minusEach(expected)
     if (missing.isEmpty() && extraneous.isEmpty()) {
-        add(DetailsFor.NOTE to AnyStringifier("Same elements, in a different order"))
+        addNote("same elements, in a different order")
         return
     }
     if (missing.isNotEmpty()) add(DetailsFor.MISSING to missing, KeepStartContext)

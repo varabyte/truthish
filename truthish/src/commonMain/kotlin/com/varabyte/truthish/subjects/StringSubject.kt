@@ -1,6 +1,5 @@
 package com.varabyte.truthish.subjects
 
-import com.varabyte.truthish.failure.AnyStringifier
 import com.varabyte.truthish.failure.Details
 import com.varabyte.truthish.failure.DetailsFor
 import com.varabyte.truthish.failure.Report
@@ -267,23 +266,18 @@ private fun createLineDiffDetails(expectedText: String, actualText: String): Det
     // diff viewer, where available
     val diff = LineDiff.tryCreate(expectedText, actualText) ?: return null
 
-    // The diff ignores line endings, which would otherwise mark every line as changed, so call them out separately
-    val notes = buildList {
+    return Details(listOf(DetailsFor.DIFF to diff)).apply {
+        // The diff ignores line endings, which would otherwise mark every line as changed, so call them out separately
         val expectedEndings = expectedText.findLineEndings()
         val actualEndings = actualText.findLineEndings()
         if (expectedEndings.isNotEmpty() && actualEndings.isNotEmpty() && expectedEndings != actualEndings) {
-            add("line endings also differ")
+            addNote("line endings also differ")
         }
         if (expectedText.endsWith('\n') && !actualText.endsWith('\n')) {
-            add("expected ends with a newline but actual doesn't")
+            addNote("expected ends with a newline but actual doesn't")
         }
         if (!expectedText.endsWith('\n') && actualText.endsWith('\n')) {
-            add("actual ends with a newline but expected doesn't")
-        }
-    }
-    return Details(listOf(DetailsFor.DIFF to diff)).apply {
-        if (notes.isNotEmpty()) {
-            add(DetailsFor.NOTE to AnyStringifier(notes.joinToString("; ").replaceFirstChar { it.uppercase() }))
+            addNote("actual ends with a newline but expected doesn't")
         }
     }
 }
