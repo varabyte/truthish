@@ -10,6 +10,8 @@ object Summaries {
     const val EXPECTED_NOT_EQUAL = "Two objects were equal"
     const val EXPECTED_SAME = "Two objects were not the same"
     const val EXPECTED_NOT_SAME = "Two objects were the same"
+    const val EXPECTED_ANY_OF = "An object was not any of the expected values"
+    const val EXPECTED_NONE_OF = "An object was one of the unexpected values"
     const val EXPECTED_INSTANCE = "An object was not an instance of a class"
     const val EXPECTED_NOT_INSTANCE = "An object was an instance of a class"
 

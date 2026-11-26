@@ -37,6 +37,27 @@ abstract class AnySubject<T: Any>(private val actual: T?) : Reportable() {
         }
     }
 
+    fun isAnyOf(vararg expected: Any?) {
+        if (actual !in expected) {
+            report(Report(Summaries.EXPECTED_ANY_OF, DetailsFor.expectedActual("any of", expected.toList(), actual)))
+        }
+    }
+
+    fun isNoneOf(vararg unexpected: Any?) {
+        val index = unexpected.indexOf(actual).takeIf { it >= 0 } ?: return
+        report(
+            Report(
+                Summaries.EXPECTED_NONE_OF,
+                DetailsFor.expectedActual(
+                    "none of",
+                    unexpected.toList(),
+                    actual,
+                    expectedContext = index.toCenteredOnContext(),
+                ),
+            )
+        )
+    }
+
     fun isInstanceOf(expected: KClass<*>) {
         if (!expected.isInstance(actual)) {
             val kClass = actual?.let { it::class }

@@ -10,6 +10,8 @@ class BasicAsserts {
 
     class Stub
 
+    enum class State { IDLE, RUNNING, DONE }
+
     @Test
     fun assertEquality() {
         run {
@@ -105,6 +107,35 @@ class BasicAsserts {
             assertThrows<AssertionError> {
                 assertThat(stubValue1).isNotSameAs(stubValue3)
             }.assertSubstrings(Summaries.EXPECTED_NOT_SAME)
+        }
+    }
+
+    @Test
+    fun assertAnyOf() {
+        run {
+            // Test true statements
+            assertThat(State.RUNNING).isAnyOf(State.IDLE, State.RUNNING)
+            assertThat(State.DONE).isNoneOf(State.IDLE, State.RUNNING)
+            assertThat(null as State?).isAnyOf(State.IDLE, null)
+        }
+
+        run {
+            // Test false statements
+            assertThrows<AssertionError> {
+                assertThat(State.DONE).isAnyOf(State.IDLE, State.RUNNING)
+            }.assertSubstrings(
+                Summaries.EXPECTED_ANY_OF,
+                "${DetailsFor.EXPECTED} any of", "[ IDLE, RUNNING ]",
+                DetailsFor.BUT_WAS, "DONE",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat(State.RUNNING).isNoneOf(State.IDLE, State.RUNNING)
+            }.assertSubstrings(
+                Summaries.EXPECTED_NONE_OF,
+                "${DetailsFor.EXPECTED} none of", "[ IDLE, RUNNING ]",
+                DetailsFor.BUT_WAS, "RUNNING",
+            )
         }
     }
 
