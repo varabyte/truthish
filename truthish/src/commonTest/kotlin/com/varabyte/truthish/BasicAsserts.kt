@@ -77,6 +77,15 @@ class BasicAsserts {
             assertThrows<AssertionError> {
                 assertThat(IntValue(234)).isNotInstanceOf<IntValue>()
             }.assertSubstrings(Summaries.EXPECTED_NOT_INSTANCE, "IntValue")
+
+            // Anonymous classes have no name of their own
+            assertThrows<AssertionError> {
+                assertThat(object : Exception("boom") {}).isInstanceOf<IllegalStateException>()
+            }.assertSubstrings(
+                Summaries.EXPECTED_INSTANCE,
+                DetailsFor.EXPECTED, "IllegalStateException",
+                DetailsFor.BUT_WAS, "<anonymous>",
+            )
         }
     }
 

@@ -34,6 +34,13 @@ class AmbiguityTest {
     }
 
     @Test
+    fun anonymousTypesAreReportedAsAnonymous() {
+        assertThrows<AssertionError> {
+            assertThat(object { override fun toString() = "x" }).isEqualTo("x")
+        }.assertSubstrings("\"x\" (Type: `String`)", "x (Type: `<anonymous>`)")
+    }
+
+    @Test
     fun mapEntriesAndPairsPrintTheSameButReportTheirTypes() {
         assertThrows<AssertionError> {
             assertThat(TestEntry("a", 1)).isEqualTo("a" to 1)

@@ -15,4 +15,17 @@ class ClassNameAsserts {
             assertThat(SameHolderA.Same()).isInstanceOf<SameHolderB.Same>()
         }.assertSubstrings(Summaries.EXPECTED_INSTANCE, "Same", "Same", "a different value that prints the same")
     }
+
+    @Test
+    fun anonymousClassesShowNote() {
+        val first = object : Exception() {}
+        val second = object : Exception() {}
+        assertThrows<AssertionError> {
+            assertThat(first).isInstanceOf(second::class)
+        }.assertSubstrings(
+            Summaries.EXPECTED_INSTANCE,
+            "<anonymous>",
+            "<anonymous> (a different value that prints the same)",
+        )
+    }
 }

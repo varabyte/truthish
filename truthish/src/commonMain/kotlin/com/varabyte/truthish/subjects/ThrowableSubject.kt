@@ -2,6 +2,7 @@ package com.varabyte.truthish.subjects
 
 import com.varabyte.truthish.failure.SkipStrategy
 import com.varabyte.truthish.failure.derivedFrom
+import com.varabyte.truthish.failure.findSimpleName
 import com.varabyte.truthish.failure.valueOf
 import com.varabyte.truthish.failure.withStrategy
 
@@ -48,11 +49,6 @@ class ThrowableSubject(private val actual: Throwable) : NotNullSubject<Throwable
 
     /** The start of the [valueOf] paths for this throwable's message and cause, e.g. `ParseException.cause`. */
     private fun findPath(): String {
-        return valueOf ?: run {
-            // An anonymous class has no simple name, or (e.g. on Wasm) a special name like `<no name provided>`. Kotlin
-            // wraps special names in angle brackets, which a real class name can't contain.
-            val className = actual::class.simpleName?.takeUnless { it.startsWith('<') }
-            className ?: "Throwable"
-        }
+        return valueOf ?: actual::class.findSimpleName() ?: "Throwable"
     }
 }

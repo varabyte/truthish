@@ -45,6 +45,14 @@ internal object Truncators {
 internal expect fun KClass<*>.toQualifiedString(): String
 
 /**
+ * Returns this class's simple name, or `null` for an anonymous class.
+ *
+ * An anonymous class has no simple name, or (e.g. on Wasm) a special name like `<no name provided>`. Kotlin wraps
+ * special names in angle brackets, which a real class name can't contain.
+ */
+internal fun KClass<*>.findSimpleName(): String? = simpleName?.takeUnless { it.startsWith('<') }
+
+/**
  * A base class for rendering a value in a report.
  *
  * NOTE: Subclasses are intentionally not public. Third-party libraries should treat the "object to text" logic as a
@@ -82,8 +90,11 @@ sealed class ValueStringifier(private val value: Any?) {
     /**
      * Extra detail to tell this value apart from another value that prints the same.
      */
-    open fun toDetailString(): String = "Type: `${value?.let { it::class.simpleName }}`"
+    open fun toDetailString(): String = "Type: `${value?.let { it::class.findSimpleName() ?: ANONYMOUS }}`"
 }
+
+/** How a report names a class that has no name of its own. */
+private const val ANONYMOUS = "<anonymous>"
 
 /**
  * A default Stringifier that can handle any case.
@@ -321,7 +332,6 @@ internal class TripleStringifier(private val value: Triple<*, *, *>, private val
 }
 
 internal class KClassStringifier(private val value: KClass<*>) : ValueStringifier(value) {
-    // Anonymous classes have no simple name
-    override fun render() = value.simpleName ?: value.toQualifiedString()
+    override fun render() = value.findSimpleName() ?: ANONYMOUS
     override fun toDetailString() = value.toQualifiedString()
 }
