@@ -77,7 +77,7 @@ internal class ContainmentAsserter<A, E>(
         }
     }
 
-    fun containsAllIn(other: Iterable<E>): OrderedAsserter {
+    fun containsAllIn(other: Iterable<E>): ConsecutiveOrderedAsserter {
         val other = IterableSnapshot(other)
 
         val matching = Matching(actual.list, other.list, comparison)
@@ -94,9 +94,11 @@ internal class ContainmentAsserter<A, E>(
                     addLeftovers(DetailsFor.MISSING, DetailsFor.POSSIBLY_MISSING, missing, other.list)
                 }
             )
-            return skipInOrderCheck()
+            return skipInOrderConsecutiveCheck()
         }
-        return OrderedAsserter(createInOrderCheck(other))
+        return ConsecutiveOrderedAsserter { consecutive ->
+            if (consecutive) checkConsecutive(other) else createInOrderCheck(other)()
+        }
     }
 
     fun containsNoneIn(other: Iterable<E>) {
@@ -210,6 +212,28 @@ internal class ContainmentAsserter<A, E>(
         // If we got here -- congrats! All elements of [expected] were found in [actual] in order.
     }
 
+    /** Checks that [expected]'s elements appear in [actual] in the same order, with nothing between them. */
+    private fun checkConsecutive(expected: IterableSnapshot<E>) {
+        val windowSize = expected.list.size
+        fun matchesAt(start: Int, i: Int) = comparison.matches(actual.list[start + i], expected.list[i])
+
+        // `actual` contains every expected element, so it's at least as long as `expected`
+        val bestStart = (0..actual.list.size - windowSize)
+            .maxByOrNull { start -> (0 until windowSize).count { matchesAt(start, it) } }!!
+        // Center both lists on where the best match goes wrong
+        val mismatch = (0 until windowSize).firstOrNull { !matchesAt(bestStart, it) } ?: return
+        report(
+            Summaries.EXPECTED_COLLECTION_ORDERED,
+            DetailsFor.expectedActual(
+                "consecutively, in order",
+                expected.snapshot,
+                actual.snapshot,
+                expectedContext = mismatch.toCenteredOnContext(),
+                actualContext = (bestStart + mismatch).toCenteredOnContext(),
+            )
+        )
+    }
+
     private fun report(summary: String, details: Details) {
         interceptDetails(details)
         parent.report(Report(summary, details))
@@ -234,10 +258,13 @@ private fun <T> Details.addLeftovers(label: String, possiblyLabel: String, lefto
 }
 
 /**
- * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]\
+ * We don't want to test inorder if a check already failed, so provide this [OrderedAsserter]
  * instead, which is guaranteed to pass.
  */
 private fun skipInOrderCheck() = OrderedAsserter {}
+
+/** Like [skipInOrderCheck], for a [ConsecutiveOrderedAsserter]. */
+private fun skipInOrderConsecutiveCheck() = ConsecutiveOrderedAsserter { _ -> }
 
 /**
  * The elements of one list that a closest pairing leaves out, i.e. what's really missing or extraneous.

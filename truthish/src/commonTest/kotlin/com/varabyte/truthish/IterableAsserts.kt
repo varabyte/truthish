@@ -34,7 +34,9 @@ class IterableAsserts {
 
             assertThat(listOf("a", "b", "c")).containsAllIn("c", "b")
             assertThat(listOf("a", "b", "c")).containsAllIn("b", "c").inOrder()
+            assertThat(listOf("a", "b", "c")).containsAllIn("b", "c").inOrder(consecutive = true)
             assertThat(listOf("a", "b", "c")).containsAllIn(emptyStrs)
+            assertThat(listOf("a", "b", "c")).containsAllIn(emptyStrs).inOrder(consecutive = true)
 
             assertThat(listOf("a", "b", "c")).containsNoneIn("d", "e", "f")
             assertThat(emptyStrs).containsNoneIn("d", "e", "f")
@@ -130,6 +132,17 @@ class IterableAsserts {
                 DetailsFor.EXTRANEOUS, "[ \"a\" ]",
             )
 
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "c")).containsAllIn("a", "c").inOrder(consecutive = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                "consecutively", "[ \"a\", \"c\" ]",
+                DetailsFor.BUT_WAS, "[ \"a\", \"b\", \"c\" ]",
+            )
+            assertThrows<AssertionError> {
+                assertThat(listOf("a", "b", "c")).containsAllIn("c", "a").inOrder(consecutive = true)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, "consecutively")
+
             // Verify inOrder doesn't get tripped up by duplicate elements in the list
             assertThrows<AssertionError> {
                 assertThat(listOf("30", "20", "10", "20")).containsExactly("30", "20", "20", "10").inOrder()
@@ -173,6 +186,7 @@ class IterableAsserts {
     fun containsAllInCountsDuplicates() {
         assertThat(listOf(1, 2, 1)).containsAllIn(1, 1)
         assertThat(listOf(1, 2, 1)).containsAllIn(1, 1).inOrder()
+        assertThat(listOf(1, 2, 1, 1)).containsAllIn(1, 1).inOrder(consecutive = true)
 
         assertThrows<AssertionError> {
             assertThat(listOf(1)).containsAllIn(1, 1, 2)
@@ -187,6 +201,9 @@ class IterableAsserts {
         assertThrows<AssertionError> {
             assertThat(listOf(1, 2, 1)).containsAllIn(2, 1, 1).inOrder()
         }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, DetailsFor.OUT_OF_ORDER, "1")
+        assertThrows<AssertionError> {
+            assertThat(listOf(1, 2, 1)).containsAllIn(1, 1).inOrder(consecutive = true)
+        }.assertSubstrings(Summaries.EXPECTED_COLLECTION_ORDERED, "consecutively")
     }
 
     @Test
@@ -298,6 +315,15 @@ class IterableAsserts {
                 DetailsFor.BUT_WAS,
                 "[ … (7 more), 8, 9, 10, 11, 12, 13, … (4 more), 18, 19, 20, 21, 22, … (8 more) ]",
                 DetailsFor.OUT_OF_ORDER, "11",
+            )
+
+            // But was is centered on where the closest run (14, 15, 16) breaks off (17)
+            assertThrows<AssertionError> {
+                assertThat((1..30).toList()).containsAllIn(14, 15, 16, 18, 19).inOrder(consecutive = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_ORDERED,
+                DetailsFor.BUT_WAS,
+                "[ … (11 more), 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, … (8 more) ]",
             )
 
             // The value is centered on the first element that's out of order (21)

@@ -26,6 +26,7 @@ class CorrespondenceAsserts {
             subject.containsAnyIn("Type mismatch", "cannot be reassigned")
             subject.containsAllIn("cannot be reassigned")
             subject.containsAllIn("Unresolved reference", "cannot be reassigned").inOrder()
+            subject.containsAllIn("Unresolved reference", "cannot be reassigned").inOrder(consecutive = true)
             subject.containsNoneIn("Type mismatch", "Unused variable")
             subject.containsExactly("cannot be reassigned", "Unresolved reference")
             subject.containsExactly("Unresolved reference", "cannot be reassigned").inOrder()

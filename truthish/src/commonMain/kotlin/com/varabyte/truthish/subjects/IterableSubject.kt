@@ -105,7 +105,7 @@ open class IterableSubject<T>(actual: Iterable<T>) : NotNullSubject<Iterable<T>>
 
     fun containsAnyIn(vararg elements: T) = containsAnyIn(elements.asIterable())
 
-    fun containsAllIn(other: Iterable<T>): OrderedAsserter = asserter.containsAllIn(other)
+    fun containsAllIn(other: Iterable<T>): ConsecutiveOrderedAsserter = asserter.containsAllIn(other)
 
     fun containsAllIn(vararg elements: T) = containsAllIn(elements.asIterable())
 
@@ -286,4 +286,15 @@ fun <T, E> IterableSubject<T>.comparingElementsUsing(
  */
 class OrderedAsserter internal constructor(private val checkInOrder: () -> Unit) {
     fun inOrder() = checkInOrder()
+}
+
+/**
+ * Lets an assertion that passed also check that the expected elements appear in order, via [inOrder], optionally with
+ * a strict consecutive requirement.
+ */
+class ConsecutiveOrderedAsserter internal constructor(private val checkInOrder: (consecutive: Boolean) -> Unit) {
+    /**
+     * @param consecutive If true, the elements must also appear next to each other, with nothing in between.
+     */
+    fun inOrder(consecutive: Boolean = false) = checkInOrder(consecutive)
 }

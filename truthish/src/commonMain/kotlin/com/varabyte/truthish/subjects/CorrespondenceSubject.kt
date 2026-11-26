@@ -32,7 +32,7 @@ class CorrespondenceSubject<A, E> internal constructor(
 
     fun containsAnyIn(vararg elements: E) = containsAnyIn(elements.asIterable())
 
-    fun containsAllIn(other: Iterable<E>): OrderedAsserter = asserter.containsAllIn(other)
+    fun containsAllIn(other: Iterable<E>): ConsecutiveOrderedAsserter = asserter.containsAllIn(other)
 
     fun containsAllIn(vararg elements: E) = containsAllIn(elements.asIterable())
 
