@@ -10,6 +10,12 @@ class StringAsserts {
     fun stringChecks() {
         run {
             // Test true statements
+            assertThat("Hello").isEqualTo("hELLO", ignoreCase = true)
+            assertThat("Hello").isNotEqualTo("HELLO")
+            assertThat("Hello").isNotEqualTo("World", ignoreCase = true)
+            // Case is compared character by character, like the standard library, so "ß" doesn't match "SS"
+            assertThat("Straße").isNotEqualTo("STRASSE", ignoreCase = true)
+
             assertThat("").isEmpty()
             assertThat("  ").isBlank()
             assertThat("  ").isNotEmpty()
@@ -52,6 +58,23 @@ class StringAsserts {
 
         run {
             // Test false statements
+            assertThrows<AssertionError> {
+                assertThat("Hello").isEqualTo("hELP", ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "\"hELP\"",
+                DetailsFor.BUT_WAS, "\"Hello\"",
+                DetailsFor.NOTE, "Case was ignored",
+            )
+            assertThrows<AssertionError> {
+                assertThat("Hello").isNotEqualTo("HELLO", ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_NOT_EQUAL,
+                "${DetailsFor.EXPECTED} not to equal", "\"HELLO\"",
+                DetailsFor.BUT_WAS, "\"Hello\"",
+                DetailsFor.NOTE, "Case was ignored",
+            )
+
             assertThrows<AssertionError> {
                 assertThat("ASDF").isEmpty()
             }.assertSubstrings(Summaries.EXPECTED_EMPTY, DetailsFor.VALUE, "\"ASDF\"")
@@ -173,6 +196,16 @@ class StringAsserts {
                 Summaries.EXPECTED_EQUAL,
                 DetailsFor.EXPECTED, "\"1,2,3\"",
                 DetailsFor.BUT_WAS, "\"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,3\" … (191 more chars)",
+            )
+
+            // Without ignoring case, the strings differ from the start; but ignoring it, only "50" vs "5X" matters
+            assertThrows<AssertionError> {
+                assertThat(items.uppercase().replace("ITEM50,", "ITEM5X,")).isEqualTo(items, ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "item49,item50,item51",
+                DetailsFor.BUT_WAS, "ITEM49,ITEM5X,ITEM51",
+                DetailsFor.NOTE, "Case was ignored",
             )
 
             // A long prefix or suffix can differ anywhere, not just near the end that's compared
@@ -427,54 +460,6 @@ class StringAsserts {
         // see at a glance from the report:
         // Expected: "a\nb"
         // But was : "a\r\nb"
-    }
-
-    @Test
-    fun equalityCanIgnoreCase() {
-        run {
-            // Test true statements
-            assertThat("Hello").isEqualTo("hELLO", ignoreCase = true)
-            assertThat("Hello").isNotEqualTo("HELLO")
-            assertThat("Hello").isNotEqualTo("World", ignoreCase = true)
-            // Case is compared character by character, like the standard library, so "ß" doesn't match "SS"
-            assertThat("Straße").isNotEqualTo("STRASSE", ignoreCase = true)
-        }
-
-        run {
-            // Test false statements
-            assertThrows<AssertionError> {
-                assertThat("Hello").isEqualTo("hELP", ignoreCase = true)
-            }.assertSubstrings(
-                Summaries.EXPECTED_EQUAL,
-                DetailsFor.EXPECTED, "\"hELP\"",
-                DetailsFor.BUT_WAS, "\"Hello\"",
-                DetailsFor.NOTE, "Case was ignored",
-            )
-
-            assertThrows<AssertionError> {
-                assertThat("Hello").isNotEqualTo("HELLO", ignoreCase = true)
-            }.assertSubstrings(
-                Summaries.EXPECTED_NOT_EQUAL,
-                "${DetailsFor.EXPECTED} not to equal", "\"HELLO\"",
-                DetailsFor.BUT_WAS, "\"Hello\"",
-                DetailsFor.NOTE, "Case was ignored",
-            )
-        }
-    }
-
-    @Test
-    fun longStringsIgnoringCaseAreTruncatedAroundTheRealDifference() {
-        val items = (1..100).joinToString(",") { "item$it" }
-
-        // The strings differ in case from the start, but only "50" vs "5X" matters
-        assertThrows<AssertionError> {
-            assertThat(items.uppercase().replace("ITEM50,", "ITEM5X,")).isEqualTo(items, ignoreCase = true)
-        }.assertSubstrings(
-            Summaries.EXPECTED_EQUAL,
-            DetailsFor.EXPECTED, "item49,item50,item51",
-            DetailsFor.BUT_WAS, "ITEM49,ITEM5X,ITEM51",
-            DetailsFor.NOTE, "Case was ignored",
-        )
     }
 
     @Test
