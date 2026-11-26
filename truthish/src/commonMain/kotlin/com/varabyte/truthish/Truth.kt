@@ -3,31 +3,31 @@ package com.varabyte.truthish
 import com.varabyte.truthish.failure.*
 import com.varabyte.truthish.subjects.*
 
-fun assertThat(actual: Any?) = NullableSubject(actual)
-fun assertThat(actual: Any) = NotNullSubject(actual)
-fun <T: Comparable<T>> assertThat(actual: T) = ComparableSubject(actual)
-fun assertThat(actual: Boolean) = BooleanSubject(actual)
-fun assertThat(actual: Byte) = ByteSubject(actual)
-fun assertThat(actual: Short) = ShortSubject(actual)
-fun assertThat(actual: Int) = IntSubject(actual)
-fun assertThat(actual: Long) = LongSubject(actual)
-fun assertThat(actual: Float) = FloatSubject(actual)
-fun assertThat(actual: Double) = DoubleSubject(actual)
-fun assertThat(actual: String) = StringSubject(actual)
-fun assertThat(actual: Throwable) = ThrowableSubject(actual)
-fun <T, I: Iterable<T>> assertThat(actual: I) = IterableSubject(actual)
-fun <K, V, T: Map<K, V>> assertThat(actual: T) = MapSubject(actual)
-fun <T, S: Sequence<T>> assertThat(actual: S) = IterableSubject(actual.asIterable())
-fun <T> assertThat(actual: Array<T>) = ArraySubject(actual)
-fun assertThat(actual: BooleanArray) = BooleanArraySubject(actual)
-fun assertThat(actual: ByteArray) = ByteArraySubject(actual)
-fun assertThat(actual: CharArray) = CharArraySubject(actual)
-fun assertThat(actual: ShortArray) = ShortArraySubject(actual)
-fun assertThat(actual: IntArray) = IntArraySubject(actual)
-fun assertThat(actual: LongArray) = LongArraySubject(actual)
-fun assertThat(actual: FloatArray) = FloatArraySubject(actual)
-fun assertThat(actual: DoubleArray) = DoubleArraySubject(actual)
-// Adding a new [assertThat] here? Also add it to SummarizedSubjectBuilder and AssetAllScope
+fun assertThat(actual: Any?) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Any) = AssertionEntryPoint.that(actual)
+fun <T: Comparable<T>> assertThat(actual: T) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Boolean) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Byte) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Short) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Int) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Long) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Float) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Double) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: String) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: Throwable) = AssertionEntryPoint.that(actual)
+fun <T, I: Iterable<T>> assertThat(actual: I) = AssertionEntryPoint.that(actual)
+fun <K, V, T: Map<K, V>> assertThat(actual: T) = AssertionEntryPoint.that(actual)
+fun <T, S: Sequence<T>> assertThat(actual: S) = AssertionEntryPoint.that(actual)
+fun <T> assertThat(actual: Array<T>) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: BooleanArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: ByteArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: CharArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: ShortArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: IntArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: LongArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: FloatArray) = AssertionEntryPoint.that(actual)
+fun assertThat(actual: DoubleArray) = AssertionEntryPoint.that(actual)
+// Keep in sync with AssertionEntryPoint.kt. Validated by EntryPointsKeptInSyncTest.
 
 /**
  * Create a block of grouped assertions.
@@ -70,35 +70,15 @@ fun assertAll(summary: String? = null, block: AssertAllScope.() -> Unit) {
     assertAllScope.block()
     assertAllScope.deferredStrategy.handleNow()
 }
-class AssertAllScope(summary: String?) {
+class AssertAllScope(summary: String?) : AssertionEntryPoint {
     internal val deferredStrategy = DeferredStrategy(summary)
 
-    fun that(actual: Any?) = NullableSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Any) = NotNullSubject(actual).withStrategy(deferredStrategy)
-    fun <T: Comparable<T>> that(actual: T) = ComparableSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Boolean) = BooleanSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Byte) = ByteSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Short) = ShortSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Int) = IntSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Long) = LongSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Float) = FloatSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Double) = DoubleSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: String) = StringSubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: Throwable) = ThrowableSubject(actual).withStrategy(deferredStrategy)
-    fun <T, I: Iterable<T>> that(actual: I) = IterableSubject(actual).withStrategy(deferredStrategy)
-    fun <K, V, T: Map<K, V>> that(actual: T) = MapSubject(actual).withStrategy(deferredStrategy)
-    fun <T, S: Sequence<T>> that(actual: S) = IterableSubject(actual.asIterable()).withStrategy(deferredStrategy)
-    fun <T> that(actual: Array<T>) = ArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: BooleanArray) = BooleanArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: ByteArray) = ByteArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: CharArray) = CharArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: ShortArray) = ShortArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: IntArray) = IntArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: LongArray) = LongArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: FloatArray) = FloatArraySubject(actual).withStrategy(deferredStrategy)
-    fun that(actual: DoubleArray) = DoubleArraySubject(actual).withStrategy(deferredStrategy)
+    override fun <S : Reportable> prepare(subject: S): S {
+        subject.strategy = deferredStrategy
+        return subject
+    }
 
-    fun withMessage(message: String) = SummarizedSubjectBuilder(message, deferredStrategy)
+    fun withMessage(message: String) = MessageEntryPoint(message, deferredStrategy)
 }
 
 /**
@@ -133,34 +113,16 @@ class AssertAllScope(summary: String?) {
  * jamming a long message in the middle of the assertion. In fact, despite being syntax sugar, you should prefer
  * using `assertWithMessage` over `withMessage` for this reason.
  */
-fun assertWithMessage(message: String) = SummarizedSubjectBuilder(message)
-class SummarizedSubjectBuilder(private val message: String, private val strategyOverride: FailureStrategy? = null) {
-    private inline fun <reified R: Reportable> R.withStrategyOverride() = if (strategyOverride != null) withStrategy(strategyOverride) else this
-
-    fun that(actual: Any?) = NullableSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Any) = NotNullSubject(actual).withMessage(message).withStrategyOverride()
-    fun <T: Comparable<T>> that(actual: T) = ComparableSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Boolean) = BooleanSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Byte) = ByteSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Short) = ShortSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Int) = IntSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Long) = LongSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Float) = FloatSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Double) = DoubleSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: String) = StringSubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: Throwable) = ThrowableSubject(actual).withMessage(message).withStrategyOverride()
-    fun <T, I: Iterable<T>> that(actual: I) = IterableSubject(actual).withMessage(message).withStrategyOverride()
-    fun <K, V, T: Map<K, V>> that(actual: T) = MapSubject(actual).withMessage(message).withStrategyOverride()
-    fun <T, S: Sequence<T>> that(actual: S) = IterableSubject(actual.asIterable()).withMessage(message).withStrategyOverride()
-    fun <T> that(actual: Array<T>) = ArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: BooleanArray) = BooleanArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: ByteArray) = ByteArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: CharArray) = CharArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: ShortArray) = ShortArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: IntArray) = IntArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: LongArray) = LongArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: FloatArray) = FloatArraySubject(actual).withMessage(message).withStrategyOverride()
-    fun that(actual: DoubleArray) = DoubleArraySubject(actual).withMessage(message).withStrategyOverride()
+fun assertWithMessage(message: String) = MessageEntryPoint(message)
+class MessageEntryPoint(
+    private val message: String,
+    private val strategyOverride: FailureStrategy? = null,
+) : AssertionEntryPoint {
+    override fun <S : Reportable> prepare(subject: S): S {
+        subject.message = message
+        strategyOverride?.let { subject.strategy = it }
+        return subject
+    }
 }
 
 /**
