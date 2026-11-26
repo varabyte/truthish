@@ -130,6 +130,29 @@ class MapSubject<K, V>(private val actual: Map<K, V>) : IterableSubject<Pair<K, 
         }
     }
 
+    /**
+     * Like `contains(key to value)`, except a report centers on [key] if it's present, so its actual value is shown.
+     *
+     * In other words, this method should be preferred over a raw `contains`.
+     */
+    fun containsEntry(key: K, value: V) {
+        if (actual.containsKey(key) && actual[key] == value) return
+        val keyIndex = actual.keys.indexOf(key).takeIf { it >= 0 }
+        report(
+            Report(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                DetailsFor.expectedActual(
+                    "to contain",
+                    key to value,
+                    actual.toIterable(),
+                    actualContext = keyIndex.toCenteredOnContext(),
+                )
+            )
+        )
+    }
+
+    fun doesNotContainEntry(key: K, value: V) = doesNotContain(key to value)
+
     fun containsAnyIn(other: Map<K, V>) = containsAnyIn(other.toIterable())
     fun containsAllIn(other: Map<K, V>) = containsAllIn(other.toIterable())
     fun containsNoneIn(other: Map<K, V>) = containsNoneIn(other.toIterable())

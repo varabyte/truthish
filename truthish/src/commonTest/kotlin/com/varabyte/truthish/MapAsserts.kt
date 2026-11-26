@@ -24,6 +24,8 @@ class MapAsserts {
             assertThat(asciiMap.values).doesNotContain(9999)
             assertThat(asciiMap).contains('e' to 101)
             assertThat(asciiMap).doesNotContain('e' to 102)
+            assertThat(asciiMap).containsEntry('e', 101)
+            assertThat(asciiMap).doesNotContainEntry('e', 102)
 
             assertThat(asciiMap).containsAnyIn('a' to 97, 'a' to 98)
             assertThat(asciiMap).containsAllIn('a' to 97, 'z' to 122).inOrder()
@@ -97,6 +99,21 @@ class MapAsserts {
             assertThrows<AssertionError> {
                 assertThat(asciiMap).contains('e' to 102)
             }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "'e' to 102")
+
+            // A key that's present with another value is shown, even far from the start
+            assertThrows<AssertionError> {
+                assertThat(asciiMap).containsEntry('m', 0)
+            }.assertSubstrings(
+                Summaries.EXPECTED_COLLECTION_CONTAINS,
+                "${DetailsFor.EXPECTED} to contain", "'m' to 0",
+                DetailsFor.BUT_WAS, "'m' to 109",
+            )
+            assertThrows<AssertionError> {
+                assertThat(asciiMap).containsEntry('E', 69)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_CONTAINS, "'E' to 69")
+            assertThrows<AssertionError> {
+                assertThat(asciiMap).doesNotContainEntry('e', 101)
+            }.assertSubstrings(Summaries.EXPECTED_COLLECTION_NOT_CONTAINS, "'e' to 101")
 
             assertThrows<AssertionError> {
                 assertThat(asciiMap).containsAllIn('a' to 122, 'z' to 122)
