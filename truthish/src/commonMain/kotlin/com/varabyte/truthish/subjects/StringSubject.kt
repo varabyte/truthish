@@ -11,13 +11,36 @@ import com.varabyte.truthish.util.truncate.Anchor
 import com.varabyte.truthish.util.truncate.Truncation
 
 class StringSubject(private val actual: String) : ComparableSubject<String>(actual) {
-    /** Like [AnySubject.isEqualTo], except two strings that span multiple lines are shown as a line-by-line diff. */
-    fun isEqualTo(expected: CharSequence?) {
-        if (actual == expected) return
+    /**
+     * Like [AnySubject.isEqualTo], except two strings that span multiple lines are shown as a line-by-line diff.
+     *
+     * @param ignoreCase If true, characters that differ only in case are considered equal.
+     */
+    fun isEqualTo(expected: CharSequence?, ignoreCase: Boolean = false) {
+        if (expected is String && actual.equals(expected, ignoreCase)) return
         val details = expected
-            ?.let { createLineDiffDetails(it.toString(), actual) ?: createStringEqualityDetails(it, actual) }
+            ?.let {
+                createLineDiffDetails(it.toString(), actual, ignoreCase)
+                    ?: createStringEqualityDetails(it, actual, ignoreCase)
+            }
             ?: DetailsFor.expectedActual(null, actual)
         report(Report(Summaries.EXPECTED_EQUAL, details))
+    }
+
+    /**
+     * Like [AnySubject.isNotEqualTo], with an option to ignore case.
+     *
+     * @param ignoreCase If true, characters that differ only in case are considered equal.
+     */
+    fun isNotEqualTo(expected: CharSequence?, ignoreCase: Boolean = false) {
+        if (!(expected is String && actual.equals(expected, ignoreCase))) return
+        val details = if (ignoreCase) {
+            // The two values may differ in case, so show both
+            DetailsFor.expectedActual("not to equal", expected, actual).apply { addNote(CASE_IGNORED_NOTE) }
+        } else {
+            DetailsFor.actual(actual)
+        }
+        report(Report(Summaries.EXPECTED_NOT_EQUAL, details))
     }
 
     fun isEmpty() {
@@ -244,29 +267,40 @@ class StringSubject(private val actual: String) : ComparableSubject<String>(actu
 }
 
 /** Details for two unequal strings, both truncated around where they first differ. */
-private fun createStringEqualityDetails(expected: CharSequence, actual: String): Details {
-    val context = expected.toList().createSharedContext(actual.toList(), Truncators.forStrings)
+private fun createStringEqualityDetails(expected: CharSequence, actual: String, ignoreCase: Boolean): Details {
+    val context = expected.toComparableChars(ignoreCase)
+        .createSharedContext(actual.toComparableChars(ignoreCase), Truncators.forStrings)
     return DetailsFor.expectedActual(expected, actual, expectedContext = context, actualContext = context)
+        .apply { if (ignoreCase) addNote(CASE_IGNORED_NOTE) }
 }
+
+/** This string's characters, for finding where two strings first differ. */
+private fun CharSequence.toComparableChars(ignoreCase: Boolean): List<Char> =
+    // "uppercase -> lowercase" is intentional, and is different from just doing "lowercase" for some characters. This
+    // is what `Char.equals` does under the hood.
+    if (ignoreCase) map { it.uppercaseChar().lowercaseChar() } else toList()
+
+private const val CASE_IGNORED_NOTE = "case was ignored"
 
 /**
  * Details showing how two strings differ line by line, or `null` if a line diff wouldn't help, e.g. because neither
  * string spans multiple lines.
  */
-private fun createLineDiffDetails(expectedText: String, actualText: String): Details? {
+private fun createLineDiffDetails(expectedText: String, actualText: String, ignoreCase: Boolean): Details? {
     if (!expectedText.contains('\n') && !actualText.contains('\n')) return null
 
     // If only line endings differ, a diff would look empty. Instead, show the values as single-line reports, whose
     // escaped `\r`s make the difference easier to see. For example:
     // Expected: "a\nb\nc"
     // But was : "a\r\nb\r\nc"
-    if (expectedText.replace("\r\n", "\n") == actualText.replace("\r\n", "\n")) return null
+    if (expectedText.replace("\r\n", "\n").equals(actualText.replace("\r\n", "\n"), ignoreCase)) return null
 
     // Strings too big to diff also show the single-line reports, truncated, leaving the full comparison to the IDE's
     // diff viewer, where available
-    val diff = LineDiff.tryCreate(expectedText, actualText) ?: return null
+    val diff = LineDiff.tryCreate(expectedText, actualText, ignoreCase) ?: return null
 
     return Details(listOf(DetailsFor.DIFF to diff)).apply {
+        if (ignoreCase) addNote(CASE_IGNORED_NOTE)
         // The diff ignores line endings, which would otherwise mark every line as changed, so call them out separately
         val expectedEndings = expectedText.findLineEndings()
         val actualEndings = actualText.findLineEndings()

@@ -385,4 +385,69 @@ class StringAsserts {
         // Expected: "a\nb"
         // But was : "a\r\nb"
     }
+
+    @Test
+    fun equalityCanIgnoreCase() {
+        run {
+            // Test true statements
+            assertThat("Hello").isEqualTo("hELLO", ignoreCase = true)
+            assertThat("Hello").isNotEqualTo("HELLO")
+            assertThat("Hello").isNotEqualTo("World", ignoreCase = true)
+            // Case is compared character by character, like the standard library, so "ß" doesn't match "SS"
+            assertThat("Straße").isNotEqualTo("STRASSE", ignoreCase = true)
+        }
+
+        run {
+            // Test false statements
+            assertThrows<AssertionError> {
+                assertThat("Hello").isEqualTo("hELP", ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "\"hELP\"",
+                DetailsFor.BUT_WAS, "\"Hello\"",
+                DetailsFor.NOTE, "Case was ignored",
+            )
+
+            assertThrows<AssertionError> {
+                assertThat("Hello").isNotEqualTo("HELLO", ignoreCase = true)
+            }.assertSubstrings(
+                Summaries.EXPECTED_NOT_EQUAL,
+                "${DetailsFor.EXPECTED} not to equal", "\"HELLO\"",
+                DetailsFor.BUT_WAS, "\"Hello\"",
+                DetailsFor.NOTE, "Case was ignored",
+            )
+        }
+    }
+
+    @Test
+    fun longStringsIgnoringCaseAreTruncatedAroundTheRealDifference() {
+        val items = (1..100).joinToString(",") { "item$it" }
+
+        // The strings differ in case from the start, but only "50" vs "5X" matters
+        assertThrows<AssertionError> {
+            assertThat(items.uppercase().replace("ITEM50,", "ITEM5X,")).isEqualTo(items, ignoreCase = true)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            DetailsFor.EXPECTED, "item49,item50,item51",
+            DetailsFor.BUT_WAS, "ITEM49,ITEM5X,ITEM51",
+            DetailsFor.NOTE, "Case was ignored",
+        )
+    }
+
+    @Test
+    fun multiLineStringDiffCanIgnoreCase() {
+        // Lines that differ only in case are kept, showing the expected text
+        assertThrows<AssertionError> {
+            assertThat("A\nB\nc").isEqualTo("a\nb\nC\nd", ignoreCase = true)
+        }.assertSubstrings(
+            Summaries.EXPECTED_EQUAL,
+            """
+            Diff:   a
+                    b
+                    C
+                  - d
+            Note: Case was ignored
+            """.trimIndent(),
+        )
+    }
 }

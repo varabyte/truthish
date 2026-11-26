@@ -36,9 +36,15 @@ internal class LineDiff private constructor(
          */
         private const val MAX_TABLE_CELLS = 1_000_000
 
-        /** Diffs [expected] and [actual], or returns `null` if they're too big to diff (see [MAX_TABLE_CELLS]). */
-        fun tryCreate(expected: String, actual: String): LineDiff? =
-            createLines(expected.splitIntoLines(), actual.splitIntoLines())?.let { LineDiff(expected, actual, it) }
+        /**
+         * Diffs [expected] and [actual], or returns `null` if they're too big to diff (see [MAX_TABLE_CELLS]).
+         *
+         * @param ignoreCase If true, lines that differ only in case count as unchanged. Since the two lines' text
+         *   differs, an unchanged line always picks the expected line's text.
+         */
+        fun tryCreate(expected: String, actual: String, ignoreCase: Boolean = false): LineDiff? =
+            createLines(expected.splitIntoLines(), actual.splitIntoLines(), ignoreCase)
+                ?.let { LineDiff(expected, actual, it) }
 
         private fun String.splitIntoLines(): List<String> {
             val lines = split(Regex("\r?\n"))
@@ -51,16 +57,18 @@ internal class LineDiff private constructor(
          *
          * See also: https://en.wikipedia.org/wiki/Longest_common_subsequence
          */
-        private fun createLines(expected: List<String>, actual: List<String>): List<Line>? {
+        private fun createLines(expected: List<String>, actual: List<String>, ignoreCase: Boolean): List<Line>? {
+            fun String.isSameLineAs(other: String) = equals(other, ignoreCase)
+
             // Strings in a failing test usually differ in only a few lines, so set aside the matching start and end
             // first, to keep the table below small
             val shorterSize = minOf(expected.size, actual.size)
             var prefixSize = 0
-            while (prefixSize < shorterSize && expected[prefixSize] == actual[prefixSize]) prefixSize++
+            while (prefixSize < shorterSize && expected[prefixSize].isSameLineAs(actual[prefixSize])) prefixSize++
             var suffixSize = 0
             while (
                 suffixSize < shorterSize - prefixSize &&
-                expected[expected.lastIndex - suffixSize] == actual[actual.lastIndex - suffixSize]
+                expected[expected.lastIndex - suffixSize].isSameLineAs(actual[actual.lastIndex - suffixSize])
             ) suffixSize++
 
             val expectedMiddle = expected.subList(prefixSize, expected.size - suffixSize)
@@ -73,7 +81,7 @@ internal class LineDiff private constructor(
             val commonCounts = Array(expectedMiddle.size + 1) { IntArray(actualMiddle.size + 1) }
             for (e in expectedMiddle.indices.reversed()) {
                 for (a in actualMiddle.indices.reversed()) {
-                    commonCounts[e][a] = if (expectedMiddle[e] == actualMiddle[a]) {
+                    commonCounts[e][a] = if (expectedMiddle[e].isSameLineAs(actualMiddle[a])) {
                         commonCounts[e + 1][a + 1] + 1
                     } else {
                         maxOf(commonCounts[e + 1][a], commonCounts[e][a + 1])
@@ -88,7 +96,7 @@ internal class LineDiff private constructor(
                 var a = 0
                 while (e < expectedMiddle.size && a < actualMiddle.size) {
                     when {
-                        expectedMiddle[e] == actualMiddle[a] -> {
+                        expectedMiddle[e].isSameLineAs(actualMiddle[a]) -> {
                             add(Line.Kept(expectedMiddle[e]))
                             e++
                             a++
@@ -115,12 +123,13 @@ internal class LineDiff private constructor(
     /**
      * Diffs [expected] and [actual].
      *
+     * @param ignoreCase See [tryCreate].
      * @throws IllegalArgumentException if they're too big to diff. Use [tryCreate] if that can happen.
      */
-    constructor(expected: String, actual: String) : this(
+    constructor(expected: String, actual: String, ignoreCase: Boolean = false) : this(
         expected,
         actual,
-        createLines(expected.splitIntoLines(), actual.splitIntoLines())
+        createLines(expected.splitIntoLines(), actual.splitIntoLines(), ignoreCase)
             ?: throw IllegalArgumentException("The strings are too big to diff"),
     )
 }

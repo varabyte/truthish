@@ -127,4 +127,19 @@ class LineDiffTest {
             .containsExactly(Removed(""), Removed(""), Removed(""), Added("a"), Added("b"), Added("c"))
             .inOrder()
     }
+
+    @Test
+    fun ignoringCaseKeepsLinesThatDifferOnlyInCase() {
+        // A kept line always picks the expected line's text
+        assertThat(LineDiff("a\nb\nc", "A\nB\nd", ignoreCase = true).lines)
+            .containsExactly(Kept("a"), Kept("b"), Removed("c"), Added("d"))
+            .inOrder()
+    }
+
+    @Test
+    fun ignoringCaseAlsoKeepsLinesBetweenChanges() {
+        assertThat(LineDiff("a\nb\nc", "x\nB\ny", ignoreCase = true).lines)
+            .containsExactly(Removed("a"), Added("x"), Kept("b"), Removed("c"), Added("y"))
+            .inOrder()
+    }
 }
