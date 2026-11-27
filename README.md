@@ -145,7 +145,6 @@ kotlin {
     linuxArm64()
     linuxX64()
     macosArm64() // Mac M1+
-    macosX64() // Mac Intel
     mingwX64() // Windows
     iosArm64() // iOS M1+
     iosX64() // iOS Intel
