@@ -219,7 +219,7 @@ internal class ContainmentAsserter<A, E>(
 
         // `actual` contains every expected element, so it's at least as long as `expected`
         val bestStart = (0..actual.list.size - windowSize)
-            .maxByOrNull { start -> (0 until windowSize).count { matchesAt(start, it) } }!!
+            .maxBy { start -> (0 until windowSize).count { matchesAt(start, it) } }
         // Center both lists on where the best match goes wrong
         val mismatch = (0 until windowSize).firstOrNull { !matchesAt(bestStart, it) } ?: return
         report(
