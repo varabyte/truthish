@@ -64,6 +64,13 @@ abstract class PrintLineCoverageFromKoverTask : DefaultTask() {
     }
 }
 
+// The integration tests exercise code paths that depend on which test framework is on the classpath
+dependencies {
+    kover(project(":integration-tests:jvm:junit4"))
+    kover(project(":integration-tests:jvm:junit5"))
+    kover(project(":integration-tests:jvm:testng"))
+}
+
 val koverXmlReportTask = tasks.named("koverXmlReport")
 tasks.register<PrintLineCoverageFromKoverTask>("printLineCoverage") {
     group = "verification"
