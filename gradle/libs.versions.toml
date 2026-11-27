@@ -1,14 +1,16 @@
 [versions]
-kotlin = "2.1.0"
-# The architecture tests are a separate build with a newer Kotlin, since Konsist is built with it. Once `kotlin` above
-# catches up, they can share it (and become a regular subproject).
+# Also the oldest Kotlin that JS / Wasm / Native users can use, since older compilers reject newer klibs. Keep the
+# README badge in sync.
+kotlin-compiler = "2.4.21"
+# The architecture tests are a separate build with a newer Kotlin, since Konsist is built with it. Once
+# `kotlin-compiler` above catches up, they can share it (and become a regular subproject).
 kotlin-architecture = "2.4.21"
-# The oldest Kotlin versions Truthish supports, used for both the stdlib dependency and the language / API version. Wasm
-# didn't really exist until the end of 1.8 and won't compile with anything older than 1.9.
-kotlin-target-common = "1.6.21"
-kotlin-target-wasm = "1.9.25"
+# The oldest Kotlin version Truthish supports on the JVM, used for both the stdlib dependency and the language / API
+# version. When bumping `kotlin-compiler` above, raise this to the oldest language version that compiler doesn't flag as
+# deprecated (and update the README badge!).
+kotlin-target = "2.2.21"
 dokka = "2.1.0"
-kover = "0.9.4"
+kover = "0.9.11"
 maven-publish = "0.35.0"
 junit4 = "4.13.2"
 opentest4j = "1.3.0"
@@ -20,8 +22,8 @@ opentest4j = { module = "org.opentest4j:opentest4j", version.ref = "opentest4j" 
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 
 [plugins]
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-compiler" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-compiler" }
 kotlin-jvm-architecture = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-architecture" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

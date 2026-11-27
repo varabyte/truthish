@@ -4,7 +4,8 @@
 ![truthish tests](https://github.com/varabyte/truthish/actions/workflows/gradle-test-all.yml/badge.svg)
 ![coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bitspittle/01b6bfe88483946d9f5438f5616d9b9f/raw/truthish-coverage-badge.json)
 <br>
-![kotlin version](https://img.shields.io/badge/kotlin_compatibility-1.6+-lightgray?logo=kotlin)
+![kotlin jvm version](https://img.shields.io/badge/kotlin_jvm-2.2+-lightgray?logo=kotlin)
+![kotlin kmp version](https://img.shields.io/badge/kotlin_kmp-2.4+-lightgray?logo=kotlin)
 ![targets](https://img.shields.io/badge/targets-JVM,_JS,_Win,_Linux,_Mac,_Android,_iOS,_Wasm-white.svg)
 <br>
 <a href="https://discord.gg/bCdxPr7aTV">

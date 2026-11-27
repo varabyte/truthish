@@ -8,7 +8,7 @@ class ClassNameAsserts {
     object SameHolderA { class Same }
     object SameHolderB { class Same }
 
-    // JS and Wasm don't support qualified class names, so the report can only say that the classes differ
+    // JS doesn't support qualified class names, so the report can only say that the classes differ
     @Test
     fun sameSimpleNamesShowNote() {
         assertThrows<AssertionError> {

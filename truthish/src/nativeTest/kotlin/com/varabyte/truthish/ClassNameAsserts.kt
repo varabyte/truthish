@@ -25,9 +25,9 @@ class ClassNameAsserts {
         }.assertSubstrings(
             Summaries.EXPECTED_INSTANCE,
             DetailsFor.EXPECTED,
-            "<anonymous> (class com.varabyte.truthish.ClassNameAsserts\$anonymousClassesShowQualifiedNames\$2)",
+            "<anonymous> (class com.varabyte.truthish.ClassNameAsserts\$anonymousClassesShowQualifiedNames\$second\$1)",
             DetailsFor.BUT_WAS,
-            "<anonymous> (class com.varabyte.truthish.ClassNameAsserts\$anonymousClassesShowQualifiedNames\$1)",
+            "<anonymous> (class com.varabyte.truthish.ClassNameAsserts\$anonymousClassesShowQualifiedNames\$first\$1)",
         )
     }
 }

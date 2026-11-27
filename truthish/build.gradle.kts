@@ -117,9 +117,7 @@ kotlin {
     }
 
     sourceSets {
-        // Anything lower and: "API version 1.x is no longer supported; please, use version 1.6 or greater."
-        // We also use "buildMap" from 1.6
-        val targetKotlinVersion = libs.versions.kotlin.target.common.get()
+        val targetKotlinVersion = libs.versions.kotlin.target.get()
 
         all {
             languageSettings {
@@ -131,17 +129,9 @@ kotlin {
             implementation(kotlin("stdlib", targetKotlinVersion))
         }
 
-        wasmJsMain {
-            // Wasm needs to use 1.9+ or else compilation dies.
-            // This exception is not a big deal since Wasm didn't really exist until the end of 1.8 anyway
-            val wasmKotlinVersion = libs.versions.kotlin.target.wasm.get()
-            languageSettings {
-                setToVersion(wasmKotlinVersion)
-            }
-
-            dependencies {
-                implementation(kotlin("stdlib", wasmKotlinVersion))
-            }
+        wasmJsMain.dependencies {
+            // The Wasm compiler only accepts a stdlib built with its own ABI version, so this one can't be older
+            implementation(kotlin("stdlib", libs.versions.kotlin.compiler.get()))
         }
         jvmMain.dependencies {
             // Test tools (IntelliJ, Gradle) offer a diff view for these exception types. We throw them when they're
