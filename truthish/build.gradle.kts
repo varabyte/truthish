@@ -129,8 +129,8 @@ kotlin {
             implementation(kotlin("stdlib", targetKotlinVersion))
         }
 
-        wasmJsMain.dependencies {
-            // The Wasm compiler only accepts a stdlib built with its own ABI version, so this one can't be older
+        webMain.dependencies {
+            // JS and Wasm only accept a stdlib built with their compiler's own ABI version, so this can't be older
             implementation(kotlin("stdlib", libs.versions.kotlin.compiler.get()))
         }
         jvmMain.dependencies {
