@@ -2,9 +2,6 @@
 # Also the oldest Kotlin that JS / Wasm / Native users can use, since older compilers reject newer klibs. Keep the
 # README badge in sync.
 kotlin-compiler = "2.4.21"
-# The architecture tests are a separate build with a newer Kotlin, since Konsist is built with it. Once
-# `kotlin-compiler` above catches up, they can share it (and become a regular subproject).
-kotlin-architecture = "2.4.21"
 # The oldest Kotlin version Truthish supports on the JVM, used for both the stdlib dependency and the language / API
 # version. When bumping `kotlin-compiler` above, raise this to the oldest language version that compiler doesn't flag as
 # deprecated (and update the README badge!).
@@ -24,7 +21,6 @@ konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-compiler" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-compiler" }
-kotlin-jvm-architecture = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-architecture" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

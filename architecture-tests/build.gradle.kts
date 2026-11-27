@@ -1,7 +1,10 @@
-// A separate build, so it can use a newer Kotlin than Truthish itself, which Konsist needs. Konsist reads Truthish's
-// sources from disk, so this build doesn't depend on Truthish at all.
+// Konsist reads Truthish's sources from disk, so this project doesn't depend on Truthish at all
 plugins {
-    alias(libs.plugins.kotlin.jvm.architecture)
+    kotlin("jvm")
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {

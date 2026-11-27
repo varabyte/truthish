@@ -11,6 +11,3 @@ plugins {
 repositories {
     mavenCentral()
 }
-
-// The architecture tests live in their own build (see architecture-tests/build.gradle.kts), so hook them in here
-tasks.check { dependsOn(gradle.includedBuild("architecture-tests").task(":test")) }
