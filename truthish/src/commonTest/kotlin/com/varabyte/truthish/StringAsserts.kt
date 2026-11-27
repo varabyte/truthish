@@ -74,6 +74,13 @@ class StringAsserts {
                 DetailsFor.BUT_WAS, "\"Hello\"",
                 DetailsFor.NOTE, "Case was ignored",
             )
+            assertThrows<AssertionError> {
+                assertThat("Hello World").isEqualTo(null)
+            }.assertSubstrings(
+                Summaries.EXPECTED_EQUAL,
+                DetailsFor.EXPECTED, "(null)",
+                DetailsFor.BUT_WAS, "\"Hello World\"",
+            )
 
             assertThrows<AssertionError> {
                 assertThat("ASDF").isEmpty()

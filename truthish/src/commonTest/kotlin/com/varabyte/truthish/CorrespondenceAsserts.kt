@@ -128,6 +128,19 @@ class CorrespondenceAsserts {
     }
 
     @Test
+    fun inOrderFailsWhenAnElementsOnlyMatchComesTooEarly() {
+        val subject = assertThat(listOf("ab", "b")).comparingElementsUsing(Correspondence.contains)
+        subject.containsAllIn("b", "a")
+
+        assertThrows<AssertionError> {
+            subject.containsAllIn("b", "a").inOrder()
+        }.assertSubstrings(
+            Summaries.EXPECTED_COLLECTION_ORDERED,
+            DetailsFor.OUT_OF_ORDER, "\"a\"",
+        )
+    }
+
+    @Test
     fun elementsThatCouldBeLeftOutInsteadOfEachOtherAreReportedTogether() {
         val subject = assertThat(listOf("ab", "a")).comparingElementsUsing(Correspondence.contains)
 
